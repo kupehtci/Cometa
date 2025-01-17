@@ -4,6 +4,7 @@ newaction {
     execute     = function ()
        print("clean the build...")
        os.rmdir("./bin")
+       os.rmdir("./bin-int")
        os.rmdir("./obj")
        os.remove("./Makefile")
        os.remove("./*.make")

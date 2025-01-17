@@ -15,4 +15,4 @@ premake5 gmake --cc=gcc --os=macosx
 
 make config=debug
 
-bin/Debug/AuraVK
+bin/Debug/AuraGL

@@ -9,29 +9,26 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug)
-  AuraVK_config = debug
+  AuraGL_config = debug
 endif
 ifeq ($(config),release)
-  AuraVK_config = release
-endif
-ifeq ($(config),dist)
-  AuraVK_config = dist
+  AuraGL_config = release
 endif
 
-PROJECTS := AuraVK
+PROJECTS := AuraGL
 
 .PHONY: all clean help $(PROJECTS) 
 
 all: $(PROJECTS)
 
-AuraVK:
-ifneq (,$(AuraVK_config))
-	@echo "==== Building AuraVK ($(AuraVK_config)) ===="
-	@${MAKE} --no-print-directory -C . -f AuraVK.make config=$(AuraVK_config)
+AuraGL:
+ifneq (,$(AuraGL_config))
+	@echo "==== Building AuraGL ($(AuraGL_config)) ===="
+	@${MAKE} --no-print-directory -C . -f AuraGL.make config=$(AuraGL_config)
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C . -f AuraVK.make clean
+	@${MAKE} --no-print-directory -C . -f AuraGL.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -39,11 +36,10 @@ help:
 	@echo "CONFIGURATIONS:"
 	@echo "  debug"
 	@echo "  release"
-	@echo "  dist"
 	@echo ""
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
-	@echo "   AuraVK"
+	@echo "   AuraGL"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
