@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 
 Renderer::Renderer() {
-    this->_window = nullptr;
-    this->_resolution = new Quad(800, 600);
+    // this->_window = nullptr;
+    // this->_resolution = new Quad(800, 600);
 }
 
 /**
@@ -29,48 +29,30 @@ void Renderer::Init(){
         return;
     }
 
-    // Create a GLFW window
-    this->_window = glfwCreateWindow(_resolution->x, _resolution->y, "CometA", NULL, NULL);
-    if (!_window) {
-        glfwTerminate();
-        return;
-    }
+    // Create a Window (Own object)
+    // _window = new Window();
+    _window = Window::GetInstancePtr();
+    _window->Create(COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT, "CometA");
 
 }
 
 void Renderer::Update(){
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    // Update current window
+    _window->Update();
 
-    // OpenGL drawing commands...
-
-
-    // EXAMPLE  DRAWING A TRIANGLE
-    float vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f,  0.5f, 0.0f
-    };
-
-    // Generate a buffer that is signed by an unique ID
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    // Bind the buffer to an array buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // Copy the vertices data into the Buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glfwSwapBuffers(this->_window);
-    glfwPollEvents();
 
     // Check if window must close
     // !glfwWindowShouldClose(this->_window);
+
 }
 
+/**
+ * Close all the rendering artifacts created
+ * And terminate the Graphics library
+ */
 void Renderer::Close(){
-    glfwDestroyWindow(this->_window);
+    _window->Close();
     glfwTerminate();
 }
 

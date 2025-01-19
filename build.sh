@@ -7,7 +7,7 @@
 ## Run the compiled binary as DEBUG by default
 ## If you want to run the release version, change the config to release
 
-source /Users/dlaplana/VulkanSDK/1.3.275.0/setup-env.sh
+# source /Users/dlaplana/VulkanSDK/1.3.275.0/setup-env.sh
 
 premake5 clean
 

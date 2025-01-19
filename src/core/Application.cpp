@@ -32,7 +32,7 @@ void Application::Running() {
         _renderer->Update();
 
         // Check if window must close
-        this->_isRunning =  !glfwWindowShouldClose(_renderer->_window);
+        this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow();
     }
 }
 
