@@ -6,3 +6,6 @@ bin-int/*
 .vscode/*
 
 *.make
+
+# Old files
+*_old*
