@@ -42,9 +42,17 @@ project "AuraGL"
         defines { "PLATFORM_MACOS" }
     filter "system:linux"
 
-    
-    filter "system:windows"
 
+    -- WINDOWS Expecifications
+    filter "system:windows"
+        includedirs{
+            "vendor/GLFW/include"
+        }
+        links{
+            "glfw3"
+            --"OpenGL.framework"
+        }
+        defines { "PLATFORM_WINDOWS" }
 
 
 	filter { "configurations:Debug" }  
