@@ -7,14 +7,24 @@
 #include <iostream>
 
 
+// Window constructor
+Window::Window()
+{
+    this->_resolution = nullptr; 
+    this->_window = nullptr;
+    this->_title = "none"; 
+}
+
 // Its implemented at the end of the file
 void HandleResizeCallback(GLFWwindow *window, int width, int height);
+
 
 
 void Window::Create(int width, int height, const char *title) {
 
     // Store resolution parameters
     _resolution = new Quad(width, height);
+    this->_title = _title; 
 
 
     // Create a GLFW window
