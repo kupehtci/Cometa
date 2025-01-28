@@ -35,7 +35,7 @@ void Window::Update() {
 }
 
 void Window::Render() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT);
 
     // OpenGL drawing commands...
 

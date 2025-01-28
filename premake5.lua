@@ -48,6 +48,9 @@ project "AuraGL"
         includedirs{
             "vendor/GLFW/include"
         }
+        libdirs{
+            "vendor/GLFW/lib"
+        }
         links{
             "glfw3"
             --"OpenGL.framework"
