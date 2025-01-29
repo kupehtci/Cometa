@@ -1,18 +1,91 @@
 #!/bin/bash
-# Settle for macOS
+# Settle for macOS and windows
 
+## For the case of MACOS
 ## Clean previous build
 ## Generate MakeFile and dependencies with targeted OS as macOS
 ## Compile the project with debug configuration using `make` command
 ## Run the compiled binary as DEBUG by default
 ## If you want to run the release version, change the config to release
 
-# source /Users/dlaplana/VulkanSDK/1.3.275.0/setup-env.sh
 
-premake5 clean
+# Print the usage of the script
+print_usage() {
+  echo "Usage: "
+  echo "    -t   Indicate the type of the OS to compile for"
+  echo "         Valid Options are: "
+  echo "               * macos   : compile for macos using premake5 to generate a MakeFile that then is compiled using Make"
+  echo "               * windows : compile for windows using premake5.exe binary (Not need to install) to generate a Visual Studio 2022 solution and proyect files with configuration"
+}
 
-premake5 gmake --cc=gcc --os=macosx
+type=""
 
-make config=debug
+while getopts 't:h' flag; do
+  case "${flag}" in
+    t) type="${OPTARG}" 
+        ;;
+    h) print_usage
+       exit 1 ;; 
+    *) print_usage
+       exit 1 ;;
+  esac
+done
 
-bin/Debug/AuraGL
+
+if [ "$type" = "" ]; then
+    echo "Type has not been specified, use -t flag to indicate a valid OS to compile the project for"
+    exit 1
+fi
+
+# Windows compilation for Visual Studio 2022
+compile_for_windows_vstudio() {
+    echo "Compiling a Visual Studio Solution for windows using premake5"
+    ./premake5.exe clean
+
+    ./premake5.exe vs2022 --os=windows 
+}
+
+# Build windows .sln using MSBuild
+build_for_windows_msbuild(){
+    # This function need to use the MSBuild.exe file ubicated in the system to run the Solution file of the proyect
+    C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe .\Aura.sln
+}
+
+# MacOS compilation and execution using Make Files
+compile_for_macos_gmake () {
+
+    # Check that Premake5 is installed
+    if command -v premake5 > /dev/null 2>&1; then
+        echo "Premake5 is installed"
+    else
+        echo "Premake5 is not installed and cannot be compiled without it"
+        echo "Install it using: "
+    fi
+
+    echo "Transcription for MacOS using premake5"
+    premake5 clean
+
+    premake5 gmake --cc=gcc --os=macosx
+
+    echo "Compiling MakeFiles"
+    make config=debug
+
+    echo "Executing the binary"
+    bin/Debug/AuraGL
+}
+
+
+case "${type}" in
+
+    "macos")
+        compile_for_macos_gmake
+    ;; 
+    "windows")
+        compile_for_windows_vstudio
+        # build_for_windows_msbuild
+    ;; 
+    *)
+        echo "Unknown option for compiling, valid options are [macos, windows] in lowercase"
+        exit 1
+    ;;
+esac

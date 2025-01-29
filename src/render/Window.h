@@ -16,6 +16,9 @@ private:
     const char* _title;
 
 public:
+    Window(); 
+    ~Window();
+
     void Create(int width, int height, const char* title);
     void Update();
     void Render();
