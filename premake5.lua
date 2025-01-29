@@ -7,6 +7,11 @@ workspace "Aura"
     -- Compile for x64 format. For 32 bits set to x86
     architecture "x86_64"
 
+-- Array of the include directories
+IncludeDir = {}
+IncludeDir["GLM"] = "vendor/glm/glm"
+IncludeDir["GLFW"] = "vendor/GLFW/include"
+
 project "AuraGL"
 	kind "ConsoleApp"  
 	language "C++"  
@@ -33,7 +38,8 @@ project "AuraGL"
     filter "system:macosx"
 
         includedirs{
-            "vendor/GLFW/include"
+            "%{IncludeDir.GLFW}",
+            "%{IncludeDir.GLM}"
         }
         links{
             "glfw",

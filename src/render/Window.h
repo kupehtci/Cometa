@@ -17,7 +17,7 @@ private:
 
 public:
     Window(); 
-    
+    ~Window();
 
     void Create(int width, int height, const char* title);
     void Update();

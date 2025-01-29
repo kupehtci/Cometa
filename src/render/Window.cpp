@@ -6,16 +6,34 @@
 
 #include <iostream>
 
-
+#include "glm/glm.hpp"
 // Window constructor
 Window::Window()
 {
     this->_resolution = nullptr; 
     this->_window = nullptr;
-    this->_title = "none"; 
+    this->_title = "none";
+    glm::vec1* veca = nullptr;
 }
 
-// Its implemented at the end of the file
+/**
+ * Window destructor
+ */
+Window::~Window(){
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+    }
+
+    delete this->_resolution;
+    delete this->_title;
+}
+
+/**
+ * Callback to handle the window resize through OpenGL function
+ * @param window Window pointer passed through the OpenGL callback
+ * @param width New width passed through the OpenGL callback
+ * @param height New height passed through the OpenGL callback
+ */
 void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
@@ -24,7 +42,7 @@ void Window::Create(int width, int height, const char *title) {
 
     // Store resolution parameters
     _resolution = new Quad(width, height);
-    this->_title = _title; 
+    this->_title = title;
 
 
     // Create a GLFW window
