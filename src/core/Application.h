@@ -4,6 +4,8 @@
 
 //#include "Singleton.h"
 #include "render/Renderer.h"
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #ifndef AURAGL_APPLICATION_H

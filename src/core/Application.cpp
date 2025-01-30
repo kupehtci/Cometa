@@ -21,8 +21,6 @@ void Application::Init(){
 
     // Initialize managers
     _renderer->Init();
-
-
 }
 
 void Application::Running() {
