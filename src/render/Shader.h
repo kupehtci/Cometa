@@ -19,6 +19,7 @@ private:
     // Source code of the shader
     std::string _sourceCode;
     std::string _filePath;
+    std::string _name;
 
 public:
 
