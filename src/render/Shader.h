@@ -47,6 +47,7 @@ public:
     std::string LoadShaderFromFile(const std::string filePath);
 
 
+
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:

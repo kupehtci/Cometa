@@ -23,6 +23,11 @@ Shader::~Shader(){
 
 std::string Shader::LoadShaderFromFile(const std::string filePath){
 
+    // std::filesystem::path absolutePath = std::filesystem::current_path().append(filePath);
+
+    // std::cout << "Absolute path: " << absolutePath.string() << std::endl;
+
+    std::cout << "Reeading shader in file path: " << filePath << std::endl;
     std::ifstream file = std::ifstream(filePath);
 
     if(!file.is_open()){
@@ -33,12 +38,12 @@ std::string Shader::LoadShaderFromFile(const std::string filePath){
     std::stringstream stream;
     stream << file.rdbuf();
     file.close();
-
     // set the own variables
+
     _filePath = filePath;
     _sourceCode = stream.str();
 
-    std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
+    // std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
 
     return _sourceCode;
 }

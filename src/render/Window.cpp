@@ -23,12 +23,12 @@ Window::Window()
  * Window destructor
  */
 Window::~Window(){
-    if(this->_window !=  nullptr){
-        glfwDestroyWindow(this->_window);
-    }
-
-    delete this->_resolution;
-    delete this->_title;
+//    if(this->_window !=  nullptr){
+//        glfwDestroyWindow(this->_window);
+//    }
+//
+//    delete this->_resolution;
+//    delete this->_title;
 }
 
 /**
@@ -89,7 +89,7 @@ void Window::Render() {
     char infoLog[512];
 
     // Compile vertex shader
-    Shader vertexShader = Shader("/Users/dlaplana/Desktop/AuraGL/src/render/shaders/vertex_shader.vert");
+    Shader vertexShader = Shader("src/render/shaders/vertex_shader.vert");
 
     std::string vertexShaderSrcString = vertexShader.GetSourceCode();
     const char* vertexShaderSource = vertexShaderSrcString.c_str();
@@ -111,7 +111,7 @@ void Window::Render() {
         std::cout << "Successful vertex shader compilation" << std::endl;
     }
 
-    Shader fragShader = Shader("/Users/dlaplana/Desktop/AuraGL/src/render/shaders/fragment_shader.frag");
+    Shader fragShader = Shader("src/render/shaders/fragment_shader.frag");
 
     std::string fragShaderSrcString = fragShader.GetSourceCode();
     const char* fragShaderSource = fragShaderSrcString.c_str();
@@ -215,8 +215,8 @@ void Window::Close() {
 
     delete this->_resolution;
     this->_resolution = nullptr;
-    delete this->_title;
-    this->_title = nullptr;
+    // delete this->_title;
+    // this->_title = nullptr;
 }
 
 /**

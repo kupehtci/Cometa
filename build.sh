@@ -1,5 +1,6 @@
 #!/bin/bash
 # Settle for macOS and windows
+# Define the OS of compilation by using "-t" flag followed by "macos", "windows" or "linux"
 
 ## For the case of MACOS
 ## Clean previous build
@@ -7,6 +8,7 @@
 ## Compile the project with debug configuration using `make` command
 ## Run the compiled binary as DEBUG by default
 ## If you want to run the release version, change the config to release
+
 
 
 # Print the usage of the script
@@ -71,6 +73,9 @@ compile_for_macos_gmake () {
     make config=debug
 
     echo "Executing the binary"
+
+    #  take into account that needs to be called from here to set the current path from here
+    #  If its called from inside the folder, the current path or called' path is going to be taken from the debug folder
     bin/Debug/AuraGL
 }
 

@@ -21,7 +21,8 @@ include "vendor/glad"
 
 project "AuraGL"
 	kind "ConsoleApp"  
-	language "C++"  
+	language "C++"
+    cppdialect "C++17"
         
     includedirs {
         "src"
