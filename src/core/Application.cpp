@@ -21,8 +21,6 @@ void Application::Init(){
 
     // Initialize managers
     _renderer->Init();
-
-
 }
 
 void Application::Running() {
@@ -38,4 +36,6 @@ void Application::Running() {
 
 void Application::Close() {
     _renderer->Close();
+
+    std::cout << "Application closed correctly" << std::endl;
 }

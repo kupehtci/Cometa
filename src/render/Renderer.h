@@ -2,10 +2,15 @@
 // Created by Daniel Laplana Gimeno on 5/12/24.
 //
 
+// #define GL_SILENCE_DEPRECATION
+
+#define GLAD_GL_IMPLEMENTATION
+#define GLFW_INCLUDE_NONE
+
+
 #include "core/Singleton.h"
 #include "../math/Quad.h"
 #include "./Window.h"
-#include <GLFW/glfw3.h>
 
 #ifndef AURAGL_RENDERER_H
 #define AURAGL_RENDERER_H
@@ -19,8 +24,6 @@ class Renderer : public SingletonManager<Renderer>//public Singleton<Renderer>
     friend class Application;
 
 private:
-    //GLFWwindow* _window;
-    //Quad* _resolution;
     Window* _window;
 
 public:
