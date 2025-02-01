@@ -56,10 +56,6 @@ void Window::Create(int width, int height, const char *title) {
         return;
     }
 
-
-    //Set the viewport for NDC transformations
-    // glViewport( 0.f, 0.f, width, height);
-
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
@@ -89,47 +85,50 @@ void Window::Render() {
     char infoLog[512];
 
     // Compile vertex shader
-    Shader vertexShader = Shader("src/render/shaders/vertex_shader.vert");
+    Shader vertexShader = Shader("src/render/shaders/vertex_shader.vert", GL_VERTEX_SHADER);
+//
+//    std::string vertexShaderSrcString = vertexShader.GetSourceCode();
+//    const char* vertexShaderSource = vertexShaderSrcString.c_str();
+//
+//    vertexShaderID = glCreateShader((GLenum)GL_VERTEX_SHADER);
+//    glShaderSource(vertexShaderID, 1, &vertexShaderSource, NULL);
+//    glCompileShader(vertexShaderID);
+//
+//
+//    // Check if shader compilation was sucessfull
+//    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
+//
+//    if(!success)
+//    {
+//        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
+//        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+//    }
+//    else{
+//        std::cout << "Successful vertex shader compilation" << std::endl;
+//    }
+    vertexShaderID = vertexShader.GetShaderUID();
 
-    std::string vertexShaderSrcString = vertexShader.GetSourceCode();
-    const char* vertexShaderSource = vertexShaderSrcString.c_str();
+    Shader fragShader = Shader("src/render/shaders/fragment_shader.frag", GL_FRAGMENT_SHADER);
 
-    vertexShaderID = glCreateShader((GLenum)GL_VERTEX_SHADER);
-    glShaderSource(vertexShaderID, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShaderID);
+//    std::string fragShaderSrcString = fragShader.GetSourceCode();
+//    const char* fragShaderSource = fragShaderSrcString.c_str();
+//
+//    fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+//    glShaderSource(fragmentShaderID, 1, &fragShaderSource, NULL);
+//    glCompileShader(fragmentShaderID);
+//
+//    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
+//
+//    if(!success)
+//    {
+//        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
+//        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+//    }
+//    else{
+//        std::cout << "Successful fragment shader compilation" << std::endl;
+//    }
 
-
-    // Check if shader compilation was sucessfull
-    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-
-    if(!success)
-    {
-        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    else{
-        std::cout << "Successful vertex shader compilation" << std::endl;
-    }
-
-    Shader fragShader = Shader("src/render/shaders/fragment_shader.frag");
-
-    std::string fragShaderSrcString = fragShader.GetSourceCode();
-    const char* fragShaderSource = fragShaderSrcString.c_str();
-
-    fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderID, 1, &fragShaderSource, NULL);
-    glCompileShader(fragmentShaderID);
-
-    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-
-    if(!success)
-    {
-        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    else{
-        std::cout << "Successful fragment shader compilation" << std::endl;
-    }
+    fragmentShaderID = fragShader.GetShaderUID();
 
 
     // Attach both shaders as a single Shader Program

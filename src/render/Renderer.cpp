@@ -46,6 +46,7 @@ void Renderer::Init(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #elif PLATFORM_LINUX
+    std::cout << "Initializating OpenGL for Linux" << std::endl;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #endif
@@ -70,8 +71,15 @@ void Renderer::Init(){
         return;
     }
 
-    std::cout << "Renderer initialized" << std::endl;
+    //Set the initial viewport for NDC transformations
+    glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
 
+    std::cout << "Renderer initialized: " << std::endl << "    OpenGL version: " <<  glGetString(GL_VERSION);
+
+    // Validate maximum number of vertex attributes to use in the shaders
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "Maximum number of vertex attributes supported by hardware: " << nrAttributes << std::endl;
 }
 
 void Renderer::Update(){

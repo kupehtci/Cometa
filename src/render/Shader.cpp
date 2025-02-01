@@ -6,28 +6,27 @@
 #include <filesystem>
 
 Shader::Shader() {
+    _shaderUID = 0;
+    _shaderType = GL_NONE;
     _sourceCode = "";
     _filePath = "";
 }
 
-Shader::Shader(const std::string filePath){
+Shader::Shader(std::string filePath, GLenum shaderType){
+    _shaderUID = 0;
     _sourceCode = "";
     _filePath = filePath;
-
-    LoadShaderFromFile(filePath);
+    _shaderType = shaderType;
+    LoadFromFile(filePath);
+    CompileShader();
 }
 
 Shader::~Shader(){
 
 }
 
-std::string Shader::LoadShaderFromFile(const std::string filePath){
+std::string Shader::LoadFromFile(std::string filePath){
 
-    // std::filesystem::path absolutePath = std::filesystem::current_path().append(filePath);
-
-    // std::cout << "Absolute path: " << absolutePath.string() << std::endl;
-
-    std::cout << "Reeading shader in file path: " << filePath << std::endl;
     std::ifstream file = std::ifstream(filePath);
 
     if(!file.is_open()){
@@ -46,4 +45,38 @@ std::string Shader::LoadShaderFromFile(const std::string filePath){
     // std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
 
     return _sourceCode;
+}
+
+unsigned int Shader::CompileShader() {
+    if(_sourceCode.empty() || _sourceCode.length() <= 0 ){
+        return 0;
+    }
+
+    // Check shader type
+//    if(shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER){
+//        return 0;
+//    }
+
+    unsigned int uid = glCreateShader(_shaderType);
+    const char* shaderSource = _sourceCode.c_str();
+    glShaderSource(uid, 1, &shaderSource, NULL);
+    glCompileShader(uid);
+
+    int success;
+    char infoLog[512];
+    // validate shader compilation
+    glGetShaderiv(uid, GL_COMPILE_STATUS, &success);
+
+    if(!success)
+    {
+        glGetShaderInfoLog(uid, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return 0;
+    }
+    else{
+        // std::cout << "Successful fragment shader compilation" << std::endl;
+    }
+
+    _shaderUID = uid;
+    return _shaderUID;
 }
