@@ -7,7 +7,17 @@
 #ifndef AURAGL_ASSERTION_H
 #define AURAGL_ASSERTION_H
 
+#define COMETA_DEBUG
 
+#ifdef COMETA_DEBUG
+    #define COMETA_ASSERT(x) Assertion::Assert(x)
+    #define COMETA_ERROR(x) Assertion::Error(x)
+    #define COMETA_WARNING(x) Assertion::Warning(x)
+#else
+    #define COMETA_ASSERT(x) ((void)0)
+    #define COMETA_ERROR(x) ((void)0)
+    #define COMETA_WARNING(x) ((void)0)
+#endif
 
 enum AssertLevel{
     Debug = 0, Warning, Error
