@@ -77,19 +77,12 @@ void Window::Render() {
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    unsigned int vertexShaderID;
-    unsigned int fragmentShaderID;
     unsigned int shaderProgramID;
 
-    // Error handling variables
-    int  success;
-    char infoLog[512];
-
-    Shader mainShader = Shader("Main Shader", "src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
+    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
     glUseProgram(mainShader.GetShaderUID());
-
 
     float vertices[] = {
             -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
