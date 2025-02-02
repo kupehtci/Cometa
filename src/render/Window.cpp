@@ -86,48 +86,9 @@ void Window::Render() {
 
     // Compile vertex shader
     Shader vertexShader = Shader("src/render/shaders/vertex_shader.vert", GL_VERTEX_SHADER);
-//
-//    std::string vertexShaderSrcString = vertexShader.GetSourceCode();
-//    const char* vertexShaderSource = vertexShaderSrcString.c_str();
-//
-//    vertexShaderID = glCreateShader((GLenum)GL_VERTEX_SHADER);
-//    glShaderSource(vertexShaderID, 1, &vertexShaderSource, NULL);
-//    glCompileShader(vertexShaderID);
-//
-//
-//    // Check if shader compilation was sucessfull
-//    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-//
-//    if(!success)
-//    {
-//        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-//        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-//    }
-//    else{
-//        std::cout << "Successful vertex shader compilation" << std::endl;
-//    }
     vertexShaderID = vertexShader.GetShaderUID();
 
     Shader fragShader = Shader("src/render/shaders/fragment_shader.frag", GL_FRAGMENT_SHADER);
-
-//    std::string fragShaderSrcString = fragShader.GetSourceCode();
-//    const char* fragShaderSource = fragShaderSrcString.c_str();
-//
-//    fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-//    glShaderSource(fragmentShaderID, 1, &fragShaderSource, NULL);
-//    glCompileShader(fragmentShaderID);
-//
-//    glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
-//
-//    if(!success)
-//    {
-//        glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
-//        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-//    }
-//    else{
-//        std::cout << "Successful fragment shader compilation" << std::endl;
-//    }
-
     fragmentShaderID = fragShader.GetShaderUID();
 
 
@@ -151,9 +112,9 @@ void Window::Render() {
 
 
     float vertices[] = {
-            -0.5f, -0.5f, 0.0f, // left
-            0.5f, -0.5f, 0.0f, // right
-            0.0f,  0.5f, 0.0f  // top
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
+            0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
+            0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
     };
 
     unsigned int VBO, VAO;
@@ -165,8 +126,13 @@ void Window::Render() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Position attr
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Color attr
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
