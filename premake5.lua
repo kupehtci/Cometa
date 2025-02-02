@@ -11,10 +11,18 @@ workspace "Aura"
 IncludeDir = {}
 IncludeDir["GLM"] = "vendor/glm/glm"
 IncludeDir["GLFW"] = "vendor/GLFW/include"
+IncludeDir["GLAD"] = "vendor/glad/include"
+
+
+-- Include other Premake5 files for:
+--          * GLAD initialization
+
+include "vendor/glad"
 
 project "AuraGL"
 	kind "ConsoleApp"  
-	language "C++"  
+	language "C++"
+    cppdialect "C++17"
         
     includedirs {
         "src"
@@ -28,23 +36,34 @@ project "AuraGL"
     }
 	files { 
             "src/**.h",
-            "src/**.cpp"
+            "src/**.cpp",
+            "src/**.vert",
+            "src/**.frag"
     }
-        
+
+
     targetdir ("bin/%{cfg.buildcfg}")
     objdir ("bin/obj/%{cfg.buildcfg}")
-	
-    
+
+
     filter "system:macosx"
 
         includedirs{
             "%{IncludeDir.GLFW}",
-            "%{IncludeDir.GLM}"
+            "%{IncludeDir.GLM}",
+            "%{IncludeDir.GLAD}"
         }
+
+        libdirs{
+            "vendor/glad/bin"
+        }
+
         links{
             "glfw",
-            "OpenGL.framework"
+            "OpenGL.framework",
+            "glad"
         }
+
         defines { "PLATFORM_MACOS" }
     filter "system:linux"
 
@@ -52,14 +71,16 @@ project "AuraGL"
     -- WINDOWS Expecifications
     filter "system:windows"
         includedirs{
-            "vendor/GLFW/include"
+            "%{IncludeDir.GLFW}",
+            "%{IncludeDir.GLM}",
+            "%{IncludeDir.GLAD}"
         }
         libdirs{
             "vendor/GLFW/lib"
         }
         links{
-            "glfw3"
-            --"OpenGL.framework"
+            "glfw3",
+            "glad"
         }
         defines { "PLATFORM_WINDOWS" }
 

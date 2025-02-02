@@ -7,6 +7,8 @@
 
 #include "../math/Quad.h"
 #include "../core/Singleton.h"
+
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 class Window : public Singleton<Window>{
@@ -19,17 +21,48 @@ public:
     Window(); 
     ~Window();
 
+    /**
+     * Create a new Window by settting the width, height and window's title
+     * @param width (int) width of the window
+     * @param height (int) height of the window
+     * @param title (const char*) title of the window
+     */
     void Create(int width, int height, const char* title);
+
+    /**
+     * Update the window's state
+     */
     void Update();
+
+    /**
+     * Render the window's elements
+     */
     void Render();
+
+    /**
+     * Close the window and remove its instance
+     */
     void Close();
 
     // Check if window should close
     bool ShouldHandleCloseWindow();
 
     // GETTERS AND SETTERS
-    Quad GetCurrentResolution(){
+public:
+    /**
+     * Get the current resolution of the window
+     * @return
+     */
+    inline Quad GetCurrentResolution(){
         return *_resolution;
+    }
+
+    /**
+     * Get the current title of the window
+     * @return
+     */
+    inline const char* GetTitle(){
+        return _title;
     }
 
 public:
