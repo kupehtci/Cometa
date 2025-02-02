@@ -5,24 +5,40 @@
 #include "Shader.h"
 #include <filesystem>
 
-Shader::Shader() {
-    _shaderUID = 0;
-    _shaderType = GL_NONE;
-    _sourceCode = "";
-    _filePath = "";
-}
+//Shader::Shader() {
+//    _shaderUID = 0;
+//    _shaderType = GL_NONE;
+//    _sourceCode = "";
+//    _filePath = "";
+//}
 
-Shader::Shader(std::string filePath, GLenum shaderType){
+//Shader::Shader(std::string filePath, GLenum shaderType){
+//    _shaderUID = 0;
+//    _sourceCode = "";
+//    _filePath = filePath;
+//    _shaderType = shaderType;
+//    LoadFromFile(filePath);
+//    CompileShader();
+//}
+
+Shader::Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource){
+
     _shaderUID = 0;
-    _sourceCode = "";
-    _filePath = filePath;
-    _shaderType = shaderType;
-    LoadFromFile(filePath);
-    CompileShader();
+
+    _shaderSources[GL_VERTEX_SHADER] = LoadFromFile(vertexShaderSource);
+    _shaderSources[GL_FRAGMENT_SHADER] = LoadFromFile(fragmentShaderSource);
+
+    _filePaths[GL_VERTEX_SHADER] = vertexShaderSource;
+    _filePaths[GL_FRAGMENT_SHADER] = fragmentShaderSource;
+
+    _debugName = name;
+
+    CompileShaderProgram();
 }
 
 Shader::~Shader(){
-
+    _shaderSources.clear();
+    _filePaths.clear();
 }
 
 std::string Shader::LoadFromFile(std::string filePath){
@@ -30,41 +46,29 @@ std::string Shader::LoadFromFile(std::string filePath){
     std::ifstream file = std::ifstream(filePath);
 
     if(!file.is_open()){
-        std::cout << "ERROR: Could not open file: " << filePath << std::endl;
+        std::cout << "ERROR/SHADER/SOURCE/COULDNT_OPEN_FILE: " << filePath << std::endl;
         return "";
     }
 
     std::stringstream stream;
     stream << file.rdbuf();
     file.close();
-    // set the own variables
-
-    _filePath = filePath;
-    _sourceCode = stream.str();
 
     // std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
 
-    return _sourceCode;
+    return stream.str();
 }
 
-unsigned int Shader::CompileShader() {
-    if(_sourceCode.empty() || _sourceCode.length() <= 0 ){
-        return 0;
-    }
+unsigned int Shader::CompileShader(GLenum shaderType) {
 
-    // Check shader type
-//    if(shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER){
-//        return 0;
-//    }
-
-    unsigned int uid = glCreateShader(_shaderType);
-    const char* shaderSource = _sourceCode.c_str();
+    unsigned int uid = glCreateShader(shaderType);
+    const char* shaderSource = _shaderSources[shaderType].c_str();
     glShaderSource(uid, 1, &shaderSource, NULL);
     glCompileShader(uid);
 
+    // Validate shader compilation
     int success;
     char infoLog[512];
-    // validate shader compilation
     glGetShaderiv(uid, GL_COMPILE_STATUS, &success);
 
     if(!success)
@@ -73,20 +77,51 @@ unsigned int Shader::CompileShader() {
         std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
         return 0;
     }
-//    else{
-//         std::cout << "Successful fragment shader compilation" << std::endl;
-//    }
 
-    _shaderUID = uid;
-    return _shaderUID;
+    // _shaderUID = uid;
+    return uid;
 }
 
+void Shader::CompileShaderProgram(){
+    std::vector<GLuint> shaderIDs;
 
-void Shader::DeleteShader(){
+    unsigned int shaderProgramID = glCreateProgram();
+
+    for(const auto& [shaderType, shaderSource] : _shaderSources){
+        // std::cout << "Reading shader in shader sources " << shaderType << " with source: " << std::endl << shaderSource << std::endl;
+        unsigned int shaderUID = CompileShader(shaderType);
+        shaderIDs.emplace_back(shaderUID);
+
+        glAttachShader(shaderProgramID, shaderUID);
+    }
+
+    glLinkProgram(shaderProgramID);
+
+    // Validate Shader Program compilation
+    int success;
+    char infoLog[512];
+
+    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
+    if(!success) {
+        glGetProgramInfoLog(shaderProgramID, 512, NULL, infoLog);
+        std::cout << "ERROR/SHADER/PROGRAM/LINKING_FAILED" << std::endl << infoLog << std::endl;
+        return;
+    }
+
+    // Detach and delete the shaders compiled
+    for(GLuint shaderUID : shaderIDs){
+        glDetachShader(shaderProgramID, shaderUID);
+        glDeleteShader(shaderUID);
+    }
+
+    _shaderUID = shaderProgramID;
+}
+
+void Shader::Delete(){
     if(_shaderUID == 0){
         std::cout << "ERROR::SHADER::Trying to delete a not compiled shader" << std::endl;
     }
-    glDeleteShader(_shaderUID);
+    glDeleteProgram(_shaderUID);
 
     _shaderUID = 0;
 }
