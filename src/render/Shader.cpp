@@ -70,13 +70,23 @@ unsigned int Shader::CompileShader() {
     if(!success)
     {
         glGetShaderInfoLog(uid, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
         return 0;
     }
-    else{
-        // std::cout << "Successful fragment shader compilation" << std::endl;
-    }
+//    else{
+//         std::cout << "Successful fragment shader compilation" << std::endl;
+//    }
 
     _shaderUID = uid;
     return _shaderUID;
+}
+
+
+void Shader::DeleteShader(){
+    if(_shaderUID == 0){
+        std::cout << "ERROR::SHADER::Trying to delete a not compiled shader" << std::endl;
+    }
+    glDeleteShader(_shaderUID);
+
+    _shaderUID = 0;
 }

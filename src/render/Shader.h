@@ -27,6 +27,8 @@ private:
     std::string _filePath;
     std::string _name;
 
+    // New variables
+
 public:
 
     /**
@@ -62,6 +64,11 @@ public:
      */
     unsigned int CompileShader();
 
+    /**
+     * Delete the shader in OpenGL by its reference
+     */
+    void DeleteShader();
+
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:
@@ -95,6 +102,14 @@ public:
       */
      inline GLenum GetShaderType() const{
          return _shaderType;
+     }
+
+     /**
+      * Check if shader has been already compiled
+      * @return
+      */
+     inline bool IsCompiled() const{
+         return _shaderType != 0;
      }
 
 };
