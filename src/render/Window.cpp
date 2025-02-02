@@ -75,6 +75,7 @@ void Window::Render() {
 
     // ------------------------------------------------------------------------------------
     // TESTING
+    // ------------------------------------------------------------------------------------
 
     unsigned int vertexShaderID;
     unsigned int fragmentShaderID;
@@ -84,31 +85,10 @@ void Window::Render() {
     int  success;
     char infoLog[512];
 
-    // Compile vertex shader
-    Shader vertexShader = Shader("src/render/shaders/vertex_shader.vert", GL_VERTEX_SHADER);
-    vertexShaderID = vertexShader.GetShaderUID();
-
-    Shader fragShader = Shader("src/render/shaders/fragment_shader.frag", GL_FRAGMENT_SHADER);
-    fragmentShaderID = fragShader.GetShaderUID();
-
-
-    // Attach both shaders as a single Shader Program
-    shaderProgramID = glCreateProgram();
-    glAttachShader(shaderProgramID, vertexShaderID);
-    glAttachShader(shaderProgramID, fragmentShaderID);
-    glLinkProgram(shaderProgramID);
-
-    glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgramID, 512, NULL, infoLog);
-        std::cout << "ERROR/SHADER/PROGRAM/LINKING_FAILED" << std::endl << infoLog << std::endl;
-    }
-
+    Shader mainShader = Shader("Main Shader", "src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
-    glUseProgram(shaderProgramID);
-    glDeleteShader(vertexShaderID);
-    glDeleteShader(fragmentShaderID);
+    glUseProgram(mainShader.GetShaderUID());
 
 
     float vertices[] = {
@@ -145,7 +125,7 @@ void Window::Render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // draw our first triangle
-    glUseProgram(shaderProgramID);
+    glUseProgram(mainShader.GetShaderUID());
     glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
     glDrawArrays(GL_TRIANGLES, 0, 3);
 

@@ -21,32 +21,28 @@ class Shader {
 private:
 
     unsigned int _shaderUID;
-    GLenum _shaderType;
-    // Source code of the shader
-    std::string _sourceCode;
-    std::string _filePath;
-    std::string _name;
+    std::unordered_map<GLenum, std::string> _shaderSources;
+    std::unordered_map<GLenum, std::string> _filePaths;
+    std::string _debugName;
 
-    // New variables
 
 public:
 
     /**
-     * Shader default constructor
+     * CONSTRUCTOR
+     * Create a shader program composed of a Vertex and Fragment shader references by its source.
+     * @param name (std::string) Debug name assigned to the shader
+     * @param vertexShaderSource (const std::string&) Vertex Shader source's path
+     * @param fragmentShaderSource (const std::string&) Fragment Shader source's path
      */
-    Shader();
-
-    /**
-     * Shader constructor that loads the shader from the file path speficied
-     * @param filePath (const string) file path of the shader to load
-     */
-    Shader(std::string filePath, GLenum shaderType);
+    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource );
 
     /**
      * Default destructor of the shader
      */
     ~Shader();
 
+private:
     /**
      * Load a shader from a file using an stream and retunrns the shader as an string
      * @param filePath Path to the file that is being loaded as a shader
@@ -54,37 +50,43 @@ public:
      */
     std::string LoadFromFile(std::string filePath);
 
-
     /**
      * Create a shader buffer in OpenGL, link the source and compile it
      * Once it has been generated it returns the UID of the buffered shader
      * If shader has not been loaded in Shader's source or some error ocurred during shader compilation it will return 0
-     * @param shaderType (GLenum) indicate the type of shader to compile
      * @return (unsigned int) UID of the shader compilated
      */
-    unsigned int CompileShader();
+    unsigned int CompileShader(GLenum shaderType);
 
     /**
-     * Delete the shader in OpenGL by its reference
+     * Compile the shader program by compiling each one of the shaders and then link them into the program
+     * Once are all linked the shaders are detached and deleted its compilation
      */
-    void DeleteShader();
+    void CompileShaderProgram();
+
+
+public:
+    /**
+     * Delete the shader program in OpenGL by its reference
+     */
+     void Delete();
 
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:
     /**
-     * Get the source code of the loaded shader
+     * Get the source code of one of the loaded shaders
      */
-    inline std::string GetSourceCode() const{
-        return _sourceCode;
+    inline std::string GetSourceCode(GLenum shaderType){
+        return _shaderSources[GL_FRAGMENT_SHADER];
     }
 
     /**
      * Get the file path of the shader that is loaded
      * @return
      */
-    inline std::string GetFilePath() const{
-        return _filePath;
+    inline std::string GetFilePath(GLenum shaderType){
+        return _filePaths[shaderType];
     }
 
     /**
@@ -94,22 +96,6 @@ public:
      */
      inline unsigned int GetShaderUID() const{
          return _shaderUID;
-     }
-
-     /**
-      * Get the shader type
-      * @return (GLenum) Shader's type
-      */
-     inline GLenum GetShaderType() const{
-         return _shaderType;
-     }
-
-     /**
-      * Check if shader has been already compiled
-      * @return
-      */
-     inline bool IsCompiled() const{
-         return _shaderType != 0;
      }
 
 };
