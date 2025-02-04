@@ -11,6 +11,7 @@
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 
 /**
@@ -41,6 +42,57 @@ public:
      * Default destructor of the shader
      */
     ~Shader();
+
+    // ------------ UNIFORMS METHODS ------------
+
+    /**
+     * Set the value of a float uniform variable
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (float) new value of the variable
+     */
+    void SetFloat(const std::string& variableName, const float& value) const;
+
+    /**
+     * Set the value of a 2 float vector uniform variable
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (glm::vec2) new value of the variable
+     */
+    void Set2Float(const std::string& variableName, const glm::vec2& value) const;
+
+    /**
+     * Set the value of a 3 floats vector uniform variable
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (glm::vec3) new value of the variable
+     */
+    void Set3Float(const std::string& variableName, const glm::vec3& value) const;
+
+
+    /**
+     * Set the value of a 4 floats vector uniform variable
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (glm::vec4) new value of the variable
+     */
+    void Set4Float(const std::string& variableName, const glm::vec4& value) const;
+
+
+    /**
+     * Set the value of an int  uniform variable
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (int) new value of the variable
+     */
+    void SetInt(const std::string& variableName, const int& value) const;
+
+
+    /**
+     * Set the value of an array of int uniform variable
+     * You need to pass a pointer to an array of values and the count of values
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param values (const int*) new value of the variable
+     * @param count (uint32_t) number of values within the int array
+     */
+    void SetIntArray(const std::string& variableName, const int* values, uint32_t count) const;
+
+
 
 private:
     /**
