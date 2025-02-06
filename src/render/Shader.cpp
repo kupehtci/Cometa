@@ -43,6 +43,11 @@ Shader::~Shader(){
 
 // ------------ UNIFORM METHODS ------------
 
+void Shader::SetBool(const std::string& variableName, const bool& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1i(location,(int)value);
+}
+
 void Shader::SetFloat(const std::string& variableName, const float& value) const{
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
     glUniform1f(location, value);

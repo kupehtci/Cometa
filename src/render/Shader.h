@@ -46,11 +46,21 @@ public:
     // ------------ UNIFORMS METHODS ------------
 
     /**
+     * Set the value of a boolean uniform variable
+     * this boolean is passed as an int to the shader
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param value (bool) new value of the variable
+     */
+    void SetBool(const std::string& variableName, const bool& value)const;
+
+
+    /**
      * Set the value of a float uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (float) new value of the variable
      */
     void SetFloat(const std::string& variableName, const float& value) const;
+
 
     /**
      * Set the value of a 2 float vector uniform variable
@@ -58,6 +68,7 @@ public:
      * @param value (glm::vec2) new value of the variable
      */
     void Set2Float(const std::string& variableName, const glm::vec2& value) const;
+
 
     /**
      * Set the value of a 3 floats vector uniform variable
