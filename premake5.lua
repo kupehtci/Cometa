@@ -12,6 +12,7 @@ IncludeDir = {}
 IncludeDir["GLM"] = "vendor/glm/glm"
 IncludeDir["GLFW"] = "vendor/GLFW/include"
 IncludeDir["GLAD"] = "vendor/glad/include"
+IncludeDir["STB_IMAGE"] = "vendor/stb_image"
 
 
 -- Include other Premake5 files for:
@@ -51,7 +52,8 @@ project "AuraGL"
         includedirs{
             "%{IncludeDir.GLFW}",
             "%{IncludeDir.GLM}",
-            "%{IncludeDir.GLAD}"
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.STB_IMAGE}"
         }
 
         libdirs{
