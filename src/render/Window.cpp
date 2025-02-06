@@ -77,8 +77,6 @@ void Window::Render() {
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    unsigned int shaderProgramID;
-
     Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
@@ -89,6 +87,11 @@ void Window::Render() {
             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
             0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
     };
+
+    // Testing uniform value update
+    float timeValue = glfwGetTime();
+    float greenValue = sin(timeValue) / 2.0f + 0.5f;
+    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -126,7 +129,8 @@ void Window::Render() {
     // Once all is used, delete the resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgramID);
+
+    mainShader.Delete();
 
     // ------------------------------------------------------------------------------------
 
