@@ -11,6 +11,9 @@
 
 #include "Shader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 // Window constructor
 Window::Window()
 {
@@ -81,7 +84,7 @@ void Window::Render() {
 
     // Set shader as current and delete the compiled shaders
     glUseProgram(mainShader.GetShaderUID());
-
+    
     float vertices[] = {
             -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right

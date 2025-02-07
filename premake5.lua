@@ -75,7 +75,8 @@ project "AuraGL"
         includedirs{
             "%{IncludeDir.GLFW}",
             "%{IncludeDir.GLM}",
-            "%{IncludeDir.GLAD}"
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.STB_IMAGE}"
         }
         libdirs{
             "vendor/GLFW/lib"
