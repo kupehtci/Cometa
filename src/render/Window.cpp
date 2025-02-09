@@ -86,12 +86,6 @@ void Window::Render() {
     // Set shader as current and delete the compiled shaders
     glUseProgram(mainShader.GetShaderUID());
     
-    //float vertices[] = {
-    //        // Positions        // Colors        
-    //        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// left
-    //        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
-    //        0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
-    //};
 
 
     float vertices[] = {
@@ -157,9 +151,11 @@ void Window::Render() {
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
     // color attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    
     // texture coord attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
@@ -190,6 +186,57 @@ void Window::Render() {
     glfwPollEvents();
 
 }
+
+
+
+
+bool Window::ShouldHandleCloseWindow(){
+    return !glfwWindowShouldClose(this->_window);
+}
+
+/**
+ * Close the window and clean it
+ * Also clean the rest of parameters of the window
+ */
+void Window::Close() {
+
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+    }
+
+    delete this->_resolution;
+    this->_resolution = nullptr;
+    // delete this->_title;
+    // this->_title = nullptr;
+}
+
+/**
+ * Handle the resize of the window
+ */
+void Window::HandleResize(GLFWwindow* window, int width, int height) {
+    Quad previousResolution = *_resolution;
+
+    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
+
+    std::cout << "Handling resize from " << previousResolution.x << ", " << previousResolution.y << " to " << _resolution->x << ", " << _resolution->y << std::endl;
+
+    // modify viewport resolution
+    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
+}
+
+/**
+ * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
+ * @param window
+ * @param width
+ * @param height
+ */
+void HandleResizeCallback(GLFWwindow* window, int width, int height){
+    Window::GetInstancePtr()->HandleResize(window, width, height);
+}
+
+
+
+// TESTING FUNCTIONS
 
 // Previus used function to show colors
 void TestingFunctionShaderColors() {
@@ -251,49 +298,4 @@ void TestingFunctionShaderColors() {
     glDeleteBuffers(1, &VBO);
 
     mainShader.Delete();
-}
-
-
-bool Window::ShouldHandleCloseWindow(){
-    return !glfwWindowShouldClose(this->_window);
-}
-
-/**
- * Close the window and clean it
- * Also clean the rest of parameters of the window
- */
-void Window::Close() {
-
-    if(this->_window !=  nullptr){
-        glfwDestroyWindow(this->_window);
-    }
-
-    delete this->_resolution;
-    this->_resolution = nullptr;
-    // delete this->_title;
-    // this->_title = nullptr;
-}
-
-/**
- * Handle the resize of the window
- */
-void Window::HandleResize(GLFWwindow* window, int width, int height) {
-    Quad previousResolution = *_resolution;
-
-    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
-
-    std::cout << "Handling resize from " << previousResolution.x << ", " << previousResolution.y << " to " << _resolution->x << ", " << _resolution->y << std::endl;
-
-    // modify viewport resolution
-    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
-}
-
-/**
- * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
- * @param window
- * @param width
- * @param height
- */
-void HandleResizeCallback(GLFWwindow* window, int width, int height){
-    Window::GetInstancePtr()->HandleResize(window, width, height);
 }
