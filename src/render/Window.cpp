@@ -12,6 +12,8 @@
 
 #include "Shader.h"
 
+#include <stdio.h>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -97,7 +99,7 @@ void Window::Render() {
     };
 
     // Testing uniform value update
-    float timeValue = glfwGetTime();
+    float timeValue = (float)glfwGetTime();
     float greenValue = sin(timeValue) / 2.0f + 0.5f;
     mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
@@ -105,7 +107,6 @@ void Window::Render() {
 
     int width, height, nrChannels;
     unsigned char* data = stbi_load("./resources/macos_example.jpg", &width, &height, &nrChannels, 0);
-    std::cout << "Macos example image has width: " << width << " and height: " << height << std::endl; 
 
     unsigned int textureUID;
     
@@ -127,6 +128,7 @@ void Window::Render() {
         stbi_image_free(data);
     }
     else {
+        COMETA_WARNING("Unable to load texture");
         return; 
     }
 
@@ -206,6 +208,9 @@ void Window::Close() {
 
     delete this->_resolution;
     this->_resolution = nullptr;
+
+    COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
+
     // delete this->_title;
     // this->_title = nullptr;
 }
@@ -218,7 +223,8 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 
     glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
 
-    std::cout << "Handling resize from " << previousResolution.x << ", " << previousResolution.y << " to " << _resolution->x << ", " << _resolution->y << std::endl;
+    COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y))
+                    .c_str());
 
     // modify viewport resolution
     glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
@@ -226,9 +232,10 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 
 /**
  * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
- * @param window
- * @param width
- * @param height
+ * This function is called from OpenGL as a callback
+ * @param window (GLFWwindow*) window pointer of the main window that is being resized
+ * @param width (int) new width value of the window
+ * @param height (int) new height value of the window
  */
 void HandleResizeCallback(GLFWwindow* window, int width, int height){
     Window::GetInstancePtr()->HandleResize(window, width, height);
