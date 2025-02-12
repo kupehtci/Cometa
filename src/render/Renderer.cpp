@@ -36,17 +36,17 @@ void Renderer::Init(){
     }
 
 #ifdef PLATFORM_MACOS
-    std::cout << "Initializating OpenGL Forward compatility for MacOS" << std::endl;
+    COMETA_ASSERT("Initializing OpenGL Forward compatibility for MacOS");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE); // TODO: Remove this, only for testing
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #elif PLATFORM_WINDOWS
-    std::cout << "Initializating OpenGL for Windows" << std::endl;
+    COMETA_ASSERT("Initializating OpenGL for Windows");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #elif PLATFORM_LINUX
-    std::cout << "Initializating OpenGL for Linux" << std::endl;
+    COMETA_ASSERT("Initializating OpenGL for Linux");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #endif
@@ -74,12 +74,12 @@ void Renderer::Init(){
     //Set the initial viewport for NDC transformations
     glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
 
-    std::cout << "Renderer initialized: " << std::endl << "    OpenGL version: " <<  glGetString(GL_VERSION);
+    std::cout << "Renderer initialized: \n OpenGL version: " <<  glGetString(GL_VERSION);
 
     // Validate maximum number of vertex attributes to use in the shaders
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    std::cout << "Maximum number of vertex attributes supported by hardware: " << nrAttributes << std::endl;
+    COMETA_ASSERT(("Maximum number of vertex attributes supported by hardware: " + std::to_string(nrAttributes)).c_str());
 }
 
 void Renderer::Update(){
