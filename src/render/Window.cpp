@@ -11,6 +11,7 @@
 #include <glm.hpp>
 
 #include "Shader.h"
+#include "Buffer.h"
 
 #include <stdio.h>
 
@@ -106,7 +107,8 @@ void Window::Render() {
     // Testing texture creation
 
     int width, height, nrChannels;
-    unsigned char* data = stbi_load("./resources/macos_example.jpg", &width, &height, &nrChannels, 0);
+    const char* texture0Path = "./resources/macos_example.jpg"; 
+    unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
 
     unsigned int textureUID;
     
@@ -128,7 +130,7 @@ void Window::Render() {
         stbi_image_free(data);
     }
     else {
-        COMETA_WARNING("Unable to load texture");
+        COMETA_WARNING("Unable to load texture at ");
         return; 
     }
 
@@ -137,18 +139,26 @@ void Window::Render() {
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
     };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    //unsigned int VBO, VAO, EBO;
+    //glGenVertexArrays(1, &VAO);
+    //glGenBuffers(1, &VBO);
+    //glGenBuffers(1, &EBO);
 
+    //glBindVertexArray(VAO);
+
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    unsigned int VAO = 0; 
+    glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices)); 
+    IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices)); 
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -168,8 +178,7 @@ void Window::Render() {
     glBindTexture(GL_TEXTURE_2D, textureUID);
 
 
-    // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0);
-    mainShader.SetInt("ourTexture", 0); 
+    mainShader.SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
