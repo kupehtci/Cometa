@@ -12,6 +12,7 @@
 
 #include "Shader.h"
 #include "Buffer.h"
+#include "VertexArray.h"
 
 #include <stdio.h>
 
@@ -152,9 +153,12 @@ void Window::Render() {
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    unsigned int VAO = 0; 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    // unsigned int VAO = 0; 
+    // glGenVertexArrays(1, &VAO);
+    // glBindVertexArray(VAO);
+
+    VertexArray vArray0 = VertexArray(); 
+    vArray0.Bind(); 
 
     VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices)); 
     IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices)); 
@@ -172,7 +176,8 @@ void Window::Render() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    glBindVertexArray(VAO);
+    // glBindVertexArray(VAO);
+    vArray0.Bind(); 
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureUID);
@@ -180,7 +185,7 @@ void Window::Render() {
 
     mainShader.SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
 
-    glBindVertexArray(VAO);
+    vArray0.Bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     
 
@@ -195,7 +200,6 @@ void Window::Render() {
 
     glfwSwapBuffers(_window);
     glfwPollEvents();
-
 }
 
 
