@@ -9,7 +9,7 @@
 *	Shader Data's types common in the Graphics API libraries
 *	Helps to determine the type of data
 */
-enum class ShaderDataType
+enum class DataType
 {
 	None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 };
@@ -18,30 +18,30 @@ enum class ShaderDataType
 * Shader data's type's harcoded size.
 * Returns Data type's size in bytes
 */
-static uint32_t ShaderDataTypeSize(ShaderDataType type)
+static uint32_t DataTypeCalculateSize(DataType type)
 {
 	switch (type)
 	{
-		case ShaderDataType::Float:    
+		case DataType::Float:
 			return 4;
-		case ShaderDataType::Float2:   
+		case DataType::Float2:
 			return 8;
-		case ShaderDataType::Float3:   
+		case DataType::Float3:
 			return 12;
-		case ShaderDataType::Float4:   
+		case DataType::Float4:
 			return 16;
-		case ShaderDataType::Mat3:     
+		case DataType::Mat3:
 			return 36;
-		case ShaderDataType::Mat4:     
+		case DataType::Mat4:
 			return 64;
-		case ShaderDataType::Int:      
+		case DataType::Int:
 			return 4;
-		case ShaderDataType::Int2:     
+		case DataType::Int2:
 			return 8;
-		case ShaderDataType::Int3:     
+		case DataType::Int3:
 			return 12;
 		// case ShaderDataType::Int4:     return 16;
-		case ShaderDataType::Bool:     
+		case DataType::Bool:
 			return 1;
 	}
 
@@ -49,6 +49,38 @@ static uint32_t ShaderDataTypeSize(ShaderDataType type)
 	return 0;
 }
 
+/**
+ *	Get the number of elements in a type of data
+ *	Can also be calculated using the size of a data type and knowing the type of individual data components
+ */
+static uint8_t DataTypeCalculateNumberElements(DataType type) {
+	switch (type)
+	{
+	case DataType::Float:
+		return 4;
+	case DataType::Float2:
+		return 8;
+	case DataType::Float3:
+		return 12;
+	case DataType::Float4:
+		return 16;
+	case DataType::Mat3:
+		return 36;
+	case DataType::Mat4:
+		return 64;
+	case DataType::Int:
+		return 4;
+	case DataType::Int2:
+		return 8;
+	case DataType::Int3:
+		return 12;
+	case DataType::Bool:
+		return 1;
+	}
+
+	COMETA_WARNING("Unknown ShaderDataType!");
+	return 0;
+}
 
 /**
 * Buffer abstract class that define the minimal structure of a Renderer API Buffer
