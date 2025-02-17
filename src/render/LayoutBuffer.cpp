@@ -5,6 +5,14 @@
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
+
+
+LayoutBuffer::~LayoutBuffer() {
+	Unbind(); 
+	_layouts.clear(); 
+	_size = 0; 
+}
+
 void LayoutBuffer::Build() {
 
 	_size = 0;
@@ -50,6 +58,23 @@ void LayoutBuffer::Enable() {
 		} 
 
 	}
+}
+
+// TODO: Replace Enable with Bind
+void LayoutBuffer::Bind() {
+	Enable(); 
+}
+
+void LayoutBuffer::Unbind() {
+
+	// Disable each layout
+	for (const Layout layout : _layouts) {
+		glDisableVertexAttribArray(layout._position); 
+	}
+
+	// _layouts.clear(); 
+
+	_size = 0; 
 }
 
 void LayoutBuffer::Debug() {
