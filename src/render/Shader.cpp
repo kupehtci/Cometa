@@ -41,6 +41,44 @@ Shader::~Shader(){
     _filePaths.clear();
 }
 
+// ------------ UNIFORM METHODS ------------
+
+void Shader::SetBool(const std::string& variableName, const bool& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1i(location,(int)value);
+}
+
+void Shader::SetFloat(const std::string& variableName, const float& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1f(location, value);
+}
+
+void Shader::Set2Float(const std::string &variableName, const glm::vec2 &value) const {
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform2f(location, value.x, value.y);
+}
+
+void Shader::Set3Float(const std::string& variableName, const glm::vec3& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform3f(location, value.x, value.y, value.z);
+}
+
+void Shader::Set4Float(const std::string& variableName, const glm::vec4& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform4f(location, value.x, value.y, value.z, value.w);
+}
+
+void Shader::SetInt(const std::string& variableName, const int& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1i(location, value);
+}
+
+void Shader::SetIntArray(const std::string& variableName, const int* values, uint32_t count) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1iv(location, count, values);
+}
+
+
 std::string Shader::LoadFromFile(std::string filePath){
 
     std::ifstream file = std::ifstream(filePath);
@@ -115,6 +153,14 @@ void Shader::CompileShaderProgram(){
     }
 
     _shaderUID = shaderProgramID;
+}
+
+void Shader::Bind(){
+    glUseProgram(_shaderUID);
+}
+
+void Shader::Unbind() {
+    glUseProgram(0);
 }
 
 void Shader::Delete(){

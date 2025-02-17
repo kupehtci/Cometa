@@ -8,8 +8,17 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm.hpp>
 
 #include "Shader.h"
+#include "Buffer.h"
+#include "VertexArray.h"
+#include "LayoutBuffer.h"
+
+#include <stdio.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 // Window constructor
 Window::Window()
@@ -77,9 +86,179 @@ void Window::Render() {
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    unsigned int shaderProgramID;
-
     Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
+
+    // Set shader as current and delete the compiled shaders
+    mainShader.Bind();
+
+    float vertices[] = {
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+    };
+
+    // Testing uniform value update
+    float timeValue = (float)glfwGetTime();
+    float greenValue = sin(timeValue) / 2.0f + 0.5f;
+    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+
+    // Testing texture creation
+
+    int width, height, nrChannels;
+    const char* texture0Path = "./resources/macos_example.jpg"; 
+    unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
+
+    unsigned int textureUID;
+    
+    if (data) {
+        glGenTextures(1, &textureUID);
+
+        // // Set the texture wrapping and filtering mode
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, textureUID);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // // Release image data
+        stbi_image_free(data);
+    }
+    else {
+        COMETA_WARNING("Unable to load texture at ");
+        return; 
+    }
+
+
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+    //unsigned int VBO, VAO, EBO;
+    //glGenVertexArrays(1, &VAO);
+    //glGenBuffers(1, &VBO);
+    //glGenBuffers(1, &EBO);
+
+    //glBindVertexArray(VAO);
+
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // unsigned int VAO = 0; 
+    // glGenVertexArrays(1, &VAO);
+    // glBindVertexArray(VAO);
+
+    VertexArray vArray0 = VertexArray(); 
+    vArray0.Bind(); 
+
+    VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices)); 
+    IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices)); 
+
+
+    LayoutBuffer layoutBuffer = {
+        {0, DataType::Float3, "_position"},
+        {1, DataType::Float3, "_color"},
+        {2, DataType::Float2, "_texCoord"}
+    }; 
+
+    layoutBuffer.Build();
+    // layoutBuffer.Debug(); // TESTING
+
+    layoutBuffer.Bind();
+
+    // glBindVertexArray(VAO);
+    vArray0.Bind(); 
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureUID);
+
+
+    mainShader.SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
+
+    vArray0.Bind();
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+    mainShader.Unbind();
+    mainShader.Delete();
+
+    // ------------------------------------------------------------------------------------
+
+    glfwSwapBuffers(_window);
+    glfwPollEvents();
+}
+
+
+
+
+bool Window::ShouldHandleCloseWindow(){
+    return !glfwWindowShouldClose(this->_window);
+}
+
+/**
+ * Close the window and clean it
+ * Also clean the rest of parameters of the window
+ */
+void Window::Close() {
+
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+    }
+
+    delete this->_resolution;
+    this->_resolution = nullptr;
+
+    COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
+
+    // delete this->_title;
+    // this->_title = nullptr;
+}
+
+/**
+ * Handle the resize of the window
+ */
+void Window::HandleResize(GLFWwindow* window, int width, int height) {
+    Quad previousResolution = *_resolution;
+
+    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
+
+    COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y))
+                    .c_str());
+
+    // modify viewport resolution
+    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
+}
+
+/**
+ * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
+ * This function is called from OpenGL as a callback
+ * @param window (GLFWwindow*) window pointer of the main window that is being resized
+ * @param width (int) new width value of the window
+ * @param height (int) new height value of the window
+ */
+void HandleResizeCallback(GLFWwindow* window, int width, int height){
+    Window::GetInstancePtr()->HandleResize(window, width, height);
+}
+
+
+
+// TESTING FUNCTIONS
+
+// Previus used function to show colors
+void TestingFunctionShaderColors() {
+    // ------------------------------------------------------------------------------------
+    // TESTING
+    // ------------------------------------------------------------------------------------
+
+    Shader mainShader = Shader("Main Shader", "src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
     glUseProgram(mainShader.GetShaderUID());
@@ -89,6 +268,11 @@ void Window::Render() {
             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
             0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
     };
+
+    // Testing uniform value update
+    float timeValue = glfwGetTime();
+    float greenValue = sin(timeValue) / 2.0f + 0.5f;
+    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -126,57 +310,6 @@ void Window::Render() {
     // Once all is used, delete the resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgramID);
 
-    // ------------------------------------------------------------------------------------
-
-
-
-    glfwSwapBuffers(_window);
-    glfwPollEvents();
-
-}
-
-bool Window::ShouldHandleCloseWindow(){
-    return !glfwWindowShouldClose(this->_window);
-}
-
-/**
- * Close the window and clean it
- * Also clean the rest of parameters of the window
- */
-void Window::Close() {
-
-    if(this->_window !=  nullptr){
-        glfwDestroyWindow(this->_window);
-    }
-
-    delete this->_resolution;
-    this->_resolution = nullptr;
-    // delete this->_title;
-    // this->_title = nullptr;
-}
-
-/**
- * Handle the resize of the window
- */
-void Window::HandleResize(GLFWwindow* window, int width, int height) {
-    Quad previousResolution = *_resolution;
-
-    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
-
-    std::cout << "Handling resize from " << previousResolution.x << ", " << previousResolution.y << " to " << _resolution->x << ", " << _resolution->y << std::endl;
-
-    // modify viewport resolution
-    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
-}
-
-/**
- * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
- * @param window
- * @param width
- * @param height
- */
-void HandleResizeCallback(GLFWwindow* window, int width, int height){
-    Window::GetInstancePtr()->HandleResize(window, width, height);
+    mainShader.Delete();
 }
