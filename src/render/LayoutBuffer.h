@@ -6,14 +6,15 @@
 #include <cstdint>
 #include <vector>
 
-#include "Buffer.h"
+#include "./Buffer.h"
+#include "./DataType.h"
 
 struct Layout { 
-	std::string _name; 
-	uint32_t _position; 
-	DataType _type;
-	uint32_t _size; 
-	uint32_t _offset; 
+	std::string _name;		// debug name of the layout
+	uint32_t _position;		// Position in the layout Renderer buffer
+	DataType _type;			// Type of the data stored in the buffer
+	uint32_t _size;			// Size of the data within the buffer
+	uint32_t _offset;		// Offset of the layout's data from the start of each stride
 
 	/**
 	*  Default constructor for layout
