@@ -34,6 +34,8 @@ public:
     void Init();
     void Update();
     void Close();
+
+    inline Window* GetWindow(){ return _window; }
 };
 
 
