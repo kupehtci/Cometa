@@ -13,8 +13,7 @@ VertexArray::~VertexArray() {
 }
 
 void VertexArray::Bind() {
-	glBindVertexArray(_uid); 
-	std::cout << "Bind vertex array: " << _uid << std::endl;
+	glBindVertexArray(_uid);
 }
 
 void VertexArray::Unbind() {

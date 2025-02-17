@@ -8,18 +8,13 @@
 VertexBuffer::VertexBuffer(uint32_t size) {
 	glGenBuffers(1, &_uid); 
 	glBindBuffer(GL_ARRAY_BUFFER, _uid); 
-	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW); 
-
-	COMETA_ASSERT("Created vertex buffer");
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 }
 
 VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
 	glGenBuffers(1, &_uid);
 	glBindBuffer(GL_ARRAY_BUFFER, _uid);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-
-	COMETA_ASSERT("Created vertex buffer"); 
-
 }
 
 VertexBuffer::~VertexBuffer() {
@@ -42,8 +37,6 @@ IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t size) {
 	glGenBuffers(1, &_uid);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _uid);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
-
-	COMETA_ASSERT("Created index buffer");
 }
 
 IndexBuffer::~IndexBuffer() {

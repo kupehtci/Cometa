@@ -89,9 +89,7 @@ void Window::Render() {
     Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
-    glUseProgram(mainShader.GetShaderUID());
-    
-
+    mainShader.Bind();
 
     float vertices[] = {
         // positions          // colors           // texture coords
@@ -172,21 +170,9 @@ void Window::Render() {
     }; 
 
     layoutBuffer.Build();
-    layoutBuffer.Debug(); // TESTING
+    // layoutBuffer.Debug(); // TESTING
 
-    layoutBuffer.Enable(); 
-
-    //// position attribute
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(0);
-
-    //// color attribute
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(1);
-    //
-    //// texture coord attribute
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    //glEnableVertexAttribArray(2);
+    layoutBuffer.Bind();
 
     // glBindVertexArray(VAO);
     vArray0.Bind(); 
@@ -199,16 +185,12 @@ void Window::Render() {
 
     vArray0.Bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    
 
 
-    // End of testing texturess
-
+    mainShader.Unbind();
     mainShader.Delete();
 
     // ------------------------------------------------------------------------------------
-
-
 
     glfwSwapBuffers(_window);
     glfwPollEvents();

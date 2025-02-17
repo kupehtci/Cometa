@@ -155,6 +155,14 @@ void Shader::CompileShaderProgram(){
     _shaderUID = shaderProgramID;
 }
 
+void Shader::Bind(){
+    glUseProgram(_shaderUID);
+}
+
+void Shader::Unbind() {
+    glUseProgram(0);
+}
+
 void Shader::Delete(){
     if(_shaderUID == 0){
         std::cout << "ERROR::SHADER::Trying to delete a not compiled shader" << std::endl;
