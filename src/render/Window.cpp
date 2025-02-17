@@ -13,6 +13,7 @@
 #include "Shader.h"
 #include "Buffer.h"
 #include "VertexArray.h"
+#include "LayoutBuffer.h"
 
 #include <stdio.h>
 
@@ -162,6 +163,17 @@ void Window::Render() {
 
     VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices)); 
     IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices)); 
+
+
+    LayoutBuffer layoutBuffer = {
+        {0, DataType::Float3, "_position"},
+        {1, DataType::Float3, "_color"},
+        {2, DataType::Float3, "_texCoord"}
+    }; 
+
+    layoutBuffer.Build();
+    layoutBuffer.Debug(); // TESTING
+
 
 
     // position attribute

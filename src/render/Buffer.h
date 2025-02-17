@@ -1,6 +1,9 @@
 #pragma once
-#include <cstdint>
 
+#ifndef AURAGL_BUFFER_H
+#define AURAGL_BUFFER_H
+
+#include <cstdint>
 
 #include "debug/Assertion.h"
 
@@ -40,47 +43,53 @@ static uint32_t DataTypeCalculateSize(DataType type)
 			return 8;
 		case DataType::Int3:
 			return 12;
-		// case ShaderDataType::Int4:     return 16;
+		case DataType::Int4:
+			return 16;
 		case DataType::Bool:
 			return 1;
+		default: 
+			COMETA_WARNING("Unknown Data type for getting size");
+			return 0;
 	}
-
-	COMETA_WARNING( "Unknown ShaderDataType!");
-	return 0;
 }
 
 /**
  *	Get the number of elements in a type of data
  *	Can also be calculated using the size of a data type and knowing the type of individual data components
+ *	Mat3 returns 3 and Mat4 returns 4 because its considered as 3 float3 vectors and 4 float4 vectors
  */
-static uint8_t DataTypeCalculateNumberElements(DataType type) {
+static uint32_t DataTypeCalculateNumberElements(DataType type)
+{
 	switch (type)
 	{
 	case DataType::Float:
-		return 4;
+		return 1;
 	case DataType::Float2:
-		return 8;
+		return 2;
 	case DataType::Float3:
-		return 12;
+		return 3;
 	case DataType::Float4:
-		return 16;
-	case DataType::Mat3:
-		return 36;
-	case DataType::Mat4:
-		return 64;
-	case DataType::Int:
 		return 4;
+	case DataType::Mat3:
+		return 3;
+	case DataType::Mat4:
+		return 4;
+	case DataType::Int:
+		return 1;
 	case DataType::Int2:
-		return 8;
+		return 2;
 	case DataType::Int3:
-		return 12;
+		return 3;
+	case DataType::Int4: 
+		return 4; 
 	case DataType::Bool:
 		return 1;
+	default:
+		COMETA_WARNING("Unknown Data type for counting number elements");
+		return 0;
 	}
-
-	COMETA_WARNING("Unknown ShaderDataType!");
-	return 0;
 }
+
 
 /**
 * Buffer abstract class that define the minimal structure of a Renderer API Buffer
@@ -145,3 +154,5 @@ public:
 	// ---------- GETTERS ---------- //
 	inline uint32_t GetCount() { return _count;  }
 };
+
+#endif  //AURAGL_BUFFER_H
