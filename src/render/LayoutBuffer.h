@@ -36,16 +36,38 @@ struct Layout {
 class LayoutBuffer /* : public Buffer */{
 
 private: 
-	std::vector<Layout> _layouts; 
-	uint32_t _size; 
+	std::vector<Layout> _layouts;	// Array of layouts that compose the structure of the LayoutBuffer
+	uint32_t _size;					// Total stride of the LayoutBuffer
 
 public: 
+	/**
+	*	Default constructor for LayoutBuffer
+	*/
 	LayoutBuffer();
 
+	/**
+	* Struct similar constructor for the LayooutBuffer
+	* Allows to create a LayoutBuffer like this: 
+	*		LayoutBuffer layBuffer = {{0, DataType::Float3, "_position"}, {1, DataType::Float3, "_color"}}
+	* 
+	* In a format like a struct declaration
+	*/
 	LayoutBuffer(std::initializer_list<Layout> layouts) : _layouts(layouts) {}; 
 
+	/**
+	*   Build the layout buffer by calculating the stride and offset of each layout
+	*/
 	void Build(); 
 
+
+	/**
+	*	Enable the LayoutBuffer by enabling each layout
+	*/
+	void Enable(); 
+
+	/**
+	* Debug function that print by console the properties of each layout within the LayoutBuffer
+	*/
 	void Debug(); 
 };
 

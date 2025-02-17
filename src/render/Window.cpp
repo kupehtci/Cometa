@@ -168,25 +168,25 @@ void Window::Render() {
     LayoutBuffer layoutBuffer = {
         {0, DataType::Float3, "_position"},
         {1, DataType::Float3, "_color"},
-        {2, DataType::Float3, "_texCoord"}
+        {2, DataType::Float2, "_texCoord"}
     }; 
 
     layoutBuffer.Build();
     layoutBuffer.Debug(); // TESTING
 
+    layoutBuffer.Enable(); 
 
+    //// position attribute
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
 
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    //// color attribute
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
+    //
+    //// texture coord attribute
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    //glEnableVertexAttribArray(2);
 
     // glBindVertexArray(VAO);
     vArray0.Bind(); 

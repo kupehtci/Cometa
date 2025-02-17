@@ -8,6 +8,9 @@
 #include "debug/Assertion.h"
 
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 /**
 *	Shader Data's types common in the Graphics API libraries
 *	Helps to determine the type of data
@@ -84,6 +87,40 @@ static uint32_t DataTypeCalculateNumberElements(DataType type)
 		return 4; 
 	case DataType::Bool:
 		return 1;
+	default:
+		COMETA_WARNING("Unknown Data type for counting number elements");
+		return 0;
+	}
+}
+
+/**
+*	Translate from Data Type to GLenum to be used in OpenGL
+*/
+static GLenum DataTypeToGlEnum(DataType type){
+	switch (type)
+	{
+	case DataType::Float:
+		return GL_FLOAT;
+	case DataType::Float2:
+		return GL_FLOAT_VEC2;
+	case DataType::Float3:
+		return GL_FLOAT_VEC3;
+	case DataType::Float4:
+		return GL_FLOAT_VEC4;
+	case DataType::Mat3:
+		return GL_FLOAT_MAT3;
+	case DataType::Mat4:
+		return GL_FLOAT_MAT4;
+	case DataType::Int:
+		return GL_INT;
+	case DataType::Int2:
+		return GL_INT_VEC2;
+	case DataType::Int3:
+		return GL_INT_VEC3;
+	case DataType::Int4:
+		return GL_INT_VEC4;
+	case DataType::Bool:
+		return GL_BOOL;
 	default:
 		COMETA_WARNING("Unknown Data type for counting number elements");
 		return 0;
