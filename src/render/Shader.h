@@ -22,8 +22,8 @@ class Shader {
 private:
 
     unsigned int _shaderUID;
-    std::unordered_map<GLenum, std::string> _shaderSources;
-    std::unordered_map<GLenum, std::string> _filePaths;
+    std::unordered_map<GLenum, std::string> _shaderSources;         // Store as a map (Shader type - source code)
+    std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)
     std::string _debugName;
 
 
@@ -129,6 +129,17 @@ private:
 
 
 public:
+
+    /**
+     * Bind the shader
+     */
+    void Bind();
+
+    /**
+     * Unbind the shader
+     */
+    void Unbind();
+
     /**
      * Delete the shader program in OpenGL by its reference
      */
