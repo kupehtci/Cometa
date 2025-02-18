@@ -4,6 +4,7 @@
 
 //#include "Singleton.h"
 #include "render/Renderer.h"
+#include "Time.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +18,9 @@ class Application : public Singleton<Application>{
 private :
     bool _isRunning;
     Renderer* _renderer;
-    GLFWwindow* _window;
+    Time* _time; 
+
+    // GLFWwindow* _window;
 
 
 public:

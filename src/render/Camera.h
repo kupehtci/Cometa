@@ -9,6 +9,8 @@
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
+#include "../debug/Assertion.h"
+
 class Camera {
 private:
     glm::mat4 _projectionMatrix;
