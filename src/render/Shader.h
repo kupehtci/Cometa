@@ -12,7 +12,7 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
-
+#include <gtc/type_ptr.hpp>
 
 /**
  * Class that represents a GSLS Shader and offers the utility to use them
@@ -44,7 +44,7 @@ public:
     ~Shader();
 
     // ------------ UNIFORMS METHODS ------------
-
+        
     /**
      * Set the value of a boolean uniform variable
      * this boolean is passed as an int to the shader
@@ -67,7 +67,7 @@ public:
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (glm::vec2) new value of the variable
      */
-    void Set2Float(const std::string& variableName, const glm::vec2& value) const;
+    void SetFloat2(const std::string& variableName, const glm::vec2& value) const;
 
 
     /**
@@ -75,7 +75,7 @@ public:
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (glm::vec3) new value of the variable
      */
-    void Set3Float(const std::string& variableName, const glm::vec3& value) const;
+    void SetFloat3(const std::string& variableName, const glm::vec3& value) const;
 
 
     /**
@@ -83,7 +83,7 @@ public:
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (glm::vec4) new value of the variable
      */
-    void Set4Float(const std::string& variableName, const glm::vec4& value) const;
+    void SetFloat4(const std::string& variableName, const glm::vec4& value) const;
 
 
     /**
@@ -104,6 +104,13 @@ public:
     void SetIntArray(const std::string& variableName, const int* values, uint32_t count) const;
 
 
+    /**
+     * Set the value of an Matrix 4 x 4 uniform variable
+     * The matrix is then transformed to a pointer of the first element
+     * @param variableName (std::string) name of the uniform variable to set
+     * @param values (glm::mat4&) Matrix 4 x 4 new value of the variable
+     */
+    void SetMatrix4(const std::string& variableName, const glm::mat4& value) const; 
 
 private:
     /**

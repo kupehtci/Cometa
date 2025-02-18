@@ -14,6 +14,7 @@
 #include "Buffer.h"
 #include "VertexArray.h"
 #include "LayoutBuffer.h"
+#include "Camera.h"
 
 #include <stdio.h>
 
@@ -79,14 +80,14 @@ void Window::Update() {
 void Window::Render() {
 
     glClearColor(0.2f, 0.1f, 0.3f, 1.0f); // Set background color
-    glClear(GL_COLOR_BUFFER_BIT);         // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 
 
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
+    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
     mainShader.Bind();
@@ -99,13 +100,12 @@ void Window::Render() {
         -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
 
-    // Testing uniform value update
-    float timeValue = (float)glfwGetTime();
-    float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+    unsigned int indices[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };
 
     // Testing texture creation
-
     int width, height, nrChannels;
     const char* texture0Path = "./resources/macos_example.jpg"; 
     unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
@@ -135,27 +135,6 @@ void Window::Render() {
     }
 
 
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    //unsigned int VBO, VAO, EBO;
-    //glGenVertexArrays(1, &VAO);
-    //glGenBuffers(1, &VBO);
-    //glGenBuffers(1, &EBO);
-
-    //glBindVertexArray(VAO);
-
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // unsigned int VAO = 0; 
-    // glGenVertexArrays(1, &VAO);
-    // glBindVertexArray(VAO);
-
     VertexArray vArray0 = VertexArray(); 
     vArray0.Bind(); 
 
@@ -170,11 +149,16 @@ void Window::Render() {
     }; 
 
     layoutBuffer.Build();
-    // layoutBuffer.Debug(); // TESTING
-
     layoutBuffer.Bind();
 
-    // glBindVertexArray(VAO);
+    // set the camera and its proyection, view and model matrices
+    Camera camera = Camera();
+    mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
+    mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+
+    glm::mat4 modelRotated = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mainShader.SetMatrix4("uModel", modelRotated); 
+
     vArray0.Bind(); 
 
     glActiveTexture(GL_TEXTURE0);
@@ -217,9 +201,6 @@ void Window::Close() {
     this->_resolution = nullptr;
 
     COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
-
-    // delete this->_title;
-    // this->_title = nullptr;
 }
 
 /**
@@ -230,8 +211,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 
     glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
 
-    COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y))
-                    .c_str());
+    // COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y)).c_str());
 
     // modify viewport resolution
     glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
@@ -272,7 +252,7 @@ void TestingFunctionShaderColors() {
     // Testing uniform value update
     float timeValue = glfwGetTime();
     float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
