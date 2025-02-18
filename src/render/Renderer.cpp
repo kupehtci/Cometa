@@ -79,12 +79,14 @@ void Renderer::Init(){
     // Validate maximum number of vertex attributes to use in the shaders
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    COMETA_ASSERT(("Maximum number of vertex attributes supported by hardware: " + std::to_string(nrAttributes)).c_str());
+    // COMETA_ASSERT(("Maximum number of vertex attributes supported by hardware: " + std::to_string(nrAttributes)).c_str());
 }
 
 void Renderer::Update(){
     // Update current window
     _window->Update();
+
+    
 }
 
 /**
