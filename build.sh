@@ -43,7 +43,8 @@ fi
 compile_for_windows_vstudio() {
     echo "Compiling a Visual Studio Solution for windows using premake5"
     ./premake5.exe clean
-
+    rm *.sln
+    rm *.vcxproj*
     ./premake5.exe vs2022 --os=windows 
 }
 

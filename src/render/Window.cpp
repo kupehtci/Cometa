@@ -14,6 +14,7 @@
 #include "Buffer.h"
 #include "VertexArray.h"
 #include "LayoutBuffer.h"
+#include "Camera.h"
 
 #include <stdio.h>
 
@@ -79,14 +80,14 @@ void Window::Update() {
 void Window::Render() {
 
     glClearColor(0.2f, 0.1f, 0.3f, 1.0f); // Set background color
-    glClear(GL_COLOR_BUFFER_BIT);         // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 
 
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
+    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
     mainShader.Bind();
@@ -102,7 +103,7 @@ void Window::Render() {
     // Testing uniform value update
     float timeValue = (float)glfwGetTime();
     float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     // Testing texture creation
 
@@ -170,11 +171,16 @@ void Window::Render() {
     }; 
 
     layoutBuffer.Build();
-    // layoutBuffer.Debug(); // TESTING
-
     layoutBuffer.Bind();
 
-    // glBindVertexArray(VAO);
+    // set the camera and its proyection, view and model matrices
+    Camera camera = Camera();
+    mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
+    mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+
+    glm::mat4 modelRotated = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mainShader.SetMatrix4("uModel", modelRotated); 
+
     vArray0.Bind(); 
 
     glActiveTexture(GL_TEXTURE0);
@@ -272,7 +278,7 @@ void TestingFunctionShaderColors() {
     // Testing uniform value update
     float timeValue = glfwGetTime();
     float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.Set3Float("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
