@@ -13,15 +13,14 @@
 
 
 Renderer::Renderer() {
-    // this->_window = nullptr;
-    // this->_resolution = new Quad(800, 600);
+    this->_window = nullptr;
 }
 
 /**
  * Renderer destructor
  */
 Renderer::~Renderer() {
-
+    
 }
 
 /**
@@ -50,7 +49,7 @@ void Renderer::Init(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 #endif
-
+     
 
     // Indicate GLFW and OpenGL version
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -85,8 +84,6 @@ void Renderer::Init(){
 void Renderer::Update(){
     // Update current window
     _window->Update();
-
-    
 }
 
 /**

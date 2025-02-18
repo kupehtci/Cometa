@@ -100,13 +100,12 @@ void Window::Render() {
         -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
 
-    // Testing uniform value update
-    float timeValue = (float)glfwGetTime();
-    float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
+    unsigned int indices[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };
 
     // Testing texture creation
-
     int width, height, nrChannels;
     const char* texture0Path = "./resources/macos_example.jpg"; 
     unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
@@ -135,27 +134,6 @@ void Window::Render() {
         return; 
     }
 
-
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    //unsigned int VBO, VAO, EBO;
-    //glGenVertexArrays(1, &VAO);
-    //glGenBuffers(1, &VBO);
-    //glGenBuffers(1, &EBO);
-
-    //glBindVertexArray(VAO);
-
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // unsigned int VAO = 0; 
-    // glGenVertexArrays(1, &VAO);
-    // glBindVertexArray(VAO);
 
     VertexArray vArray0 = VertexArray(); 
     vArray0.Bind(); 
@@ -223,9 +201,6 @@ void Window::Close() {
     this->_resolution = nullptr;
 
     COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
-
-    // delete this->_title;
-    // this->_title = nullptr;
 }
 
 /**
@@ -236,8 +211,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 
     glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
 
-    COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y))
-                    .c_str());
+    // COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y)).c_str());
 
     // modify viewport resolution
     glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
