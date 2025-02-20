@@ -29,7 +29,11 @@ public:
 
 	Texture(std::string filePath); 
 
+	~Texture();
+
 	void Bind(GLenum textureNumber);
+
+	void Delete(); 
 
 	// Operator overload
 	

@@ -66,7 +66,23 @@ void Texture::Bind(unsigned int index) {
     // because they are a sequence
 	glActiveTexture(GL_TEXTURE0 + index);
 	glBindTexture(GL_TEXTURE_2D, _uid);
-	COMETA_MSG("binding texture: ", _uid); 
+	// COMETA_MSG("Texture binded: ", _uid); 
+}
+
+Texture::~Texture() {
+	Delete(); 	
+}
+
+
+void Texture::Delete(){
+	if (_uid != 0) {
+		glDeleteTextures(1, &_uid);
+		_uid = 0;
+		_width = 0;
+		_height = 0;
+		_channels = 0;
+		_path = "";
+	}
 }
 
 bool const Texture::operator==(const Texture& other) {
