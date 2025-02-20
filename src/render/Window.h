@@ -29,6 +29,10 @@ public:
      */
     void Create(int width, int height, const char* title);
 
+
+
+    void Init(); 
+
     /**
      * Update the window's state
      */
@@ -43,6 +47,7 @@ public:
      * Close the window and remove its instance
      */
     void Close();
+
 
     // Check if window should close
     bool ShouldHandleCloseWindow();

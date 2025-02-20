@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include <filesystem>
 
+
 //Shader::Shader() {
 //    _shaderUID = 0;
 //    _shaderType = GL_NONE;
@@ -53,17 +54,17 @@ void Shader::SetFloat(const std::string& variableName, const float& value) const
     glUniform1f(location, value);
 }
 
-void Shader::Set2Float(const std::string &variableName, const glm::vec2 &value) const {
+void Shader::SetFloat2(const std::string &variableName, const glm::vec2 &value) const {
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
     glUniform2f(location, value.x, value.y);
 }
 
-void Shader::Set3Float(const std::string& variableName, const glm::vec3& value) const{
+void Shader::SetFloat3(const std::string& variableName, const glm::vec3& value) const{
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
     glUniform3f(location, value.x, value.y, value.z);
 }
 
-void Shader::Set4Float(const std::string& variableName, const glm::vec4& value) const{
+void Shader::SetFloat4(const std::string& variableName, const glm::vec4& value) const{
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
@@ -77,6 +78,12 @@ void Shader::SetIntArray(const std::string& variableName, const int* values, uin
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
     glUniform1iv(location, count, values);
 }
+
+void Shader::SetMatrix4(const std::string& variableName, const glm::mat4& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str()); 
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
 
 
 std::string Shader::LoadFromFile(std::string filePath){
