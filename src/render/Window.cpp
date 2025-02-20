@@ -15,6 +15,7 @@
 #include "VertexArray.h"
 #include "LayoutBuffer.h"
 #include "Camera.h"
+#include "Texture.h"
 
 #include <stdio.h>
 
@@ -33,12 +34,9 @@ Window::Window()
  * Window destructor
  */
 Window::~Window(){
-//    if(this->_window !=  nullptr){
-//        glfwDestroyWindow(this->_window);
-//    }
-//
-//    delete this->_resolution;
-//    delete this->_title;
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+    }
 }
 
 /**
@@ -105,35 +103,37 @@ void Window::Render() {
         1, 2, 3    // second triangle
     };
 
-    // Testing texture creation
-    int width, height, nrChannels;
-    const char* texture0Path = "./resources/macos_example.jpg"; 
-    unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
+//    // Testing texture creation
+//    int width, height, nrChannels;
+//    const char* texture0Path = "./resources/macos_example.jpg";
+//    unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
+//
+//    unsigned int textureUID;
+//
+//    if (data) {
+//        glGenTextures(1, &textureUID);
+//
+//        // // Set the texture wrapping and filtering mode
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//
+//        glBindTexture(GL_TEXTURE_2D, textureUID);
+//
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+//        glGenerateMipmap(GL_TEXTURE_2D);
+//
+//        // // Release image data
+//        stbi_image_free(data);
+//    }
+//    else {
+//        COMETA_WARNING("Unable to load texture at ");
+//        return;
+//    }
 
-    unsigned int textureUID;
-    
-    if (data) {
-        glGenTextures(1, &textureUID);
-
-        // // Set the texture wrapping and filtering mode
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glBindTexture(GL_TEXTURE_2D, textureUID);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        // // Release image data
-        stbi_image_free(data);
-    }
-    else {
-        COMETA_WARNING("Unable to load texture at ");
-        return; 
-    }
-
+    Texture texture0 = Texture("./resources/macos_example.jpg");
+    texture0.Bind(0);
 
     VertexArray vArray0 = VertexArray(); 
     vArray0.Bind(); 
@@ -161,8 +161,9 @@ void Window::Render() {
 
     vArray0.Bind(); 
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureUID);
+//    glActiveTexture(GL_TEXTURE0);
+//    glBindTexture(GL_TEXTURE_2D, textureUID);
+    texture0.Bind(0);
 
 
     mainShader.SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 

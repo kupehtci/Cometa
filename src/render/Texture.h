@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include "../debug/Assertion.h"

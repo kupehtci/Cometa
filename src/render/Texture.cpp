@@ -27,9 +27,14 @@ Texture::Texture(std::string filePath){
 	// Check that channels in RGB are 3 or 4
 	if (nrChannels != 3 && nrChannels != 4) {
 		COMETA_ERROR("Texture format not supported"); 
+		return;
 	}
 
 	if (data != nullptr) {
+		_width = width;
+		_height = height;
+		_channels = nrChannels;
+
 		glGenTextures(1, &_uid);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -39,11 +44,11 @@ Texture::Texture(std::string filePath){
 
 		glBindTexture(GL_TEXTURE_2D, _uid);
 
-		GLenum format = nrChannels == 4 ? GL_RGBA : GL_RGB; 
-		GLenum internalFormat = nrChannels == 4 ? GL_RGBA8 : GL_RGB8; 
+		GLenum format = _channels == 4 ? GL_RGBA : GL_RGB; 
+		GLenum internalFormat = _channels == 4 ? GL_RGBA8 : GL_RGB8; 
 
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, _width, _height, 0, format, GL_UNSIGNED_BYTE, data);
-		// glTextureSubImage2D
+        glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
 	}
@@ -55,9 +60,13 @@ Texture::Texture(std::string filePath){
 }
 
 
-void Texture::Bind(GLenum textureNumber) {
-	glActiveTexture(textureNumber);
-	//glBindTexture(GL_TEXTURE_2D, _uid);
+void Texture::Bind(unsigned int index) {
+
+    // The GL_TEXTUREi with i being an slot of the textures available, can be obtained using the 0 slot and plus the index
+    // because they are a sequence
+	glActiveTexture(GL_TEXTURE0 + index);
+	glBindTexture(GL_TEXTURE_2D, _uid);
+	COMETA_MSG("binding texture: ", _uid); 
 }
 
 bool const Texture::operator==(const Texture& other) {
