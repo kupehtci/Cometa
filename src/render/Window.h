@@ -54,18 +54,15 @@ public:
 
     // GETTERS AND SETTERS
 public:
-    /**
-     * Get the current resolution of the window
-     * @return
-     */
+
+    inline GLFWwindow* GetGlfwWindow(){
+        return _window;
+    }
+
     inline Quad GetCurrentResolution(){
         return *_resolution;
     }
 
-    /**
-     * Get the current title of the window
-     * @return
-     */
     inline const char* GetTitle(){
         return _title;
     }
