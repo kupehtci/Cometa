@@ -3,7 +3,7 @@
 //
 
 #include "core/Application.h"
-
+#include "../input/Input.h"
 
 Application::Application(){
     this->_isRunning = true;
@@ -38,10 +38,9 @@ void Application::Running() {
         _time->Update(); 
 
         _renderer->Update();
-
         
         // Check if window must close
-        this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow();
+        this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow() && !Input::IsKeyPressed(GLFW_KEY_ESCAPE);
     }
 }
 

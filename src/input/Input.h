@@ -2,7 +2,10 @@
 #define COMETA_INPUT_H
 
 #include "../core/Singleton.h"
+#include "../render/Renderer.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm.hpp>
 
 enum InputType{
@@ -16,14 +19,22 @@ enum InputType{
 }; 
 
 class Input : public Singleton<Input>{
-   std::unordered_map<int, int> _keys; 
+private: 
+    // std::unordered_map<int, int> _keys; 
+    // GLFWwindow* _window;                   // Window is created by Rendered and passed to input initialization
 
-   bool IsKeyPressed(int keycode);
-   bool IsKeyReleased(int keycode);
-   bool IsMouseButtonPressed(int button);
 
-   glm::vec2 GetMousePosition();
-   glm::vec2 GetMouseScroll();
+public: 
+    // Input(); 
+
+   static bool IsKeyPressed(int keycode);
+   static bool IsMouseButtonPressed(int button);
+   static bool IsKeyReleased(int keycode);
+
+   static glm::vec2 GetMousePosition();
+   static glm::vec2 GetMouseScroll();
+
+   // void SetWindowContext(GLFWwindow* window);
 }; 
 
 #endif // COMETA_INPUT_H
