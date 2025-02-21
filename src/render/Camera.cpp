@@ -9,6 +9,8 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 
+#include "../input/Input.h"
+
 Camera::Camera() {
     Quad currentResolution = Renderer::GetInstancePtr()->GetWindow()->GetCurrentResolution();
     _projectionMatrix = glm::perspective(glm::radians(30.0f), static_cast<float>((float)currentResolution.x/(float)currentResolution.y), 0.1f, 100.0f);// glm::mat4(1.0f);
@@ -30,6 +32,17 @@ Camera::~Camera() {
 }
 
 void Camera::OnUpdate() {
-
+    if(Input::IsKeyPressed(GLFW_KEY_W)) {
+        _viewMatrix = glm::translate(_viewMatrix, glm::vec3(0.0f, 0.0f, -0.1f));
+    }
+    if(Input::IsKeyPressed(GLFW_KEY_S)) {
+        _viewMatrix = glm::translate(_viewMatrix, glm::vec3(0.0f, 0.0f, 0.1f));
+    }
+    if(Input::IsKeyPressed(GLFW_KEY_A)) {
+        _viewMatrix = glm::translate(_viewMatrix, glm::vec3(-0.1f, 0.0f, 0.0f));
+    }
+    if(Input::IsKeyPressed(GLFW_KEY_D)) {
+        _viewMatrix = glm::translate(_viewMatrix, glm::vec3(0.1f, 0.0f, 0.0f));
+    }
 }
 
