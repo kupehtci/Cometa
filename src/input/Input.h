@@ -18,23 +18,30 @@ enum InputType{
     MOUSE_SCROLL = 7,
 }; 
 
-class Input : public Singleton<Input>{
+class Input : public SingletonManager<Input>{
 private: 
     // std::unordered_map<int, int> _keys; 
     // GLFWwindow* _window;                   // Window is created by Rendered and passed to input initialization
-
+    float _xpos, _ypos = 0.0f;
+    float _xDeltaPos, _yDeltaPos = 0.0f;
 
 public: 
-    // Input(); 
+   Input() = default; 
+
+   void Init() override; 
+   void Update() override;
+   void Close() override; 
 
    static bool IsKeyPressed(int keycode);
    static bool IsMouseButtonPressed(int button);
    static bool IsKeyReleased(int keycode);
 
    static glm::vec2 GetMousePosition();
+   static glm::vec2 GetMouseDelta(); 
    static glm::vec2 GetMouseScroll();
 
-   // void SetWindowContext(GLFWwindow* window);
+
+
 }; 
 
 #endif // COMETA_INPUT_H

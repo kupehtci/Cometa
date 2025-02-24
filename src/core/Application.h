@@ -5,6 +5,7 @@
 //#include "Singleton.h"
 #include "render/Renderer.h"
 #include "Time.h"
+#include "input/Input.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -19,8 +20,7 @@ private :
     bool _isRunning;
     Renderer* _renderer;
     Time* _time; 
-
-    // GLFWwindow* _window;
+    Input* _input; 
 
 
 public:
