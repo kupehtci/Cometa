@@ -12,13 +12,29 @@
 #include "../input/Input.h"
 
 Camera::Camera() {
+
+    _position = glm::vec3(0.0f, 0.0f, 3.0f);
+    _up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    _direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    _right = glm::cross(_direction, glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+    _movementSpeed = 7.0f;
+    _pitch = 0.0f; 
+    _yaw = -90.0f; 
+    _fov = 45.0f;
+
+    _near = 0.05f;
+    _far = 1000.0f;
+
+    // Coordinate matrices
     Quad currentResolution = Renderer::GetInstancePtr()->GetWindow()->GetCurrentResolution();
     _projectionMatrix = glm::perspective(glm::radians(30.0f), static_cast<float>((float)currentResolution.x/(float)currentResolution.y), 0.1f, 100.0f);// glm::mat4(1.0f);
 
     glm::mat4 view = glm::mat4(1.0f);
 
-    // note that we're translating the scene in the reverse direction of where we want to move
-    _viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)); //glm::translate(view, glm::vec3(0.0f, 0.0f, glm::cos((float)glfwGetTime()) *  -2.0f - 5.0f));
+    _viewMatrix = glm::translate(glm::mat4(1.0f), _direction * 3.0f); //glm::translate(view, glm::vec3(0.0f, 0.0f, glm::cos((float)glfwGetTime()) *  -2.0f - 5.0f));
 }
 
 Camera::Camera(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
@@ -44,5 +60,16 @@ void Camera::OnUpdate() {
     if(Input::IsKeyPressed(GLFW_KEY_D)) {
         _viewMatrix = glm::translate(_viewMatrix, glm::vec3(0.1f, 0.0f, 0.0f));
     }
+
+
+    // Update direction
+
+    _direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+    _direction.y = sin(glm::radians(_pitch));
+    _direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+
+
+    // Update shader coordinates system
+
 }
 

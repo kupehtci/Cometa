@@ -220,6 +220,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
     glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
 }
 
+
 /**
  * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
  * This function is called from OpenGL as a callback

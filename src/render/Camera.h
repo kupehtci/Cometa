@@ -13,8 +13,25 @@
 
 class Camera {
 private:
+    
+    glm::vec3 _position; 
+    glm::vec3 _direction; 
+    glm::vec3 _up;
+    glm::vec3 _right;
+
+    float _fov;
+    float _pitch;  
+    float _yaw;
+
+    float _near; 
+    float _far;
+
+    float _movementSpeed; 
+    
     glm::mat4 _projectionMatrix;
     glm::mat4 _viewMatrix;
+
+
 public:
     Camera();
     

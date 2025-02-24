@@ -32,20 +32,8 @@ public:
 
 
     void Init(); 
-
-    /**
-     * Update the window's state
-     */
     void Update();
-
-    /**
-     * Render the window's elements
-     */
     void Render();
-
-    /**
-     * Close the window and remove its instance
-     */
     void Close();
 
 
@@ -68,11 +56,9 @@ public:
     }
 
 public:
-    /**
-     * Handle the resize of the window
-     * This function is used through the HandleResizeCallback function
-     */
+
      void HandleResize(GLFWwindow* window, int width, int height);
+     void HandleMouse(GLFWwindow* window, double xpos, double ypos); 
 
 
 };
