@@ -22,6 +22,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+
 // Window constructor
 Window::Window()
 {
@@ -71,9 +72,15 @@ void Window::Create(int width, int height, const char *title) {
     glfwMakeContextCurrent(_window);
 }
 
+void Window::Init() {
+
+}
+
+
 void Window::Update() {
     Render();
 }
+
 
 void Window::Render() {
 
@@ -231,6 +238,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 void HandleResizeCallback(GLFWwindow* window, int width, int height){
     Window::GetInstancePtr()->HandleResize(window, width, height);
 }
+
 
 
 

@@ -23,6 +23,8 @@ Camera::Camera() {
 
 
     _movementSpeed = 7.0f;
+    _sensitivity = 0.1f; 
+    
     _pitch = 0.0f; 
     _yaw = -90.0f; 
     _fov = 45.0f;
@@ -70,7 +72,11 @@ void Camera::OnUpdate() {
     _direction.y = sin(glm::radians(_pitch));
     _direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
 
-    
+    glm::vec2 mouseDelta = Input::GetMouseDelta(); 
+
+    _yaw += (mouseDelta.x * _sensitivity);
+    _pitch += (mouseDelta.y * _sensitivity); 
+
 
     // Update shader coordinates system
 

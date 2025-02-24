@@ -27,7 +27,8 @@ private:
     float _far;
 
     float _movementSpeed; 
-    
+    float _sensitivity; 
+
     glm::mat4 _projectionMatrix;
     glm::mat4 _viewMatrix;
 
