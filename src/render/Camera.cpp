@@ -11,6 +11,8 @@
 
 #include "../input/Input.h"
 
+#include "../math/CometaMath.h"
+
 Camera::Camera() {
 
     _position = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -68,6 +70,7 @@ void Camera::OnUpdate() {
     _direction.y = sin(glm::radians(_pitch));
     _direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
 
+    
 
     // Update shader coordinates system
 
