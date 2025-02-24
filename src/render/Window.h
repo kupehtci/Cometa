@@ -7,6 +7,13 @@
 
 #include "../math/Quad.h"
 #include "../core/Singleton.h"
+#include "../render/Camera.h"
+
+#include "Shader.h"
+#include "Buffer.h"
+#include "VertexArray.h"
+#include "LayoutBuffer.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +23,7 @@ private:
     GLFWwindow* _window;
     Quad* _resolution;
     const char* _title;
+    Camera _camera; 
 
 public:
     Window(); 

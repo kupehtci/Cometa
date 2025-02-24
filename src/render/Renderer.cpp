@@ -14,6 +14,7 @@
 
 Renderer::Renderer() {
     this->_window = nullptr;
+    this->_objectShader = nullptr; 
 }
 
 /**
@@ -78,7 +79,18 @@ void Renderer::Init(){
     // Validate maximum number of vertex attributes to use in the shaders
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    // COMETA_ASSERT(("Maximum number of vertex attributes supported by hardware: " + std::to_string(nrAttributes)).c_str());
+    COMETA_MSG(("Maximum number of vertex attributes supported by hardware: ", std::to_string(nrAttributes)).c_str());
+
+    // Enable depth testing
+    //glEnable(GL_DEPTH_TEST);
+
+    // Enable back face culling
+    //glEnable(GL_CULL_FACE);
+
+    // Enable blending
+    //glEnable(GL_BLEND);
+
+    _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 }
 
 void Renderer::Update(){

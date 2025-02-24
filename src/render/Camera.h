@@ -10,6 +10,7 @@
 #include <glm.hpp>
 
 #include "../debug/Assertion.h"
+#include "../core/Time.h"
 
 class Camera {
 private:
