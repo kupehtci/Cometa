@@ -153,11 +153,13 @@ void Window::Render() {
 
     // set the camera and its proyection, view and model matrices
     Camera camera = Camera();
-    mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
-    mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+    // mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
+    // mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+
+    mainShader.SetMatrix4("uViewProjection", camera.GetViewProyection()); 
 
     glm::mat4 modelRotated = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mainShader.SetMatrix4("uModel", modelRotated); 
+    mainShader.SetMatrix4("uModel", modelRotated);
 
     vArray0.Bind(); 
 
