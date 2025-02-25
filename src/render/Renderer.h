@@ -25,6 +25,7 @@ class Renderer : public SingletonManager<Renderer>//public Singleton<Renderer>
 
 private:
     Window* _window;
+    Shader* _objectShader;      // Main object shader using camera and fragment shader
 
 public:
     Renderer();
@@ -36,6 +37,7 @@ public:
     void Close() override;
 
     inline Window* GetWindow(){ return _window; }
+    inline Shader* GetObjectShader(){ return _objectShader; }
 };
 
 

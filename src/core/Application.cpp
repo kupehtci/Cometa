@@ -3,7 +3,6 @@
 //
 
 #include "core/Application.h"
-#include "../input/Input.h"
 
 Application::Application(){
     this->_isRunning = true;
@@ -23,6 +22,9 @@ void Application::Init(){
     Renderer::Create();
     _renderer = Renderer::GetInstancePtr();
 
+    Input::Create(); 
+    _input = Input::GetInstancePtr(); 
+
     
 
     // Initialize managers
@@ -38,6 +40,8 @@ void Application::Running() {
         _time->Update(); 
 
         _renderer->Update();
+
+        _input->Update();
         
         // Check if window must close
         this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow() && !Input::IsKeyPressed(GLFW_KEY_ESCAPE);

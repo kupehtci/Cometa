@@ -7,6 +7,13 @@
 
 #include "../math/Quad.h"
 #include "../core/Singleton.h"
+#include "../render/Camera.h"
+
+#include "Shader.h"
+#include "Buffer.h"
+#include "VertexArray.h"
+#include "LayoutBuffer.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +23,7 @@ private:
     GLFWwindow* _window;
     Quad* _resolution;
     const char* _title;
+    Camera _camera; 
 
 public:
     Window(); 
@@ -32,20 +40,8 @@ public:
 
 
     void Init(); 
-
-    /**
-     * Update the window's state
-     */
     void Update();
-
-    /**
-     * Render the window's elements
-     */
     void Render();
-
-    /**
-     * Close the window and remove its instance
-     */
     void Close();
 
 
@@ -68,11 +64,9 @@ public:
     }
 
 public:
-    /**
-     * Handle the resize of the window
-     * This function is used through the HandleResizeCallback function
-     */
+
      void HandleResize(GLFWwindow* window, int width, int height);
+     void HandleMouse(GLFWwindow* window, double xpos, double ypos); 
 
 
 };

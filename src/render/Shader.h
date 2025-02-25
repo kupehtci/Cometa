@@ -26,6 +26,7 @@ private:
     std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)
     std::string _debugName;
 
+    std::unordered_map<std::string, unsigned int> _shadersCache;    // Cache of all the shaders
 
 public:
 

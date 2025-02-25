@@ -10,17 +10,13 @@
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
-#include "Shader.h"
-#include "Buffer.h"
-#include "VertexArray.h"
-#include "LayoutBuffer.h"
-#include "Camera.h"
-#include "Texture.h"
-
 #include <stdio.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include "Renderer.h"
+
 
 // Window constructor
 Window::Window()
@@ -28,6 +24,7 @@ Window::Window()
     this->_resolution = nullptr; 
     this->_window = nullptr;
     this->_title = "none";
+
 }
 
 /**
@@ -71,13 +68,19 @@ void Window::Create(int width, int height, const char *title) {
     glfwMakeContextCurrent(_window);
 }
 
+void Window::Init() {
+    _camera = Camera();
+}
+
+
 void Window::Update() {
     Render();
 }
 
+
 void Window::Render() {
 
-    glClearColor(0.2f, 0.1f, 0.3f, 1.0f); // Set background color
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 
 
@@ -85,10 +88,12 @@ void Window::Render() {
     // TESTING
     // ------------------------------------------------------------------------------------
 
-    Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
-
+    //Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
+    //mainShader.Bind(); 
+    
     // Set shader as current and delete the compiled shaders
-    mainShader.Bind();
+    Shader* mainShader = Renderer::GetInstancePtr()->GetObjectShader(); 
+    mainShader->Bind(); 
 
     float vertices[] = {
         // positions          // colors           // texture coords
@@ -102,35 +107,6 @@ void Window::Render() {
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
-
-//    // Testing texture creation
-//    int width, height, nrChannels;
-//    const char* texture0Path = "./resources/macos_example.jpg";
-//    unsigned char* data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
-//
-//    unsigned int textureUID;
-//
-//    if (data) {
-//        glGenTextures(1, &textureUID);
-//
-//        // // Set the texture wrapping and filtering mode
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-//        glBindTexture(GL_TEXTURE_2D, textureUID);
-//
-//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-//        glGenerateMipmap(GL_TEXTURE_2D);
-//
-//        // // Release image data
-//        stbi_image_free(data);
-//    }
-//    else {
-//        COMETA_WARNING("Unable to load texture at ");
-//        return;
-//    }
 
     Texture texture0 = Texture("./resources/macos_example.jpg");
     texture0.Bind(0);
@@ -152,12 +128,15 @@ void Window::Render() {
     layoutBuffer.Bind();
 
     // set the camera and its proyection, view and model matrices
-    Camera camera = Camera();
-    mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
-    mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+    //Camera camera = Camera();
+    // mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
+    // mainShader.SetMatrix4("uView", camera.GetViewMatrix());
+    _camera.OnUpdate(); 
+
+    mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection()); 
 
     glm::mat4 modelRotated = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mainShader.SetMatrix4("uModel", modelRotated); 
+    mainShader->SetMatrix4("uModel", modelRotated);
 
     vArray0.Bind(); 
 
@@ -166,14 +145,14 @@ void Window::Render() {
     texture0.Bind(0);
 
 
-    mainShader.SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
+    mainShader->SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
 
     vArray0.Bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-    mainShader.Unbind();
-    mainShader.Delete();
+    mainShader->Unbind();
+    //mainShader.Delete();
 
     // ------------------------------------------------------------------------------------
 
@@ -218,6 +197,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
     glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
 }
 
+
 /**
  * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
  * This function is called from OpenGL as a callback
@@ -228,6 +208,7 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
 void HandleResizeCallback(GLFWwindow* window, int width, int height){
     Window::GetInstancePtr()->HandleResize(window, width, height);
 }
+
 
 
 
