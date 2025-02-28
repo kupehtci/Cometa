@@ -55,24 +55,14 @@ public:
     // GETTERS AND SETTERS
 public:
 
-    inline GLFWwindow* GetGlfwWindow(){
-        return _window;
-    }
-
-    inline Quad GetCurrentResolution(){
-        return *_resolution;
-    }
-
-    inline const char* GetTitle(){
-        return _title;
-    }
+    inline GLFWwindow* GetGlfwWindow(){return _window;}
+    inline Quad GetCurrentResolution(){return *_resolution;}
+    inline const char* GetTitle(){return _title;}
 
 public:
 
      void HandleResize(GLFWwindow* window, int width, int height);
      void HandleMouse(GLFWwindow* window, double xpos, double ypos); 
-
-
 };
 
 
