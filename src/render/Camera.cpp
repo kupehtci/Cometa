@@ -87,7 +87,7 @@ void Camera::OnUpdate() {
 
 
     // Update direction
-    std::cout << " camera yaw: " << _yaw << " and pitch " << _pitch << std::endl; 
+    // std::cout << " camera yaw: " << _yaw << " and pitch " << _pitch << std::endl; 
 
     glm::vec2 mouseDelta = Input::GetMouseDelta();
 

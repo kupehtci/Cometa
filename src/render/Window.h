@@ -23,7 +23,11 @@ private:
     GLFWwindow* _window;
     Quad* _resolution;
     const char* _title;
-    Camera _camera; 
+    Camera _camera;
+
+    //TESTING
+public: 
+    Texture* texture0;
 
 public:
     Window(); 
@@ -51,24 +55,14 @@ public:
     // GETTERS AND SETTERS
 public:
 
-    inline GLFWwindow* GetGlfwWindow(){
-        return _window;
-    }
-
-    inline Quad GetCurrentResolution(){
-        return *_resolution;
-    }
-
-    inline const char* GetTitle(){
-        return _title;
-    }
+    inline GLFWwindow* GetGlfwWindow(){return _window;}
+    inline Quad GetCurrentResolution(){return *_resolution;}
+    inline const char* GetTitle(){return _title;}
 
 public:
 
      void HandleResize(GLFWwindow* window, int width, int height);
      void HandleMouse(GLFWwindow* window, double xpos, double ypos); 
-
-
 };
 
 
