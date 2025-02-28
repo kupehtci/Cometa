@@ -108,8 +108,10 @@ void Window::Render() {
         1, 2, 3    // second triangle
     };
 
-    Texture texture0 = Texture("./resources/macos_example.jpg");
-    texture0.Bind(0);
+
+    //this->texture0 = new Texture("./resources/macos_example.jpg"); // Now the creation is handled on window creation
+    std::cout << "Texture0: " << texture0->GetPath() << std::endl;
+    texture0->Bind(0);
 
     VertexArray vArray0 = VertexArray(); 
     vArray0.Bind(); 
@@ -129,20 +131,20 @@ void Window::Render() {
 
     // set the camera and its proyection, view and model matrices
     //Camera camera = Camera();
-    // mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix()); 
+    // mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix());
     // mainShader.SetMatrix4("uView", camera.GetViewMatrix());
     _camera.OnUpdate(); 
 
     mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection()); 
 
-    glm::mat4 modelRotated = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 modelRotated = glm::mat4(1.0f); // glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     mainShader->SetMatrix4("uModel", modelRotated);
 
     vArray0.Bind(); 
 
 //    glActiveTexture(GL_TEXTURE0);
 //    glBindTexture(GL_TEXTURE_2D, textureUID);
-    texture0.Bind(0);
+    texture0->Bind(0);
 
 
     mainShader->SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 

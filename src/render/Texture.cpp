@@ -7,7 +7,6 @@ Texture::Texture() {
 	_path = "";
 	_width = _height = 0;
 	_channels = 0;
-
 }
 
 Texture::Texture(std::string filePath){
@@ -56,7 +55,7 @@ Texture::Texture(std::string filePath){
 		COMETA_ERROR("Unable to load texture"); 
 		return; 
 	}
-
+	std::cout << "Texture loaded: " << _path << std::endl;
 }
 
 
@@ -66,7 +65,7 @@ void Texture::Bind(unsigned int index) {
     // because they are a sequence
 	glActiveTexture(GL_TEXTURE0 + index);
 	glBindTexture(GL_TEXTURE_2D, _uid);
-	// COMETA_MSG("Texture binded: ", _uid); 
+	COMETA_MSG("Texture binded: ", _uid); 
 }
 
 Texture::~Texture() {
