@@ -9,6 +9,7 @@ class Onion {
 private: 
     std::vector<Layer*> _layers;
 
+public: 
     void Init();
     void Update(); 
     void Close(); 

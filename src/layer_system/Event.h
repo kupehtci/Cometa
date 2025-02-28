@@ -11,6 +11,8 @@ private:
 public: 
     EventType GetEventType() { return _type; }
     bool HasBeenHandled() { return _handled; }
+
+    void SetHandled() { _handled = true; }
 }; 
 
 #endif
