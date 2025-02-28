@@ -11,9 +11,11 @@ private:
 public:
     // Layer();
     ~Layer();
+    
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void Close() = 0;
+
     virtual void HandleEvent(Event& event) = 0;
 }; 
 
