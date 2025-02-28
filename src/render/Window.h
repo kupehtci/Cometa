@@ -23,7 +23,11 @@ private:
     GLFWwindow* _window;
     Quad* _resolution;
     const char* _title;
-    Camera _camera; 
+    Camera _camera;
+
+    //TESTING
+public: 
+    Texture* texture0;
 
 public:
     Window(); 
