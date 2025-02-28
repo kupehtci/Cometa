@@ -10,11 +10,13 @@
 #include "../debug/Assertion.h"
 
 #include "layer_system/Onion.h"
+#include "layer_system/Layer.h"
 
 class ExampleLayer : public Layer{
 
 public: 
-    ExampleLayer() = default;
+    ExampleLayer() : Layer("Example Layer") {};
+    ExampleLayer(std::string name) : Layer(name) {};
 
     void Init() override {
         std::cout << "Example Layer Init" << std::endl;
@@ -26,7 +28,7 @@ public:
         std::cout << "Example Layer Close" << std::endl;
     }
 
-    void HandleEvent(Event& event){
+    void HandleEvent(Event& event) override{
         std::cout << "Event handled: " << event.GetEventType() << std::endl;
         event.SetHandled();
     }
@@ -36,8 +38,10 @@ public:
 int main() {
 
     Onion lOnion = Onion();
-    lOnion.PushLayer(new ExampleLayer());
+    Layer* layer1 = new ExampleLayer(); 
     Layer* layer2 = new ExampleLayer(); 
+    
+    lOnion.PushLayer(layer1);
     lOnion.PushLayer(layer2);
 
     lOnion.Init();

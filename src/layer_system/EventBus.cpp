@@ -1,5 +1,9 @@
 #include "EventBus.h"
 
+EventBus::EventBus(){
+    
+}
+
 void EventBus::Subscribe(EventType type, Layer* layer) {
     _subscribers[type].push_back(layer);
 }

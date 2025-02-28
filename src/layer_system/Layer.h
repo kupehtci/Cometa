@@ -1,17 +1,20 @@
 #ifndef COMETA_LAYER_H
 #define COMETA_LAYER_H
 
+#include <string>
+
 #include "Event.h"
 
 class Layer{
+    // friend class Onion; 
 
-private: 
-
+protected: 
+    std::string _name; 
 
 public:
-    // Layer();
+    Layer(std::string name) { _name = name;};
     ~Layer();
-    
+
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void Close() = 0;
