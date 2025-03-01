@@ -37,25 +37,25 @@ public:
 
 int main() {
 
-    Onion lOnion = Onion();
-    Layer* layer1 = new ExampleLayer(); 
-    Layer* layer2 = new ExampleLayer(); 
-    
-    lOnion.PushLayer(layer1);
-    lOnion.PushLayer(layer2);
+//    Onion lOnion = Onion();
+//    Layer* layer1 = new ExampleLayer();
+//    Layer* layer2 = new ExampleLayer();
+//
+//    lOnion.PushLayer(layer1);
+//    lOnion.PushLayer(layer2);
+//
+//    lOnion.Init();
+//
+//    lOnion.PopLayer(layer2);
+//
+//    lOnion.Update();
+//
+//    lOnion.Close();
 
-    lOnion.Init();
-    
-    lOnion.PopLayer(layer2); 
-
-    lOnion.Update();
-    
-    lOnion.Close();
-
-    // Application* app = Application::GetInstancePtr();
-    // app->Init();
-    // app->Running();
-    // app->Close();
+     Application* app = Application::GetInstancePtr();
+     app->Init();
+     app->Running();
+     app->Close();
 
     return 0;
 }

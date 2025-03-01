@@ -55,7 +55,8 @@ Texture::Texture(std::string filePath){
 		COMETA_ERROR("Unable to load texture"); 
 		return; 
 	}
-	std::cout << "Texture loaded: " << _path << std::endl;
+
+	COMETA_MSG("Texture loaded: ", _path);
 }
 
 
