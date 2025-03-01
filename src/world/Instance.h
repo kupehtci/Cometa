@@ -12,6 +12,7 @@ public:
     Instance();
 
 
+
     // --------- GETTERS AND SETTERS ---------
     uint32_t GetUID() { return _uid;}
 };
