@@ -1,14 +1,22 @@
-//
-// Created by Daniel Laplana Gimeno on 1/3/25.
-//
+#ifndef COMETA_INSTANCE_H
+#define COMETA_INSTANCE_H
 
-#ifndef AURAGL_INSTANCE_H
-#define AURAGL_INSTANCE_H
-
+#include <stdint.h>
 
 class Instance {
 
+private:
+    uint32_t _uid;
+    static uint32_t AvailableUid;
+public:
+    Instance();
+
+
+    // --------- GETTERS AND SETTERS ---------
+    uint32_t GetUID() { return _uid;}
 };
 
+uint32_t Instance::AvailableUid = 1;
 
-#endif //AURAGL_INSTANCE_H
+
+#endif //COMETA_INSTANCE_H
