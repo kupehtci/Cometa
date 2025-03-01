@@ -19,14 +19,13 @@ enum InputType{
 }; 
 
 class Input : public SingletonManager<Input>{
-private: 
-    // std::unordered_map<int, int> _keys; 
-    // GLFWwindow* _window;                   // Window is created by Rendered and passed to input initialization
+private:
+    // std::unordered_map<int, int> _keys;
     float _xpos, _ypos = 0.0f;
     float _xDeltaPos, _yDeltaPos = 0.0f;
 
 public: 
-   Input() = default; 
+   Input();
 
    void Init() override; 
    void Update() override;

@@ -1,8 +1,18 @@
 #include "Input.h"
 
 
-void Input::Init() {
+Input::Input(){
+    _xpos = _ypos = 0.0f;
+    _xDeltaPos = _yDeltaPos = 0.0f;
+}
 
+void Input::Init() {
+    // set initial positions stored before calculate delta
+    GLFWwindow* currentWindow = Renderer::GetInstancePtr()->GetWindow()->GetGlfwWindow();
+    double xpos, ypos;
+    glfwGetCursorPos(currentWindow, &xpos, &ypos);
+    _xpos = (float)xpos;
+    _ypos = (float)ypos;
 }
 
 void Input::Update() {
