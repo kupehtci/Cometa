@@ -56,17 +56,16 @@ Texture::Texture(std::string filePath){
 		return; 
 	}
 
-	COMETA_MSG("Texture loaded: ", _path);
+	// COMETA_MSG("Texture loaded: ", _path);
 }
 
 
 void Texture::Bind(unsigned int index) {
 
-    // The GL_TEXTUREi with i being an slot of the textures available, can be obtained using the 0 slot and plus the index
-    // because they are a sequence
+    // The GL_TEXTUREi with i being an slot of the textures available,
+    // can be obtained using the 0 slot and plus the index because they are a sequence
 	glActiveTexture(GL_TEXTURE0 + index);
 	glBindTexture(GL_TEXTURE_2D, _uid);
-	COMETA_MSG("Texture binded: ", _uid); 
 }
 
 Texture::~Texture() {

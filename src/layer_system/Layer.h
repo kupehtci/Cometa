@@ -12,8 +12,8 @@ protected:
     std::string _name; 
 
 public:
-    Layer(std::string name) { _name = name;};
-    ~Layer();
+
+    ~Layer() {};
 
     virtual void Init() = 0;
     virtual void Update() = 0;

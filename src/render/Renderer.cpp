@@ -92,9 +92,6 @@ void Renderer::Init(){
 
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
-    // Testing
-    // TODO: Remove this once testing textures has been finished
-    _window->texture0 = new Texture("./resources/macos_example.jpg");
 }
 
 void Renderer::Update(){
