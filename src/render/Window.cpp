@@ -66,7 +66,6 @@ void Window::Create(int width, int height, const char *title) {
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
-
     glfwMakeContextCurrent(_window);
 }
 

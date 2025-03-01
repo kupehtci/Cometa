@@ -9,7 +9,7 @@ Input::Input(){
 void Input::Init() {
     // set initial positions stored before calculate delta
     GLFWwindow* currentWindow = Renderer::GetInstancePtr()->GetWindow()->GetGlfwWindow();
-    double xpos, ypos;
+    double xpos, ypos = 0.0f;
     glfwGetCursorPos(currentWindow, &xpos, &ypos);
     _xpos = (float)xpos;
     _ypos = (float)ypos;
@@ -17,7 +17,7 @@ void Input::Init() {
 
 void Input::Update() {
     GLFWwindow* currentWindow = Renderer::GetInstancePtr()->GetWindow()->GetGlfwWindow();
-    double xpos, ypos;
+    double xpos, ypos = 0.0f;
     glfwGetCursorPos(currentWindow, &xpos, &ypos);
 
 
