@@ -15,10 +15,10 @@
 
 Camera::Camera() {
 
-    _position = glm::vec3(0.0f, 0.0f, 3.0f);
+    _position = glm::vec3(0.0f, 0.0f, 0.0f);
     _up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    _direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    _direction = glm::vec3(0.0f, 0.0f, 1.0f);
     _right = glm::cross(_direction, glm::vec3(0.0f, 1.0f, 0.0f));
 
 
@@ -26,7 +26,7 @@ Camera::Camera() {
     _sensitivity = 0.1f; 
     
     _pitch = 0.0f; 
-    _yaw = -90.0f; 
+    _yaw = -90.0f;
     _fov = 45.0f;
 
     _near = 0.05f;
@@ -41,15 +41,8 @@ Camera::Camera() {
 
 Camera::Camera(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 
-    _position = glm::vec3(0.0f, 0.0f, 3.0f);
-    _up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    _direction = glm::vec3(0.0f, 0.0f, -1.0f);
-    _right = glm::cross(_direction, glm::vec3(0.0f, 1.0f, 0.0f));
-
-
-    _movementSpeed = 7.0f;
-    _sensitivity = 0.1f;
+    _movementSpeed = 13.0f;
+    _sensitivity = 0.2f;
 
     _pitch = 0.0f;
     _yaw = -90.0f;
@@ -57,6 +50,21 @@ Camera::Camera(glm::mat4 projectionMatrix, glm::mat4 viewMatrix) {
 
     _near = 0.05f;
     _far = 1000.0f;
+
+
+    _position = glm::vec3(0.0f, 0.0f, 3.0f);
+    _up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    _direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+    _direction.y = sin(glm::radians(_pitch));
+    _direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+
+    _direction = glm::normalize(_direction);
+
+    // _direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    _right = glm::cross(_direction, _up);
+
+
 
 
     _projectionMatrix = projectionMatrix;
@@ -87,7 +95,7 @@ void Camera::OnUpdate() {
 
 
     // Update direction
-    // std::cout << " camera yaw: " << _yaw << " and pitch " << _pitch << std::endl; 
+    std::cout << " camera yaw: " << _yaw << " and pitch " << _pitch << std::endl;
 
     glm::vec2 mouseDelta = Input::GetMouseDelta();
 

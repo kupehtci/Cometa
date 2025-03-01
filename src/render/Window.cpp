@@ -24,7 +24,6 @@ Window::Window()
     this->_resolution = nullptr; 
     this->_window = nullptr;
     this->_title = "none";
-
 }
 
 /**
@@ -61,6 +60,9 @@ void Window::Create(int width, int height, const char *title) {
         return;
     }
 
+    // Lock the mouse within the window
+    // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
@@ -69,7 +71,7 @@ void Window::Create(int width, int height, const char *title) {
 }
 
 void Window::Init() {
-    _camera = Camera();
+    //_camera = Camera();
 }
 
 
@@ -80,10 +82,10 @@ void Window::Update() {
 
 void Window::Render() {
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
+//    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 
-
+#ifdef WINDOW_RENDERING
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
@@ -157,9 +159,12 @@ void Window::Render() {
     //mainShader.Delete();
 
     // ------------------------------------------------------------------------------------
-
+#endif
     glfwSwapBuffers(_window);
     glfwPollEvents();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 }
 
 

@@ -1,6 +1,5 @@
-//
-// Created by Daniel Laplana Gimeno on 18/11/24.
-//
+#ifndef AURAGL_APPLICATION_H
+#define AURAGL_APPLICATION_H
 
 //#include "Singleton.h"
 #include "render/Renderer.h"
@@ -10,9 +9,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#ifndef AURAGL_APPLICATION_H
-#define AURAGL_APPLICATION_H
 
+#include "layer_system/Onion.h"
 
 
 class Application : public Singleton<Application>{
@@ -22,6 +20,7 @@ private :
     Time* _time; 
     Input* _input; 
 
+    Onion _onion;
 
 public:
     Application();
