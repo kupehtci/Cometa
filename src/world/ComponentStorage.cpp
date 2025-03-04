@@ -1,5 +1,6 @@
 #include "ComponentStorage.h"
 
-ComponentStorage::ComponentStorage() {
+template<typename T>
+ComponentStorage<T>::ComponentStorage() {
 
 }

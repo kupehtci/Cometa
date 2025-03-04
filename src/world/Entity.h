@@ -11,13 +11,8 @@ private:
 public:
     Entity();
 
-
-
     // --------- GETTERS AND SETTERS ---------
     uint32_t GetUID() { return _uid;}
 };
-
-uint32_t Entity::AvailableUid = 1;
-
 
 #endif //COMETA_ENTITY_H
