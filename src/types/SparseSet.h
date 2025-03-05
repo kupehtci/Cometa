@@ -6,7 +6,7 @@
 template<typename T>
 class SparseSet {
 
-private: 
+protected: 
 	std::vector<T> _dense;
 	std::vector<int> _sparse; 
 
