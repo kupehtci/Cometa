@@ -18,6 +18,7 @@ private:
 	
 public: 
 	ComponentStorage();
+	void Hello(); 
 };
 
 #endif

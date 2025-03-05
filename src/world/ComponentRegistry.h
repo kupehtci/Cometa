@@ -21,6 +21,11 @@ public:
 		GetStorage<T>().Pop(ent.GetUID()); 
 	}
 
+	template<typename T>
+	T& GetComponent(Entity ent) const {
+		return GetStorage<T>().Get(ent.GetUID()); 
+	}
+
 	/**
 	* Retrieve the storage for an specific type of component
 	*/
