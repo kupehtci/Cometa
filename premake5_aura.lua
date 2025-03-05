@@ -1,7 +1,7 @@
 -- Include file that defines "clean" action for removing build files
 include "clean.lua"
 
-workspace "Cometa"
+workspace "Aura"
 	configurations { "Debug", "Release" }
 
     -- Compile for x64 format. For 32 bits set to x86
@@ -20,7 +20,7 @@ IncludeDir["STB_IMAGE"] = "vendor/stb_image"
 
 include "vendor/glad"
 
-project "CometaGL"
+project "AuraGL"
 	kind "ConsoleApp"  
 	language "C++"
     cppdialect "C++17"
