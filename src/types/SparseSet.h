@@ -8,7 +8,7 @@ class SparseSet {
 
 private: 
 	std::vector<T> _dense;
-	std::vector<size_t> _sparse; 
+	std::vector<int> _sparse; 
 
 	size_t _size = 0;				// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
 	size_t _capacity = 100000;		// Maximum capacity of the SparseSet. Used for initialization 
@@ -22,7 +22,10 @@ public:
 		_denseCapacity = 10; 
 
 		_dense = std::vector<T>(_denseCapacity);
-		_sparse = std::vector<size_t>(_capacity, -1);		// initialize with all values to -1. Used for checking if empty
+		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking if empty
+		for (size_t i = 0; i < _capacity; i++) {
+			_sparse[i] = -1; 
+		}
 	}
 
 	void Add(size_t index, const T value) {
@@ -84,6 +87,15 @@ public:
 	void Print() const {
 		for (size_t i = 0; i < _size; i++) {
 			std::cout << "SparseSet [" << i << "] : " << _dense[i] << " dense capacity:  " << std::endl;
+		}
+	}
+
+	void PrintIndex() const {
+		std::cout << "SparseSet print index: " << std::endl;
+		for (size_t i = 0; i < _sparse.size(); i++) {
+			if (_sparse[i] >= 0) {
+				std::cout << "[" << i << "] index value: " << _sparse[i] << " has value associated in dense: " << _dense[_sparse[i]] << std::endl; 
+			}
 		}
 	}
 
