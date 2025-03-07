@@ -30,6 +30,14 @@ public:
 
 	void Add(size_t index, const T value) {
 
+		if(!Contains(index)){
+			_size++;
+		}
+		else{
+			std::cout << "Already contains element at index: " << index << " with value: " << value << std::endl; 
+			std::cout << "Overwriten element" << std::endl; 
+		}
+
 		// Increase dense capacity
 		if (_size >= _denseCapacity) {
 			_denseCapacity = _denseCapacity * 2; 
@@ -40,7 +48,7 @@ public:
 		_sparse[index] = _size;
 		_dense[_size] = value;
 
-		_size++;
+		
 	}
 
 	void Pop(size_t index) {
