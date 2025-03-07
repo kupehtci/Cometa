@@ -1,15 +1,17 @@
 #ifndef COMETA_COMPONENT_REGISTRY_H
 #define COMETA_COMPONENT_REGISTRY_H
 
-#include "Instance.h"
+#include "Entity.h"
 #include "ComponentStorage.h"
+
+
 
 class ComponentRegistry {
 
 private: 
 
 public: 
-	ComponentRegistry(); 
+	ComponentRegistry(){}
 
 	template<typename T>
 	void AddComponent(Entity ent, const T& component) {
@@ -19,6 +21,11 @@ public:
 	template<typename T>
 	void RemoveComponent(Entity ent) {
 		GetStorage<T>().Pop(ent.GetUID()); 
+	}
+
+	template<typename T>
+	T& GetComponent(Entity ent) const {
+		return GetStorage<T>().Get(ent.GetUID()); 
 	}
 
 	/**

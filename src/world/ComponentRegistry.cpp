@@ -1,5 +1,5 @@
-#include "ComponentRegistry.h"
+// #include "ComponentRegistry.h"
 
-ComponentRegistry::ComponentRegistry() {
+// ComponentRegistry::ComponentRegistry() {
 
-}
+// }
