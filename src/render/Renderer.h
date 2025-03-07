@@ -20,20 +20,24 @@ const unsigned int COMETA_DEFAULT_HEIGHT = 900;
 
 
 class Renderer : public SingletonManager<Renderer>//public Singleton<Renderer>
-        {
+{
     friend class Application;
 
 private:
     Window* _window;
+    Shader* _objectShader;      // Main object shader using camera and fragment shader
 
 public:
     Renderer();
     ~Renderer();
 
 public:
-    void Init();
-    void Update();
-    void Close();
+    void Init() override;
+    void Update() override;
+    void Close() override;
+
+    inline Window* GetWindow(){ return _window; }
+    inline Shader* GetObjectShader(){ return _objectShader; }
 };
 
 

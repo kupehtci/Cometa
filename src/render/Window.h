@@ -7,6 +7,13 @@
 
 #include "../math/Quad.h"
 #include "../core/Singleton.h"
+#include "../render/Camera.h"
+
+#include "Shader.h"
+#include "Buffer.h"
+#include "VertexArray.h"
+#include "LayoutBuffer.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +23,11 @@ private:
     GLFWwindow* _window;
     Quad* _resolution;
     const char* _title;
+    Camera _camera;
+
+    //TESTING
+public: 
+    Texture* texture0;
 
 public:
     Window(); 
@@ -29,50 +41,28 @@ public:
      */
     void Create(int width, int height, const char* title);
 
-    /**
-     * Update the window's state
-     */
+
+
+    void Init(); 
     void Update();
-
-    /**
-     * Render the window's elements
-     */
     void Render();
-
-    /**
-     * Close the window and remove its instance
-     */
     void Close();
+
 
     // Check if window should close
     bool ShouldHandleCloseWindow();
 
     // GETTERS AND SETTERS
 public:
-    /**
-     * Get the current resolution of the window
-     * @return
-     */
-    inline Quad GetCurrentResolution(){
-        return *_resolution;
-    }
 
-    /**
-     * Get the current title of the window
-     * @return
-     */
-    inline const char* GetTitle(){
-        return _title;
-    }
+    inline GLFWwindow* GetGlfwWindow(){return _window;}
+    inline Quad GetCurrentResolution(){return *_resolution;}
+    inline const char* GetTitle(){return _title;}
 
 public:
-    /**
-     * Handle the resize of the window
-     * This function is used through the HandleResizeCallback function
-     */
+
      void HandleResize(GLFWwindow* window, int width, int height);
-
-
+     void HandleMouse(GLFWwindow* window, double xpos, double ypos); 
 };
 
 
