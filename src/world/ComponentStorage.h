@@ -17,8 +17,9 @@ private:
 	//std::vector<uint32_t> _uid; 
 	
 public: 
-	ComponentStorage();
-	void Hello(); 
+	ComponentStorage(){
+		
+	}
 };
 
 #endif

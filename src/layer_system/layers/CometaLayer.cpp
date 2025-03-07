@@ -21,11 +21,12 @@ void CometaLayer::Init() {
 }
 
 void CometaLayer::Update(){
-    std::cout << "Cometa layer update" << std::endl;
+    // create a shader and example drawing elements
+    // ALso update the uViewProjection used for generating the neccesary matrices for the camera in the shader
+
 
     Shader* mainShader = Renderer::GetInstancePtr()->GetObjectShader();
     mainShader->Bind();
-
 
     float vertices[] = {
             // positions          // colors           // texture coords
@@ -37,7 +38,7 @@ void CometaLayer::Update(){
 
     unsigned int indices[] = {
             0, 1, 3,   // first triangle
-            1, 2, 3    // second triangle
+            1, 2, 3,    // second triangle
     };
 
 
@@ -69,14 +70,12 @@ void CometaLayer::Update(){
 
     vArray0.Bind();
 
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, textureUID);
     _texture0->Bind(0);
 
     mainShader->SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0);
 
     vArray0.Bind();
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
 
     mainShader->Unbind();
