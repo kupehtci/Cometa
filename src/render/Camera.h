@@ -51,6 +51,8 @@ public:
 
 
     // --------- GETTERS ---------
+public: 
+    glm::vec3 GetPosition() { return _position;  }
     glm::mat4 GetProyectionMatrix() { return _projectionMatrix; }
     glm::mat4 GetViewMatrix() { return _viewMatrix;  }
     glm::mat4 GetViewProyection() { return _projectionMatrix * _viewMatrix; }

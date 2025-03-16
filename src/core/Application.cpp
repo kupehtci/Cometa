@@ -5,6 +5,7 @@
 #include "core/Application.h"
 
 #include "layer_system/layers/CometaLayer.h"
+#include "layer_system/layers/MaterialLayer.h"
 
 Application::Application(){
     this->_isRunning = true;
@@ -29,8 +30,11 @@ void Application::Init(){
     _input = Input::GetInstancePtr();
 
     // Push the layers
-    CometaLayer* cometaLayer = new CometaLayer();
-    _onion.PushLayer(cometaLayer);
+    //CometaLayer* cometaLayer = new CometaLayer();
+    //_onion.PushLayer(cometaLayer);
+    MaterialLayer* matLayer = new MaterialLayer(); 
+    _onion.PushLayer(matLayer); 
+    
 
 
     // Initialize managers
