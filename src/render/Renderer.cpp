@@ -15,6 +15,9 @@
 Renderer::Renderer() {
     this->_window = nullptr;
     this->_objectShader = nullptr; 
+
+    _depthCulling = true; 
+    _faceCulling = true; 
 }
 
 /**
@@ -81,14 +84,11 @@ void Renderer::Init(){
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     COMETA_MSG(("Maximum number of vertex attributes supported by hardware: ", std::to_string(nrAttributes)).c_str());
 
-    // Enable depth testing
-    //glEnable(GL_DEPTH_TEST);
+    if (_depthCulling) {
+        glEnable(GL_DEPTH_TEST); 
+    }
 
-    // Enable back face culling
-    //glEnable(GL_CULL_FACE);
-
-    // Enable blending
-    //glEnable(GL_BLEND);
+    if(_faceCulling)
 
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
