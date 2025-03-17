@@ -20,7 +20,7 @@ const unsigned int COMETA_DEFAULT_HEIGHT = 900;
 
 
 enum FACE_CULLING_MODE {
-    NONE = 0, 
+    FACE_CULLING_NONE = 0, 
     FACE_CULLING_CLOCKWISE = 1, 
     FACE_CULLING_COUNTER_CLOCKWISE = 2
 };
@@ -50,10 +50,7 @@ public:
 
     inline void SetDepthCulling(bool value) { _depthCulling = value;  }
     inline void SetFaceCulling(FACE_CULLING_MODE value) { 
-        _faceCullingMode = value; 
-        switch (value) {
-            // TODO: Complete
-        }
+        // TODO: Remain to implement
     }
 };
 

@@ -17,7 +17,7 @@ Renderer::Renderer() {
     this->_objectShader = nullptr; 
 
     _depthCulling = true; 
-    _faceCulling = true; 
+    _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_NONE; 
 }
 
 /**
@@ -88,7 +88,6 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-    if(_faceCulling)
 
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
