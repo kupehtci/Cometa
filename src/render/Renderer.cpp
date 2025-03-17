@@ -75,7 +75,13 @@ void Renderer::Init(){
     }
 
     //Set the initial viewport for NDC transformations
-    glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
+    //glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
+
+    int frameBufferWidth, frameBufferHeight = 0; 
+    glfwGetFramebufferSize(_window->GetGlfwWindow(), &frameBufferWidth, &frameBufferHeight);
+
+    glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+
 
     std::cout << "Renderer initialized: \n OpenGL version: " <<  glGetString(GL_VERSION);
 
@@ -88,9 +94,7 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
-
 }
 
 void Renderer::Update(){
