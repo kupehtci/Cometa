@@ -46,7 +46,8 @@ void MaterialLayer::Update(){
     mainShader->SetFloat3("material.specular", mat.GetSpecular());
     mainShader->SetFloat("material.shininess", mat.GetShininess()); 
 
-    glm::vec3 lightPosition = glm::vec3(0.0f, 1.0f, -2.0f); 
+    glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f); 
+
     mainShader->SetFloat3("light.position", lightPosition);
     mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f)); 

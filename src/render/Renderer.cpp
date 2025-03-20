@@ -20,24 +20,18 @@ Renderer::Renderer() {
     _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_NONE; 
 }
 
-/**
- * Renderer destructor
- */
 Renderer::~Renderer() {
     
 }
 
-/**
- * Initialize the Renderer
- */
 void Renderer::Init(){
 
-    // Initialize GLFW
     if(!glfwInit()){
         Assertion::Error("Cannot initialize GLFW, review GLFW installation");
         return;
     }
 
+    // Intialize Hints depending on the platform
 #ifdef PLATFORM_MACOS
     COMETA_ASSERT("Initializing OpenGL Forward compatibility for MacOS");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -82,7 +76,6 @@ void Renderer::Init(){
 
     glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 
-
     std::cout << "Renderer initialized: \n OpenGL version: " <<  glGetString(GL_VERSION);
 
     // Validate maximum number of vertex attributes to use in the shaders
@@ -102,10 +95,6 @@ void Renderer::Update(){
     _window->Update();
 }
 
-/**
- * Close all the rendering artifacts created
- * And terminate the Graphics library
- */
 void Renderer::Close(){
     _window->Close();
     glfwTerminate();
