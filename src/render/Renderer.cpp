@@ -87,7 +87,7 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-    _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
+    _objectShader = new Shader("Main Shader", "src/render/shaders/3D_shader.vert", "src/render/shaders/3D_shader.frag");
 }
 
 void Renderer::Update(){
