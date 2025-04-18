@@ -30,8 +30,11 @@ void Application::Init(){
     _input = Input::GetInstancePtr();
 
     // Push the layers
+    // // Push cometa layer previous implementation
     //CometaLayer* cometaLayer = new CometaLayer();
     //_onion.PushLayer(cometaLayer);
+
+    // // Push material layer used for materials
     MaterialLayer* matLayer = new MaterialLayer(); 
     _onion.PushLayer(matLayer); 
     

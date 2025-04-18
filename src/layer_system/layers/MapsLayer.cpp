@@ -1,37 +1,33 @@
 //
-// Created by Daniel Laplana Gimeno on 1/3/25.
+// Created by Daniel Laplana Gimeno on 18/4/25.
 //
 
-#include "MaterialLayer.h"
+#include "MapsLayer.h"
+
 #include "render/Renderer.h"
-
-//
-// Created by Daniel Laplana Gimeno on 1/3/25.
-//
-
-#include "CometaLayer.h"
-#include "render/Renderer.h"
-
+#include "render/Shader.h"
 #include "render/Material.h"
-
-MaterialLayer::MaterialLayer() {
-
-}
-
-MaterialLayer::~MaterialLayer(){
+MapsLayer::MapsLayer()
+{
 
 }
 
-void MaterialLayer::Init() {
-    std::cout << "Cometa layer init" << std::endl;
+MapsLayer::~MapsLayer()
+{
 
-    _texture0 = new Texture("./resources/macos_example.jpg");
+}
+
+void MapsLayer::Init()
+{
+    std::cout << "Maps layer init" << std::endl;
+
+    _texture = new Texture("./resources/macos_example.jpg");
+    _diffuseMap = new Texture("./resources/macos_example.jpg");
     _camera = Camera();
 }
 
-void MaterialLayer::Update(){
-    // create a shader and example drawing elements
-    // ALso update the uViewProjection used for generating the neccesary matrices for the camera in the shader
+void MapsLayer::Update()
+{
 
     Shader* mainShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords_normals.vert", "src/render/shaders/material_shader.frag");
     mainShader->Bind();
@@ -53,55 +49,43 @@ void MaterialLayer::Update(){
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
     mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    //float vertices[] = {
-    //        // positions        //normals           // colors           // texture coords
-    //        0.5f,  0.5f, 0.0f,  0.0f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-    //        0.5f, -0.5f, 0.0f,  0.0f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    //        -0.5f, -0.5f, 0.0f, 0.0f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    //        -0.5f,  0.5f, 0.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-    //};
-
-    //unsigned int indices[] = {
-    //        0, 1, 3,   // first triangle
-    //        1, 2, 3,    // second triangle
-    //};
     float vertices[] = {
         // Front face
         // positions          // normals           // colors            // texture coords
         -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
         -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
 
         // Back face
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
 
-         // Top face
-         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-          0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-          0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+        // Top face
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
 
-          // Bottom face
-          -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-           0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-           0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-          -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+        // Bottom face
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
 
-          // Right face
-           0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-           0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
-           0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-           0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        // Right face
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
 
-           // Left face
-           -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-           -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-           -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-           -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f
+        // Left face
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f
     };
 
     unsigned int indices[] = {
@@ -114,7 +98,7 @@ void MaterialLayer::Update(){
     };
 
 
-    _texture0->Bind(0);
+    _texture->Bind(0);
 
     VertexArray vArray0 = VertexArray();
     vArray0.Bind();
@@ -144,7 +128,7 @@ void MaterialLayer::Update(){
 
     vArray0.Bind();
 
-    _texture0->Bind(0);
+    _texture->Bind(0);
     mainShader->Bind();
     mainShader->SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0);
 
@@ -175,10 +159,12 @@ void MaterialLayer::Update(){
     // --------- END OF DRAWING LIGHT POINT ---------
 }
 
-void MaterialLayer::Close() {
-    std::cout << "Cometa layer close" << std::endl;
+
+void MapsLayer::Close()
+{
+
 }
 
-void MaterialLayer::HandleEvent(Event& event){
+void MapsLayer::HandleEvent(Event& event){
 
 }

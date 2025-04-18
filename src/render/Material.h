@@ -3,17 +3,18 @@
 
 #include <glm.hpp>
 
-class Material{
-private: 
+class SimpleMaterial{
+private:
     glm::vec3 _color = glm::vec3(1.0f, 1.0f, 1.0f);
-    glm::vec3 _ambient = glm::vec3(1.0f, 0.5f, 0.32f); 
+    glm::vec3 _ambient = glm::vec3(1.0f, 0.5f, 0.32f);
     glm::vec3 _diffuse = glm::vec3(1.0f, 0.5f, 0.32f);
     glm::vec3 _specular = glm::vec3(0.5f, 0.5f, 0.5f);
     float _shininess = 256.0f;
 
+
 public:
-	Material() = default; 
-    Material(glm::vec3 color, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess) :
+	SimpleMaterial() = default;
+    SimpleMaterial(glm::vec3 color, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess) :
         _color(color), _ambient(ambient), _diffuse(diffuse), _specular(specular), _shininess(shininess) {}
 
 
