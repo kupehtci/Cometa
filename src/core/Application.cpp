@@ -62,9 +62,12 @@ void Application::Running() {
         _input->Update();
 
         _onion.Update();
-        
+
         // Check if window must close
-        this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow() && !Input::IsKeyPressed(GLFW_KEY_ESCAPE);
+        if (_isRunning)
+        {
+            _isRunning = !_renderer->GetWindow()->ShouldHandleCloseWindow();
+        }
     }
 }
 

@@ -4,24 +4,34 @@
 #define GL_SILENCE_DEPRECATION
 
 #include "Window.h"
-#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
-#include <stdio.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <core/Application.h>
+#include <input/Input.h>
 
-#include "Renderer.h"
+#include "render/Renderer.h"
+#include "core/Application.h"
+
+
+// ------------ FUNCTION DECLARATION ------------
+/**
+ * Callback to handle the window resize through OpenGL function
+ * @param window Window pointer passed through the OpenGL callback
+ * @param width New width passed through the OpenGL callback
+ * @param height New height passed through the OpenGL callback
+ */
+void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
 // Window constructor
 Window::Window()
 {
-    this->_resolution = nullptr; 
+    this->_resolution = nullptr;
     this->_window = nullptr;
     this->_title = "none";
 }
@@ -32,19 +42,12 @@ Window::Window()
 Window::~Window(){
     if(this->_window !=  nullptr){
         glfwDestroyWindow(this->_window);
-        delete _window; 
+        delete _window;
     }
 
     delete _resolution;
 }
 
-/**
- * Callback to handle the window resize through OpenGL function
- * @param window Window pointer passed through the OpenGL callback
- * @param width New width passed through the OpenGL callback
- * @param height New height passed through the OpenGL callback
- */
-void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
 
@@ -63,9 +66,6 @@ void Window::Create(int width, int height, const char *title) {
         return;
     }
 
-    // Lock the mouse within the window
-    // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
@@ -73,7 +73,7 @@ void Window::Create(int width, int height, const char *title) {
 }
 
 void Window::Init() {
-    //_camera = Camera();
+
 }
 
 
@@ -98,7 +98,7 @@ void Window::Render() {
 
 
 bool Window::ShouldHandleCloseWindow(){
-    return !glfwWindowShouldClose(this->_window);
+    return glfwWindowShouldClose(this->_window);
 }
 
 /**
@@ -145,9 +145,8 @@ void HandleResizeCallback(GLFWwindow* window, int width, int height){
 }
 
 
-
 // Previus used function to show colors
-void TestingFunctionShaderColors() {
+void TestingFunctionShaderColors(GLFWwindow* window, int key, int scancode, int action, int mods) {
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
