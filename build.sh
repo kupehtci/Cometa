@@ -62,6 +62,7 @@ compile_for_macos_gmake () {
         echo "Premake5 is installed"
     else
         echo "Premake5 is not installed and cannot be compiled without it"
+        exit 1;
     fi
 
     echo "Transcription for MacOS using premake5"
