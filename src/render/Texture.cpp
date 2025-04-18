@@ -3,7 +3,6 @@
 
 Texture::Texture() {
 	_uid = 0;
-	_uid = 0;
 	_path = "";
 	_width = _height = 0;
 	_channels = 0;
@@ -64,6 +63,10 @@ void Texture::Bind(unsigned int index) {
 
     // The GL_TEXTUREi with i being an slot of the textures available,
     // can be obtained using the 0 slot and plus the index because they are a sequence
+	if (index >= 32){
+		COMETA_ERROR("Texture binding index out of scope, limited from 0 to 31");
+		return;
+	}
 	glActiveTexture(GL_TEXTURE0 + index);
 	glBindTexture(GL_TEXTURE_2D, _uid);
 }

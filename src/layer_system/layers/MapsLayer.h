@@ -6,6 +6,8 @@
 #define MAPSLAYER_H
 
 #include <iostream>
+#include <render/Material.h>
+
 #include "layer_system/Layer.h"
 #include "render/Texture.h"
 #include "render/Camera.h"
@@ -14,10 +16,9 @@ class MapsLayer : public Layer{
 
 private:
     Texture* _texture = nullptr;
-    Texture* _normalMap = nullptr;
-    Texture* _diffuseMap = nullptr;
 
     Camera _camera;
+    Material _mat;
 
 public:
     MapsLayer();

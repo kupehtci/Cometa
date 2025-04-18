@@ -4,6 +4,8 @@
 
 #include "core/Application.h"
 
+#include "layer_system/layers/MapsLayer.h"
+
 #include "layer_system/layers/CometaLayer.h"
 #include "layer_system/layers/MaterialLayer.h"
 
@@ -35,9 +37,12 @@ void Application::Init(){
     //_onion.PushLayer(cometaLayer);
 
     // // Push material layer used for materials
-    MaterialLayer* matLayer = new MaterialLayer(); 
-    _onion.PushLayer(matLayer); 
-    
+    // MaterialLayer* matLayer = new MaterialLayer();
+    // _onion.PushLayer(matLayer);
+
+    // Light maps testing
+    MapsLayer* mapsLayer = new MapsLayer();
+    _onion.PushLayer(mapsLayer);
 
 
     // Initialize managers
