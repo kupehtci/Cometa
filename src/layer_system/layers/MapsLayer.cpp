@@ -40,8 +40,15 @@ void MapsLayer::Update()
     mainShader->Bind();
 
     Texture* materialDiffuseMap = _mat.GetDiffuseMap();
-    unsigned int diffuseMapIndex = 0;
+    int diffuseMapIndex = 0;
     mainShader->SetInt("material.diffuse", diffuseMapIndex);
+    materialDiffuseMap->Bind(diffuseMapIndex);
+
+
+    Texture* materialSpecularMap = _mat.GetSpecularMap();
+    int specularMapIndex = 1;
+    mainShader->SetInt("material.specular", specularMapIndex);
+    materialSpecularMap->Bind(specularMapIndex);
 
     mainShader->SetFloat3("material.color", _mat.GetColor());
     // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
@@ -137,7 +144,7 @@ void MapsLayer::Update()
 
 
     mainShader->Bind();
-    materialDiffuseMap->Bind(0);
+    // materialDiffuseMap->Bind(0);
 
     vArray0.Bind();
 
