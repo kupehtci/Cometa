@@ -31,7 +31,8 @@ void MapsLayer::Init()
                                     glm::vec3(0.5f, 0.5f, 0.5f),
                                     2.0f,
                                     "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg");
+                                    "resources/bricks_specular_map.jpg",
+                                    "resources/rocket_cometa.png");
 }
 
 void MapsLayer::Update()
@@ -44,19 +45,25 @@ void MapsLayer::Update()
     mainShader->SetInt("material.diffuse", diffuseMapIndex);
     materialDiffuseMap->Bind(diffuseMapIndex);
 
-
     Texture* materialSpecularMap = _mat.GetSpecularMap();
     int specularMapIndex = 1;
     mainShader->SetInt("material.specular", specularMapIndex);
     materialSpecularMap->Bind(specularMapIndex);
 
+    Texture* materialEmissionMap = _mat.GetEmissionMap();
+    int emissionMapIndex = 2;
+    mainShader->SetInt("material.emission", emissionMapIndex);
+    materialEmissionMap->Bind(emissionMapIndex);
+
+
     mainShader->SetFloat3("material.color", _mat.GetColor());
     // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
     mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    mainShader->SetFloat3("material.specular", _mat.GetSpecular());
+    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
     mainShader->SetFloat("material.shininess", _mat.GetShininess());
 
-    glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
+    // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
+    glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
     mainShader->SetFloat3("light.position", lightPosition);
     mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
@@ -144,11 +151,22 @@ void MapsLayer::Update()
 
 
     mainShader->Bind();
-    // materialDiffuseMap->Bind(0);
 
     vArray0.Bind();
 
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+    // ------------------ DRAW MORE CUBES ---------------------------
+    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, -4.0f)));
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -5.0f)));
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -6.0f)));
+    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // ------------------ END OF DRAWING MORE CUBES ---------------------------
+
 
     mainShader->Unbind();
 
@@ -171,8 +189,6 @@ void MapsLayer::Update()
     lightShader->Unbind();
 
     // --------- END OF DRAWING LIGHT POINT ---------
-
-
 
     //
     // // REPETITION

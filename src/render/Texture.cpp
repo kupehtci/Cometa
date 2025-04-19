@@ -8,7 +8,7 @@ Texture::Texture() {
 	_channels = 0;
 }
 
-Texture::Texture(std::string filePath){
+Texture::Texture(const std::string& filePath){
 
 	_uid = 0;
 	_path = filePath; 
@@ -17,10 +17,10 @@ Texture::Texture(std::string filePath){
 	
 	// Load image using STBI
 	int width, height, nrChannels;
-	const char* texture0Path = filePath.c_str();
+	const char* texturePath = filePath.c_str();
 	stbi_uc* data = nullptr; 
 
-	data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
+	data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
 	// Check that channels in RGB are 3 or 4
 	if (nrChannels != 3 && nrChannels != 4) {
