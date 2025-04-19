@@ -15,26 +15,23 @@
 Renderer::Renderer() {
     this->_window = nullptr;
     this->_objectShader = nullptr; 
+
+    _depthCulling = true; 
+    _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_NONE; 
 }
 
-/**
- * Renderer destructor
- */
 Renderer::~Renderer() {
     
 }
 
-/**
- * Initialize the Renderer
- */
 void Renderer::Init(){
 
-    // Initialize GLFW
     if(!glfwInit()){
         Assertion::Error("Cannot initialize GLFW, review GLFW installation");
         return;
     }
 
+    // Intialize Hints depending on the platform
 #ifdef PLATFORM_MACOS
     COMETA_ASSERT("Initializing OpenGL Forward compatibility for MacOS");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -72,7 +69,12 @@ void Renderer::Init(){
     }
 
     //Set the initial viewport for NDC transformations
-    glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
+    //glViewport( 0.f, 0.f, COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
+
+    int frameBufferWidth, frameBufferHeight = 0; 
+    glfwGetFramebufferSize(_window->GetGlfwWindow(), &frameBufferWidth, &frameBufferHeight);
+
+    glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 
     std::cout << "Renderer initialized: \n OpenGL version: " <<  glGetString(GL_VERSION);
 
@@ -81,17 +83,13 @@ void Renderer::Init(){
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     COMETA_MSG(("Maximum number of vertex attributes supported by hardware: ", std::to_string(nrAttributes)).c_str());
 
-    // Enable depth testing
-    //glEnable(GL_DEPTH_TEST);
+    COMETA_MSG("Maximum number of textures in buffer: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
-    // Enable back face culling
-    //glEnable(GL_CULL_FACE);
-
-    // Enable blending
-    //glEnable(GL_BLEND);
+    if (_depthCulling) {
+        glEnable(GL_DEPTH_TEST); 
+    }
 
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
-
 }
 
 void Renderer::Update(){
@@ -99,10 +97,6 @@ void Renderer::Update(){
     _window->Update();
 }
 
-/**
- * Close all the rendering artifacts created
- * And terminate the Graphics library
- */
 void Renderer::Close(){
     _window->Close();
     glfwTerminate();

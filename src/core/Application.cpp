@@ -4,7 +4,10 @@
 
 #include "core/Application.h"
 
+#include "layer_system/layers/MapsLayer.h"
+
 #include "layer_system/layers/CometaLayer.h"
+#include "layer_system/layers/MaterialLayer.h"
 
 Application::Application(){
     this->_isRunning = true;
@@ -29,8 +32,17 @@ void Application::Init(){
     _input = Input::GetInstancePtr();
 
     // Push the layers
-    CometaLayer* cometaLayer = new CometaLayer();
-    _onion.PushLayer(cometaLayer);
+    // // Push cometa layer previous implementation
+    //CometaLayer* cometaLayer = new CometaLayer();
+    //_onion.PushLayer(cometaLayer);
+
+    // // Push material layer used for materials
+    // MaterialLayer* matLayer = new MaterialLayer();
+    // _onion.PushLayer(matLayer);
+
+    // Light maps testing
+    MapsLayer* mapsLayer = new MapsLayer();
+    _onion.PushLayer(mapsLayer);
 
 
     // Initialize managers
@@ -50,9 +62,12 @@ void Application::Running() {
         _input->Update();
 
         _onion.Update();
-        
+
         // Check if window must close
-        this->_isRunning =  _renderer->_window->ShouldHandleCloseWindow() && !Input::IsKeyPressed(GLFW_KEY_ESCAPE);
+        if (_isRunning)
+        {
+            _isRunning = !_renderer->GetWindow()->ShouldHandleCloseWindow();
+        }
     }
 }
 

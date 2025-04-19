@@ -16,13 +16,24 @@ enum InputType{
     MOUSE_BUTTON_PRESSED = 5,
     MOUSE_BUTTON_RELEASED = 6, 
     MOUSE_SCROLL = 7,
-}; 
+};
+
 
 class Input : public SingletonManager<Input>{
 private:
     // std::unordered_map<int, int> _keys;
     float _xpos, _ypos = 0.0f;
     float _xDeltaPos, _yDeltaPos = 0.0f;
+
+    enum CursorMode
+    {
+        CURSOR_MODE_NONE = 0,
+        CURSOR_MODE_ENABLED = 1,
+        CURSOR_MODE_DISABLED = 2,
+        CURSOR_MODE_HIDDEN = 4,
+        CURSOR_MODE_LOCKED = 8
+    };
+    CursorMode _cursorMode = CURSOR_MODE_NONE;
 
 public: 
    Input();
@@ -39,8 +50,7 @@ public:
    static glm::vec2 GetMouseDelta(); 
    static glm::vec2 GetMouseScroll();
 
-
-
+   void HandleKey(GLFWwindow* window, int key, int scancode, int action, int mods);
 }; 
 
 #endif // COMETA_INPUT_H

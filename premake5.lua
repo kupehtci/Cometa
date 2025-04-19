@@ -1,6 +1,7 @@
 -- Include file that defines "clean" action for removing build files
 include "clean.lua"
 
+-- Define main workspace
 workspace "Cometa"
 	configurations { "Debug", "Release" }
 
@@ -21,12 +22,13 @@ IncludeDir["STB_IMAGE"] = "vendor/stb_image"
 include "vendor/glad"
 
 project "CometaGL"
-	kind "ConsoleApp"  
+	kind "ConsoleApp"
 	language "C++"
     cppdialect "C++17"
-        
+
     includedirs {
         "src"
+        --"vendor/GLFW/src"
 --             "src/debug",
 --             "src/core",
 --             "src/components",
@@ -46,24 +48,29 @@ project "CometaGL"
     targetdir ("bin/%{cfg.buildcfg}")
     objdir ("bin/obj/%{cfg.buildcfg}")
 
-
+    -- MACOS specifications
     filter "system:macosx"
 
         includedirs{
             "%{IncludeDir.GLFW}",
             "%{IncludeDir.GLM}",
             "%{IncludeDir.GLAD}",
-            "%{IncludeDir.STB_IMAGE}"
+            "%{IncludeDir.STB_IMAGE}",
+            "/opt/homebrew/include",
+            --"/vendor/GLFW/include/GLFW_macos"
         }
 
         libdirs{
-            "vendor/glad/bin"
+            "vendor/glad/bin",
+            "vendor/GLFW/lib_macos_arm"
         }
 
         links{
-            "glfw",
+            "glfw3",
             "OpenGL.framework",
-            "glad"
+            "glad",
+            "Cocoa.framework",
+            "IOKit.framework"
         }
 
         defines { "PLATFORM_MACOS" }
@@ -88,10 +95,10 @@ project "CometaGL"
         defines { "PLATFORM_WINDOWS" }
 
 
-	filter { "configurations:Debug" }  
-        defines { "DEBUG" }  
-        symbols "On"  
-	  
-	filter { "configurations:Release" }  
-        defines { "NDEBUG" }  
+	filter { "configurations:Debug" }
+        defines { "DEBUG" }
+        symbols "On"
+
+	filter { "configurations:Release" }
+        defines { "NDEBUG" }
         optimize "On"

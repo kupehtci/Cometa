@@ -14,6 +14,10 @@
 
 
 class Application : public Singleton<Application>{
+    friend class Window;
+    friend class Input;
+    friend class Renderer;
+
 private :
     bool _isRunning;
     Renderer* _renderer;
@@ -31,6 +35,14 @@ public:
     void Running();
     void Close();
 
+private:
+    /**
+     * Set isRunning to false so in next frame, application should close
+     */
+    void MustClose()
+    {
+        _isRunning = false;
+    }
 };
 
 

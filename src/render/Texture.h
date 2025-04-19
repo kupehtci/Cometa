@@ -27,7 +27,7 @@ private:
 public: 
 	Texture(); 
 
-	Texture(std::string filePath); 
+	Texture(const std::string& filePath);
 
 	~Texture();
 

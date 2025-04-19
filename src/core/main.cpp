@@ -24,6 +24,8 @@ int main() {
     app->Running();
     app->Close();
 
+    delete app;
+    
     return 0;
 }
 

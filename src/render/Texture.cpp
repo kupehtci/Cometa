@@ -3,13 +3,12 @@
 
 Texture::Texture() {
 	_uid = 0;
-	_uid = 0;
 	_path = "";
 	_width = _height = 0;
 	_channels = 0;
 }
 
-Texture::Texture(std::string filePath){
+Texture::Texture(const std::string& filePath){
 
 	_uid = 0;
 	_path = filePath; 
@@ -18,10 +17,10 @@ Texture::Texture(std::string filePath){
 	
 	// Load image using STBI
 	int width, height, nrChannels;
-	const char* texture0Path = filePath.c_str();
+	const char* texturePath = filePath.c_str();
 	stbi_uc* data = nullptr; 
 
-	data = stbi_load(texture0Path, &width, &height, &nrChannels, 0);
+	data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
 	// Check that channels in RGB are 3 or 4
 	if (nrChannels != 3 && nrChannels != 4) {
@@ -64,6 +63,10 @@ void Texture::Bind(unsigned int index) {
 
     // The GL_TEXTUREi with i being an slot of the textures available,
     // can be obtained using the 0 slot and plus the index because they are a sequence
+	if (index >= 32){
+		COMETA_ERROR("Texture binding index out of scope, limited from 0 to 31");
+		return;
+	}
 	glActiveTexture(GL_TEXTURE0 + index);
 	glBindTexture(GL_TEXTURE_2D, _uid);
 }

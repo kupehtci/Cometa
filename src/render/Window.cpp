@@ -4,24 +4,34 @@
 #define GL_SILENCE_DEPRECATION
 
 #include "Window.h"
-#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
-#include <stdio.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <core/Application.h>
+#include <input/Input.h>
 
-#include "Renderer.h"
+#include "render/Renderer.h"
+#include "core/Application.h"
+
+
+// ------------ FUNCTION DECLARATION ------------
+/**
+ * Callback to handle the window resize through OpenGL function
+ * @param window Window pointer passed through the OpenGL callback
+ * @param width New width passed through the OpenGL callback
+ * @param height New height passed through the OpenGL callback
+ */
+void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
 // Window constructor
 Window::Window()
 {
-    this->_resolution = nullptr; 
+    this->_resolution = nullptr;
     this->_window = nullptr;
     this->_title = "none";
 }
@@ -32,16 +42,12 @@ Window::Window()
 Window::~Window(){
     if(this->_window !=  nullptr){
         glfwDestroyWindow(this->_window);
+        delete _window;
     }
+
+    delete _resolution;
 }
 
-/**
- * Callback to handle the window resize through OpenGL function
- * @param window Window pointer passed through the OpenGL callback
- * @param width New width passed through the OpenGL callback
- * @param height New height passed through the OpenGL callback
- */
-void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
 
@@ -60,9 +66,6 @@ void Window::Create(int width, int height, const char *title) {
         return;
     }
 
-    // Lock the mouse within the window
-    // glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
@@ -70,7 +73,7 @@ void Window::Create(int width, int height, const char *title) {
 }
 
 void Window::Init() {
-    //_camera = Camera();
+
 }
 
 
@@ -84,84 +87,9 @@ void Window::Render() {
 //    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 
-#ifdef WINDOW_RENDERING
-    // ------------------------------------------------------------------------------------
-    // TESTING
-    // ------------------------------------------------------------------------------------
-
-    //Shader mainShader = Shader("Main Shader","src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
-    //mainShader.Bind(); 
-    
-    // Set shader as current and delete the compiled shaders
-    Shader* mainShader = Renderer::GetInstancePtr()->GetObjectShader(); 
-    mainShader->Bind(); 
-
-    float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-    };
-
-    unsigned int indices[] = {
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
-
-
-    //this->texture0 = new Texture("./resources/macos_example.jpg"); // Now the creation is handled on window creation
-    std::cout << "Texture0: " << texture0->GetPath() << std::endl;
-    texture0->Bind(0);
-
-    VertexArray vArray0 = VertexArray(); 
-    vArray0.Bind(); 
-
-    VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices)); 
-    IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices)); 
-
-
-    LayoutBuffer layoutBuffer = {
-        {0, DataType::Float3, "_position"},
-        {1, DataType::Float3, "_color"},
-        {2, DataType::Float2, "_texCoord"}
-    }; 
-
-    layoutBuffer.Build();
-    layoutBuffer.Bind();
-
-    // set the camera and its proyection, view and model matrices
-    //Camera camera = Camera();
-    // mainShader.SetMatrix4("uProjection", camera.GetProyectionMatrix());
-    // mainShader.SetMatrix4("uView", camera.GetViewMatrix());
-    _camera.OnUpdate(); 
-
-    mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection()); 
-
-    glm::mat4 modelRotated = glm::mat4(1.0f); // glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mainShader->SetMatrix4("uModel", modelRotated);
-
-    vArray0.Bind(); 
-
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, textureUID);
-    texture0->Bind(0);
-
-
-    mainShader->SetInt("ourTexture", 0);         // glUniform1i(glGetUniformLocation(mainShader.GetShaderUID(), "ourTexture"), 0); 
-
-    vArray0.Bind();
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-    mainShader->Unbind();
-    //mainShader.Delete();
-
-    // ------------------------------------------------------------------------------------
-#endif
     glfwSwapBuffers(_window);
     glfwPollEvents();
-
+    glEnable(GL_DEPTH_TEST); 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
 }
@@ -170,7 +98,7 @@ void Window::Render() {
 
 
 bool Window::ShouldHandleCloseWindow(){
-    return !glfwWindowShouldClose(this->_window);
+    return glfwWindowShouldClose(this->_window);
 }
 
 /**
@@ -195,8 +123,9 @@ void Window::Close() {
 void Window::HandleResize(GLFWwindow* window, int width, int height) {
     Quad previousResolution = *_resolution;
 
-    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
-
+    // glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
+    glfwGetFramebufferSize(_window, &_resolution->x, &_resolution->y);
+    
     // COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y)).c_str());
 
     // modify viewport resolution
@@ -216,12 +145,8 @@ void HandleResizeCallback(GLFWwindow* window, int width, int height){
 }
 
 
-
-
-// TESTING FUNCTIONS
-
 // Previus used function to show colors
-void TestingFunctionShaderColors() {
+void TestingFunctionShaderColors(GLFWwindow* window, int key, int scancode, int action, int mods) {
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
