@@ -31,7 +31,8 @@ void MapsLayer::Init()
                                     glm::vec3(0.5f, 0.5f, 0.5f),
                                     2.0f,
                                     "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg");
+                                    "resources/bricks_specular_map.jpg",
+                                    "resources/rocket_cometa.png");
 }
 
 void MapsLayer::Update()
@@ -44,11 +45,16 @@ void MapsLayer::Update()
     mainShader->SetInt("material.diffuse", diffuseMapIndex);
     materialDiffuseMap->Bind(diffuseMapIndex);
 
-
     Texture* materialSpecularMap = _mat.GetSpecularMap();
     int specularMapIndex = 1;
     mainShader->SetInt("material.specular", specularMapIndex);
     materialSpecularMap->Bind(specularMapIndex);
+
+    Texture* materialEmissionMap = _mat.GetEmissionMap();
+    int emissionMapIndex = 2;
+    mainShader->SetInt("material.emission", emissionMapIndex);
+    materialEmissionMap->Bind(emissionMapIndex);
+
 
     mainShader->SetFloat3("material.color", _mat.GetColor());
     // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
