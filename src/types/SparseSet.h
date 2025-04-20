@@ -27,25 +27,13 @@ public:
 
 		_dense = std::vector<T>(_denseCapacity);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
-		// for (size_t i = 0; i < _capacity; i++) {
-		// 	_sparse[i] = -1;
-		// }
 
-		std::cout << "initialized SparseSet with capacity: " << _capacity << std::endl;
-		for (size_t i = 0; i < _capacity; i++)
-		{
-			std::cout << "[" << i << "] : " << _sparse[i] << std::endl;
-		}
+
+		COMETA_MSG("initialized SparseSet with capacity: ", _capacity);
 	}
 
 	void Add(size_t index, const T value) {
 
-		// if(!Contains(index)){
-		// 	_size++;
-		// }
-		// else{
-		// 	std::cout << "Overwritten element" << std::endl;
-		// }
 		if (Contains(index))
 		{
 			COMETA_WARNING("SparseSet: Tried to insert a currently existing item");
@@ -66,24 +54,25 @@ public:
 		_lastInsertedSparse = index;
 
 		_size++;
+		// std::cout << "Current size value: " << _size << std::endl;
 	}
 
 	void Pop(size_t index) {
 		if (!Contains(index)) return;
 
 		// Swap deleted item with the last one and update both sparse's values
-		_dense[_sparse[index]] = _dense[_size];
+		_dense[_sparse[index]] = _dense[_size - 1];
 		_sparse[_lastInsertedSparse] = _sparse[index];
 		_sparse[index] = -1;
 		_size--;
 	}
 
-	T Get(size_t index) const {
+	T* Get(const size_t index) {
 		if (!Contains(index)) {
-			return 0;
+			return nullptr;
 		}
 
-		return _dense[_sparse[index]];
+		return &_dense[_sparse[index]];
 	}
 
 	T GetLast() const {
@@ -118,7 +107,7 @@ public:
 		std::cout << "SparseSet print index: " << std::endl;
 		for (size_t i = 0; i < _capacity; i++) {
 			if (_sparse[i] >= 0) {
-				std::cout << "Sparse[" << i << "] index value: " << _sparse[i] << " : " << std::endl; //<< _dense[_sparse[i]] << std::endl;
+				std::cout << "Sparse[" << i << "] index value: " << _sparse[i] << " : " << _dense[_sparse[i]] << std::endl;
 			}
 		}
 	}
@@ -128,6 +117,13 @@ public:
 public: 
 	size_t GetSize() const { return _size;  }
 	size_t GetCapacity() const{ return _capacity;  }
+	size_t GetDenseCapacity() const{ return _denseCapacity;  }
+
+	// Implement iteration
+	std::vector<T>::iterator begin() {return _dense.begin();}
+	std::vector<T>::iterator end() {return _dense.begin() + _size;}
+
+
 };
 
 #endif

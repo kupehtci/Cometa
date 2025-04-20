@@ -25,11 +25,10 @@ public:
 	 */
 	T* Create(size_t index)
 	{
-		if(!this->Contains(index)){
-			++this->_size;
-		}
-		else{
-			std::cout << "Overwritten element" << std::endl;
+		if (this->Contains(index))
+		{
+			std::cout << "ComponentStorage() for component: " << typeid(T).name() << " already has the component" << std::endl;
+			return this->Get(index);
 		}
 
 		// Increase dense and sparse capacity
@@ -45,6 +44,8 @@ public:
 		this->_sparse[index] = this->_size;
 		this->_dense[this->_size] = T();
 		this->PrintIndex();
+
+		this->_size++;
 		return &this->_dense[this->_size];
 	}
 };
