@@ -10,7 +10,8 @@ class SparseSet {
 
 protected: 
 	std::vector<T> _dense;
-	std::vector<int> _sparse; 
+	std::vector<int> _denseIndex;
+	std::vector<int> _sparse;
 
 	size_t _size = 0;					// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
 	size_t _capacity = 100;				// Maximum capacity of the Sparse.
@@ -26,13 +27,14 @@ public:
 		_denseCapacity = 100;
 
 		_dense = std::vector<T>(_denseCapacity);
+		_denseIndex = std::vector<int>(_denseCapacity);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
 
 
 		COMETA_MSG("initialized SparseSet with capacity: ", _capacity);
 	}
 
-	void Add(size_t index, const T value) {
+	void Add(size_t index, const T& value) {
 
 		if (Contains(index))
 		{
@@ -40,29 +42,44 @@ public:
 			return;
 		}
 
-		// Increase dense and sparse capacity
+		// Increase dense and dense Index capacity if full
 		if (_size >= _denseCapacity) {
-			_denseCapacity = _capacity = _denseCapacity * 2;
+			_denseCapacity = _denseCapacity * 2;
 			_dense.resize(_denseCapacity);
+			_denseIndex.resize(_denseCapacity);
+		}
+		// Increase sparse if index to insert is out of scope
+		while (_capacity <= index)
+		{
+			_capacity *= 2;
 			_sparse.resize(_capacity, -1);
 		}
+
 		std::cout << "Added value at index: " << index << " dense capacity: " << _denseCapacity << std::endl;
 
 		_sparse[index] = _size;
 		_dense[_size] = value;
+		_denseIndex[_size] = static_cast<int>(index);
 
-		_lastInsertedSparse = index;
+		//_lastInsertedSparse = index;
 
 		_size++;
-		// std::cout << "Current size value: " << _size << std::endl;
 	}
 
 	void Pop(size_t index) {
 		if (!Contains(index)) return;
 
 		// Swap deleted item with the last one and update both sparse's values
-		_dense[_sparse[index]] = _dense[_size - 1];
-		_sparse[_lastInsertedSparse] = _sparse[index];
+		// _dense[_sparse[index]] = _dense[_size - 1];
+		// _sparse[_lastInsertedSparse] = _sparse[index];
+		// _sparse[index] = -1;
+		// _size--;
+		int lastDenseIndex = _size-1;
+
+		_dense[_sparse[index]] = _dense[lastDenseIndex];
+		_denseIndex[_sparse[index]] = _denseIndex[lastDenseIndex];
+		_sparse[_denseIndex[lastDenseIndex]] = _sparse[index];
+
 		_sparse[index] = -1;
 		_size--;
 	}
@@ -76,13 +93,19 @@ public:
 	}
 
 	T* GetLast() {
-		return _size == 0 ? nullptr : _dense[_size - 1];
+		return _size == 0 ? nullptr : &_dense[_size - 1];
 	}
 	
 	bool Contains (const size_t value) const {
 		return (value < _capacity && _sparse[value] != -1);
 	}
 
+	/**
+	 * Check if dense contains the Data.
+	 * The T class must have comparison "==" operator implemented
+	 * @param data data to check if its contained in the sparse
+	 * @return
+	 */
 	bool Contains(T data) const {
 		for (size_t i = 0; i < _size; i++) {
 			if (_dense[i] == data) {
@@ -107,7 +130,7 @@ public:
 		std::cout << "SparseSet print index: " << std::endl;
 		for (size_t i = 0; i < _capacity; i++) {
 			if (_sparse[i] >= 0) {
-				std::cout << "Sparse[" << i << "] contains dense index: " << _sparse[i] << std::endl;
+				std::cout << "Sparse[" << i << "] contains dense index: " << _sparse[i] << " that contains: " << _dense[_sparse[i]] << std::endl;
 			}
 		}
 	}

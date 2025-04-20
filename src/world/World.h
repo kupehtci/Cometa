@@ -14,7 +14,7 @@
 
 class World {
   private:
-    SparseSet<Entity*> _entitiesSparseSet;
+    SparseSet<Entity> _entitiesSparseSet;
     ComponentRegistry _componentRegistry;
 
 public:

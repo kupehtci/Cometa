@@ -9,7 +9,7 @@
 
 World::World()
 {
-    _entitiesSparseSet = SparseSet<Entity*>();
+    _entitiesSparseSet = SparseSet<Entity>();
     _componentRegistry = ComponentRegistry();
 }
 World::~World()
@@ -25,11 +25,13 @@ World::~World()
  */
 Entity* World::CreateEntity(const std::string& name)
 {
-    auto* newEntity = new Entity(name);
-    _entitiesSparseSet.Add(newEntity->GetUID(), newEntity);
+    Entity newEntity = Entity(name);
+    uint32_t newUid = newEntity.GetUID();
+    _entitiesSparseSet.Add(newEntity.GetUID(), newEntity);
 
-    ComponentRegistry::CreateComponent<Transform>(newEntity);
-    return newEntity;
+    ComponentRegistry::CreateComponent<Transform>(&newEntity);
+    
+    return _entitiesSparseSet.Get(newUid);
 }
 
 /**

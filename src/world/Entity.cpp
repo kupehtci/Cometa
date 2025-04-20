@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+uint32_t Entity::AvailableUid = 1;
+
 Entity::Entity() {
     _uid = Entity::AvailableUid;
     Entity::AvailableUid++;
@@ -17,4 +19,3 @@ Entity::~Entity()
 
 }
 
-uint32_t Entity::AvailableUid = 1;

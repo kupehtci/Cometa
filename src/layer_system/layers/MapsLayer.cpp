@@ -21,8 +21,6 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
-    std::cout << "Maps layer init" << std::endl;
-
     _texture = new Texture("./resources/macos_example.jpg");
     _camera = Camera();
 
@@ -37,7 +35,7 @@ void MapsLayer::Init()
 
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
-
+    std::cout << "New created entity UID: " << ent0->GetUID() << std::endl;
 }
 
 void MapsLayer::Update()

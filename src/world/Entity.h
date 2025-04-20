@@ -1,6 +1,7 @@
 #ifndef COMETA_ENTITY_H
 #define COMETA_ENTITY_H
 
+#include <ostream>
 #include <string>
 
 class Entity {
@@ -11,12 +12,20 @@ private:
 
     std::string _name = "Default";
 
-    // keep private if only World class should instantiate and manage instances
-    Entity();
-    explicit Entity(const std::string& name);
 
 public:
+    Entity();
     ~Entity();
+    explicit Entity(const std::string& name);
+
+
+public:
+    // ------------ OPERATOR OVERLOAD ------------
+    friend std::ostream& operator<<(std::ostream& os, const Entity& entity)
+    {
+        os << "Entity UID: " << entity._uid << std::endl;
+        return os;
+    }
 
 public:
     // --------- GETTERS AND SETTERS ---------
