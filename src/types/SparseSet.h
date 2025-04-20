@@ -1,7 +1,9 @@
 #ifndef COMETA_SPARSE_SET_H
 #define COMETA_SPARSE_SET_H
 
+#include <iostream>
 #include <vector>
+#include "debug/Assertion.h"
 
 template<typename T>
 class SparseSet {
@@ -11,55 +13,69 @@ protected:
 	std::vector<int> _sparse; 
 
 	size_t _size = 0;				// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
-	size_t _capacity = 100000;		// Maximum capacity of the SparseSet. Used for initialization 
-	size_t _denseCapacity = 10; 
+	size_t _capacity = 100;		// Maximum capacity of the SparseSet. Used for initialization
+	size_t _denseCapacity = 100;
+
+	size_t _lastInsertedSparse = 0; // Keeps track of the last item inserted in the sparse. This is helpful for popping items (removing efficiently)
 
 
 public: 
 	SparseSet() {
 		_size = 0;
-		_capacity = 100000;
-		_denseCapacity = 10; 
+		_capacity = 100;
+		_denseCapacity = 100;
 
 		_dense = std::vector<T>(_denseCapacity);
-		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking if empty
-		for (size_t i = 0; i < _capacity; i++) {
-			_sparse[i] = -1; 
+		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
+		// for (size_t i = 0; i < _capacity; i++) {
+		// 	_sparse[i] = -1;
+		// }
+
+		std::cout << "initialized SparseSet with capacity: " << _capacity << std::endl;
+		for (size_t i = 0; i < _capacity; i++)
+		{
+			std::cout << "[" << i << "] : " << _sparse[i] << std::endl;
 		}
 	}
 
 	void Add(size_t index, const T value) {
 
-		if(!Contains(index)){
-			_size++;
-		}
-		else{
-			std::cout << "Already contains element at index: " << index << " with value: " << value << std::endl; 
-			std::cout << "Overwriten element" << std::endl; 
+		// if(!Contains(index)){
+		// 	_size++;
+		// }
+		// else{
+		// 	std::cout << "Overwritten element" << std::endl;
+		// }
+		if (Contains(index))
+		{
+			COMETA_WARNING("SparseSet: Tried to insert a currently existing item");
+			return;
 		}
 
-		// Increase dense capacity
+		// Increase dense and sparse capacity
 		if (_size >= _denseCapacity) {
-			_denseCapacity = _denseCapacity * 2; 
-			_dense.resize(_denseCapacity); 
+			_denseCapacity = _capacity = _denseCapacity * 2;
+			_dense.resize(_denseCapacity);
+			_sparse.resize(_capacity, -1);
 		}
-		std::cout << "Added " << value << " at index: " << index << " dense capacity: " << _denseCapacity << std::endl; 
+		std::cout << "Added value at index: " << index << " dense capacity: " << _denseCapacity << std::endl;
 
 		_sparse[index] = _size;
 		_dense[_size] = value;
 
-		
+		_lastInsertedSparse = index;
+
+		_size++;
 	}
 
 	void Pop(size_t index) {
 		if (!Contains(index)) return;
-		if (index > _capacity) {
-			COMETA_WARNING("Index to pop from sparse set out of bounds");
-			return;
-		}
 
-		_dense[index] = _dense[_size - 1];
-		_size--; 
+		// Swap deleted item with the last one and update both sparse's values
+		_dense[_sparse[index]] = _dense[_size];
+		_sparse[_lastInsertedSparse] = _sparse[index];
+		_sparse[index] = -1;
+		_size--;
 	}
 
 	T Get(size_t index) const {
@@ -74,8 +90,8 @@ public:
 		return _size == 0 ? reinterpret_cast<T>(0) : _dense[_size];
 	}
 	
-	bool Contains(size_t value) const {
-		return (_sparse[value] != -1);
+	[[nodiscard]] bool Contains (const size_t value) const {
+		return (value < _capacity && _sparse[value] != -1);
 	}
 
 	bool Contains(T data) const {
@@ -100,9 +116,9 @@ public:
 
 	void PrintIndex() const {
 		std::cout << "SparseSet print index: " << std::endl;
-		for (size_t i = 0; i < _sparse.size(); i++) {
+		for (size_t i = 0; i < _capacity; i++) {
 			if (_sparse[i] >= 0) {
-				std::cout << "[" << i << "] index value: " << _sparse[i] << " has value associated in dense: " << _dense[_sparse[i]] << std::endl; 
+				std::cout << "Sparse[" << i << "] index value: " << _sparse[i] << " : " << std::endl; //<< _dense[_sparse[i]] << std::endl;
 			}
 		}
 	}

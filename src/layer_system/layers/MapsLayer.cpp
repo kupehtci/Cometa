@@ -7,6 +7,7 @@
 #include "render/Renderer.h"
 #include "render/Shader.h"
 
+#include "world/World.h"
 
 MapsLayer::MapsLayer()
 {
@@ -32,12 +33,17 @@ void MapsLayer::Init()
                                     2.0f,
                                     "resources/bricks_diffuse_map.jpg",
                                     "resources/bricks_specular_map.jpg",
-                                    "resources/rocket_cometa.png");
+                                    "resources/black.jpg");
+
+    World world0 = World();
+    Entity* ent0 = world0.CreateEntity("Entity0");
 }
 
 void MapsLayer::Update()
 {
-    Shader* mainShader = new Shader("Main Shader", "src/render/shaders/light_map_shader.vert", "src/render/shaders/light_map_shader.frag");
+    Shader* mainShader = new Shader("Main Shader",
+        "src/render/shaders/light_map_shader.vert",
+        "src/render/shaders/light_map_shader.frag");
     mainShader->Bind();
 
     Texture* materialDiffuseMap = _mat.GetDiffuseMap();

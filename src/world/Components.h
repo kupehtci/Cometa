@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include "render/Texture.h"
 
-#include <stdio.h>
+#include <iostream>
 #include <string>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -13,58 +13,80 @@
 #include <gtc/matrix_transform.hpp>
 
 class Component {
-protected: 
-	// Entity* _owner; 
+public: 
+	virtual ~Component() = default;
+protected:
+	Entity* _owner = nullptr;
+
+	
+	// GETTERS AND SETTERS
+	Entity* GetOwner() { return _owner; }
+	
+
+	friend class Entity;
+	friend class ComponentRegistry;
 };
 
-class TransformComponent : public Component {
+class Transform : public Component {
 public: 
 
 	glm::vec3 translation = { 0.0f, 0.0f, 0.0f }; 
 	glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale = { 1.0f, 1.0f, 1.0f }; 
 
-	TransformComponent() = default; 
-	TransformComponent(const TransformComponent&) = default; 
-	TransformComponent(const glm::vec3& translation) {
-		this->translation = translation; 
+	Transform() = default;
+	Transform(const Transform& other)
+	{
+		translation = other.translation;
+		rotation = other.rotation;
+		scale = other.scale;
+	};
+
+	explicit Transform(const glm::vec3& translation) {
+		this->translation = translation;
+		this->rotation = { 0.0f, 0.0f, 0.0f };
+		this->scale = { 1.0f, 1.0f, 1.0f };
 	}
 
-	glm::mat4 GetTransform() {
-
-		glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
+	[[nodiscard]] glm::mat4 GetTransform() const {
+		const glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
 		return glm::translate(glm::mat4(1.0f), translation) * rotation * glm::scale(glm::mat4(1.0f), scale);
 	}
-	
+
+	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
+	{
+		os << "owner: " << transform._owner->GetUID() << "Transform";
+		return os;
+	}
 };
 
-class RendererComponent : public Component {
-	RendererComponent() = default; 
-	RendererComponent(const RendererComponent&) = default; 
+class Renderable : public Component {
+	Renderable() = default;
+	Renderable(const Renderable&) = default;
 };
 
-class SpriteRendererComponent : public Component {
+class SpriteRenderable : public Component {
 public: 
 	Texture texture; 
 	glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	SpriteRendererComponent() = default;
-	SpriteRendererComponent(const SpriteRendererComponent&) = default;
+	SpriteRenderable() = default;
+	SpriteRenderable(const SpriteRenderable&) = default;
 };
 
-class ColliderComponent : public Component {
+class Collider : public Component {
 public: 
-	ColliderComponent() = default; 
-	ColliderComponent(const ColliderComponent&) = default;
+	Collider() = default;
+	Collider(const Collider&) = default;
 };
 
-class TagComponent : public Component {
+class Tag : public Component {
 private: 
 	std::string _tag = ""; 
 public: 
-	TagComponent() = default;
-	TagComponent(const TagComponent&) = default;
-	TagComponent(const std::string& tag) : _tag(tag) {}
+	Tag() = default;
+	Tag(const Tag&) = default;
+	Tag(const std::string& tag) : _tag(tag) {}
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }
