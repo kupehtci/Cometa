@@ -12,11 +12,11 @@ protected:
 	std::vector<T> _dense;
 	std::vector<int> _sparse; 
 
-	size_t _size = 0;				// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
-	size_t _capacity = 100;		// Maximum capacity of the SparseSet. Used for initialization
-	size_t _denseCapacity = 100;
+	size_t _size = 0;					// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
+	size_t _capacity = 100;				// Maximum capacity of the Sparse.
+	size_t _denseCapacity = 100;		// Maximum capacity of the Dense.
 
-	size_t _lastInsertedSparse = 0; // Keeps track of the last item inserted in the sparse. This is helpful for popping items (removing efficiently)
+	size_t _lastInsertedSparse = 0;		// Keeps track of the last item inserted in the sparse. This is helpful for popping items (removing efficiently)
 
 
 public: 
@@ -75,11 +75,11 @@ public:
 		return &_dense[_sparse[index]];
 	}
 
-	T GetLast() const {
-		return _size == 0 ? reinterpret_cast<T>(0) : _dense[_size];
+	T* GetLast() {
+		return _size == 0 ? nullptr : _dense[_size - 1];
 	}
 	
-	[[nodiscard]] bool Contains (const size_t value) const {
+	bool Contains (const size_t value) const {
 		return (value < _capacity && _sparse[value] != -1);
 	}
 
@@ -107,7 +107,7 @@ public:
 		std::cout << "SparseSet print index: " << std::endl;
 		for (size_t i = 0; i < _capacity; i++) {
 			if (_sparse[i] >= 0) {
-				std::cout << "Sparse[" << i << "] index value: " << _sparse[i] << " : " << _dense[_sparse[i]] << std::endl;
+				std::cout << "Sparse[" << i << "] contains dense index: " << _sparse[i] << std::endl;
 			}
 		}
 	}
@@ -115,15 +115,18 @@ public:
 
 	// --------- GETTERS AND SETTERS ---------
 public: 
-	size_t GetSize() const { return _size;  }
-	size_t GetCapacity() const{ return _capacity;  }
-	size_t GetDenseCapacity() const{ return _denseCapacity;  }
+	[[nodiscard]] size_t GetSize() const { return _size;  }
+	[[nodiscard]] size_t GetCapacity() const{ return _capacity;  }
+	[[nodiscard]] size_t GetDenseCapacity() const{ return _denseCapacity;  }
 
-	// Implement iteration
-	std::vector<T>::iterator begin() {return _dense.begin();}
-	std::vector<T>::iterator end() {return _dense.begin() + _size;}
+	// ITERATION IMPLEMENTATION
+	// This allows to use the class with a for each loop, example:
+	// for (auto element : example_sparse_set){} ...
+	typename std::vector<T>::iterator begin() {return _dense.begin();}
+	typename std::vector<T>::iterator end() {return _dense.begin() + _size;}
 
-
+	typename std::vector<T>::const_iterator begin() const { return _dense.begin(); }
+	typename std::vector<T>::const_iterator end() const { return _dense.begin() + _size; }
 };
 
 #endif

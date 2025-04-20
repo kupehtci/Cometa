@@ -56,7 +56,8 @@ public:
 	 */
 	template<typename T>
 	static T* GetComponent(Entity* ent) {
-		return &GetStorage<T>().Get(ent->GetUID());
+		// Get returns a pointer to the element stored in the Sparse Set
+		return GetStorage<T>().Get(ent->GetUID());
 	}
 
 	// template<typename T>

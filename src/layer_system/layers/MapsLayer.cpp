@@ -35,22 +35,9 @@ void MapsLayer::Init()
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
-    // World world0 = World();
-    // Entity* ent0 = world0.CreateEntity("Entity0");
+    World world0 = World();
+    Entity* ent0 = world0.CreateEntity("Entity0");
 
-    SparseSet<int> exampleSS = SparseSet<int>();
-    exampleSS.Add(1, 2);
-    exampleSS.Add(2, 4);
-    exampleSS.Add(4, 8);
-    exampleSS.Add(5, 12);
-    exampleSS.Add(6, 14);
-    exampleSS.Pop(2);
-    exampleSS.PrintIndex();
-    //
-    // for (auto t : exampleSS)
-    // {
-    //     std::cout << t << std::endl;
-    // }
 }
 
 void MapsLayer::Update()
