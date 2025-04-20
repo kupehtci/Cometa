@@ -26,7 +26,8 @@ public:
 		_capacity = 100;
 		_denseCapacity = 100;
 
-		_dense = std::vector<T>(_denseCapacity);
+		_dense.reserve(_denseCapacity);
+		//_dense = std::vector<T>(_denseCapacity);
 		_denseIndex = std::vector<int>(_denseCapacity);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
 
