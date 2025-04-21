@@ -61,6 +61,7 @@ public:
 };
 
 class Renderable : public Component {
+public:
 	Renderable() = default;
 	Renderable(const Renderable&) = default;
 };
@@ -78,6 +79,12 @@ class Collider : public Component {
 public: 
 	Collider() = default;
 	Collider(const Collider&) = default;
+};
+
+class RigidBody : public Component
+{
+public:
+	RigidBody() = default;
 };
 
 class Tag : public Component {

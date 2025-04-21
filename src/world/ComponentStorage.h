@@ -46,7 +46,7 @@ public:
 		this->_denseIndex[this->_size] = index;
 
 		this->_size++;
-		return &this->_dense[this->_size];
+		return &this->_dense[this->_size - 1];
 	}
 };
 

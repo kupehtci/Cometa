@@ -33,6 +33,7 @@ void MapsLayer::Init()
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
+
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
     std::cout << "New created entity UID: " << ent0->GetUID() << std::endl;

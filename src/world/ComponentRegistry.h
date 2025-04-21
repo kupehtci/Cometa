@@ -5,12 +5,21 @@
 #include "world/ComponentStorage.h"
 #include "world/Components.h"
 
+
 class ComponentRegistry {
 
 private: 
+	std::tuple<
+		ComponentStorage<Transform>,
+		ComponentStorage<Renderable>,
+		ComponentStorage<SpriteRenderable>,
+		ComponentStorage<Collider>,
+		ComponentStorage<RigidBody>,
+		ComponentStorage<Tag>
+		> _components;
 
 public: 
-	ComponentRegistry(){}
+	ComponentRegistry() = default;
 
 	/**
 	 * Add a pointer to a component as the new component for that entity
@@ -20,7 +29,7 @@ public:
 	 * @param component
 	 */
 	template<typename T>
-	static void AddComponent(Entity* ent, const T* component) {
+	void AddComponent(Entity* ent, const T* component) {
 		GetStorage<T>().Add(ent->GetUID(), component);
 
 		auto c = static_cast<Component* >(component);
@@ -34,7 +43,7 @@ public:
 	 * @return pointer to the new component created
 	 */
 	template<typename T>
-	static T* CreateComponent(Entity* ent){
+	T* CreateComponent(Entity* ent){
 		return GetStorage<T>().Create(ent->GetUID());
 	}
 
@@ -44,7 +53,7 @@ public:
 	 * @param ent Entity pointer to delete the component from
 	 */
 	template<typename T>
-	static void RemoveComponent(Entity* ent) {
+	void RemoveComponent(Entity* ent) {
 		GetStorage<T>().Pop(ent->GetUID());
 	}
 
@@ -55,23 +64,17 @@ public:
 	 * @return Pointer to the component stored in the ComponentStorage
 	 */
 	template<typename T>
-	static T* GetComponent(Entity* ent) {
+	T* GetComponent(Entity* ent) {
 		// Get returns a pointer to the element stored in the Sparse Set
 		return GetStorage<T>().Get(ent->GetUID());
 	}
-
-	// template<typename T>
-	// static T* GetComponentPointer(Entity* ent) {
-	// 	return &GetStorage<T>().Get(ent->GetUID());
-	// }
 
 	/**
 	* Retrieve the storage for an specific type of component
 	*/
 	template<typename T>
-	static ComponentStorage<T>& GetStorage() {
-		static ComponentStorage<T> storage; 
-		return storage; 
+	ComponentStorage<T>& GetStorage() {
+		return std::get<ComponentStorage<T>>(_components);
 	}
 };
 

@@ -18,6 +18,7 @@ class World {
     ComponentRegistry _componentRegistry;
 
 public:
+    static int worldInstanceCount;
     World();
     ~World();
 
