@@ -1,8 +1,10 @@
 #include "World.h"
 
+#include <iostream>
+
 #include "world/Entity.h"
-#include "world/Components.h"
-#include "world/ComponentRegistry.h"
+// #include "world/Components.h"
+// #include "world/ComponentRegistry.h"
 
 int World::worldInstanceCount = 0;
 
@@ -11,7 +13,7 @@ World::World()
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entitiesSparseSet = SparseSet<Entity>();
-    _componentRegistry = new ComponentRegistry();
+    // _componentRegistry = ComponentRegistry();
 }
 World::~World()
 {
@@ -28,20 +30,32 @@ Entity* World::CreateEntity(const std::string& name)
 {
     Entity newEntity = Entity(name);
     uint32_t newUid = newEntity.GetUID();
-    _entitiesSparseSet.Add(newEntity.GetUID(), newEntity);
+    newEntity._parentWorld = this;
+    _entitiesSparseSet.Add(newUid, newEntity);
+    std::cout << "previous to create component transform " << std::endl;
 
-    _componentRegistry->CreateComponent<Transform>(&newEntity);
+    Transform* transform = newEntity.CreateComponent<Transform>();
+
+    std::cout << "Created entity with transform : " << transform->translation.x << std::endl;
+    transform->translation.x = 1;
+    transform = newEntity.GetComponent<Transform>();
+    std::cout << "Created entity with transform : " << transform->translation.x << std::endl;
 
     return _entitiesSparseSet.Get(newUid);
 }
+
 
 /**
  * Delete an entity and its components associated
  * @param entity Entity* to delete
  * @return bool that indicated the success in deleting the Entity. It will return false if Entity is not contained in this World or cannot delete.
  */
-bool DeleteEntity(Entity* entity)
+bool World::DeleteEntity(Entity* entity)
 {
-    // TODO: Remain to implement delete an entity
     return false;
 }
+
+// --------------- ENTITIES METHODS IMPLEMENTATIONS ---------------
+
+
+// --------------- END OF ENTITIES METHODS IMPLEMENTATIONS ---------------

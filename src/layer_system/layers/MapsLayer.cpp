@@ -7,6 +7,7 @@
 #include "render/Renderer.h"
 #include "render/Shader.h"
 
+#include "world/Entity.h"
 #include "world/World.h"
 #include "world/Components.h"
 
@@ -34,14 +35,24 @@ void MapsLayer::Init()
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
-
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
-    std::cout << "New created entity UID: " << ent0->GetUID() << std::endl;
-    ent0->HasComponent<Transform>();
-    ent0->HasComponent<Renderable>();
+    Renderable* rend = ent0->CreateComponent<Renderable>();
 
-    ent0->GetComponent<Transform>();
+    if (ent0->HasComponent<Transform>())
+    {
+        std::cout << "HAs transform ent0 " << std::endl;
+    }
+
+    if (ent0->HasComponent<Renderable>())
+    {
+        std::cout << "HAs renderable ent0 " << std::endl;
+    }
+
+    if (ent0->HasComponent<SpriteRenderable>())
+    {
+        std::cout << "HAs sprite renderable ent0 " << std::endl;
+    }
 }
 
 void MapsLayer::Update()

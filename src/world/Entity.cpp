@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include <iostream>
+
 uint32_t Entity::AvailableUid = 1;
 
 Entity::Entity() {
@@ -20,5 +20,4 @@ Entity::~Entity()
 {
 
 }
-
 

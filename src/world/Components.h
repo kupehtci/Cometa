@@ -1,7 +1,6 @@
 #ifndef COMETA_COMPONENTS_H
 #define COMETA_COMPONENTS_H
 
-#include "Entity.h"
 #include "render/Texture.h"
 
 #include <iostream>
@@ -12,10 +11,12 @@
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
 
+class Entity;
+
 class Component {
 public: 
 	virtual ~Component() = default;
-protected:
+public:
 	Entity* _owner = nullptr;
 
 	
@@ -55,7 +56,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
 	{
-		os << "owner: " << transform._owner->GetUID() << "Transform";
+		os << "owner: "	 << "Transform";
 		return os;
 	}
 };

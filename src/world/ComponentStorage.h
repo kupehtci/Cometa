@@ -13,7 +13,7 @@ class ComponentStorage : public SparseSet<T>{
 public:
 	ComponentStorage()
 	{
-		std::cout << "ComponentStorage() for component: " << typeid(T).name() << std::endl;
+		// std::cout << "ComponentStorage() for component: " << typeid(T).name() << std::endl;
 	};
 
 	/**
@@ -38,7 +38,7 @@ public:
 			this->_sparse.resize(this->_capacity, -1);
 		}
 
-		std::cout << "Created component for Entity: " << index << " new dense capacity: " << this->_denseCapacity << std::endl;
+		// std::cout << "Created component for Entity: " << index << " new dense capacity: " << this->_denseCapacity << std::endl;
 
 		// Create the new component in the Dense
 		this->_sparse[index] = this->_size;

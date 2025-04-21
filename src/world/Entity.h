@@ -1,11 +1,15 @@
 #ifndef COMETA_ENTITY_H
 #define COMETA_ENTITY_H
 
-#include <ostream>
+#include <iostream>
 #include <string>
 
+#include "world/ComponentRegistry.h"
 #include "world/World.h"
+class World;
 
+
+// Be careful with World circular dependency by ComponentRegistry class
 class Entity {
 
 private:
@@ -23,16 +27,17 @@ public:
 
     // ------------ COMPONENTS MANAGEMENT ------------
     template<typename T>
-    void CreateComponent()
+    T* CreateComponent()
     {
-        std::cout << "Creating component of type: " << typeid(T).name() << std::endl;
+        T* newComponent = _parentWorld->_componentRegistry.CreateComponent<T>(this->GetUID());
+        newComponent->_owner = this;
+        return newComponent;
     }
 
     template<typename T>
     T* GetComponent()
     {
-        std::cout << "Getting component of type: " << typeid(T).name() << std::endl;
-        return nullptr;
+        return _parentWorld->_componentRegistry.GetComponent<T>(this->_uid);
     }
 
     template<typename T>
@@ -45,8 +50,7 @@ public:
     template<typename T>
     bool HasComponent()
     {
-        std::cout << "Entity::HasComponent()" << typeid(T).name() << std::endl;
-        return false;
+        return _parentWorld->_componentRegistry.HasComponent<T>(this->_uid);
     }
 
 
@@ -70,11 +74,14 @@ public:
     // --------- GETTERS AND SETTERS ---------
     [[nodiscard]] uint32_t GetUID() const { return _uid;}
     [[nodiscard]] std::string GetName() const { return _name;}
-    // [[nodiscard]] World* GetParentWorld() const { return _parentWorld;}
+    [[nodiscard]] World* GetParentWorld() const { return _parentWorld;}
 
     void SetName(const std::string& name) { _name = name;}
 
     friend class World;
 };
+
+
+
 
 #endif //COMETA_ENTITY_H

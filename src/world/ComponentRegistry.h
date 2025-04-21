@@ -1,9 +1,9 @@
 #ifndef COMETA_COMPONENT_REGISTRY_H
 #define COMETA_COMPONENT_REGISTRY_H
 
-#include "world/Entity.h"
-#include "world/ComponentStorage.h"
+// #include "world/Entity.h"
 #include "world/Components.h"
+#include "world/ComponentStorage.h"
 
 
 class ComponentRegistry {
@@ -23,17 +23,13 @@ public:
 
 	/**
 	 * Add a pointer to a component as the new component for that entity
-	 *
-	 * @tparam T
-	 * @param ent
-	 * @param component
+	 * @tparam T Type of component to add
+	 * @param uid Unique ID of the Entity to add the component to
+	 * @param component Component to Add to that entity
 	 */
 	template<typename T>
-	void AddComponent(Entity* ent, const T* component) {
-		GetStorage<T>().Add(ent->GetUID(), component);
-
-		auto c = static_cast<Component* >(component);
-		c->_owner = ent;
+	void AddComponent(const uint32_t& uid, const T* component) {
+		GetStorage<T>().Add(uid, component);
 	}
 
 	/**
@@ -43,8 +39,8 @@ public:
 	 * @return pointer to the new component created
 	 */
 	template<typename T>
-	T* CreateComponent(Entity* ent){
-		return GetStorage<T>().Create(ent->GetUID());
+	T* CreateComponent(const uint32_t& uid){
+		return GetStorage<T>().Create(uid);
 	}
 
 	/**
@@ -53,8 +49,8 @@ public:
 	 * @param ent Entity pointer to delete the component from
 	 */
 	template<typename T>
-	void RemoveComponent(Entity* ent) {
-		GetStorage<T>().Pop(ent->GetUID());
+	void RemoveComponent(const uint32_t uid) {
+		GetStorage<T>().Pop(uid);
 	}
 
 	/**
@@ -64,9 +60,14 @@ public:
 	 * @return Pointer to the component stored in the ComponentStorage
 	 */
 	template<typename T>
-	T* GetComponent(Entity* ent) {
+	T* GetComponent(const uint32_t uid) {
 		// Get returns a pointer to the element stored in the Sparse Set
-		return GetStorage<T>().Get(ent->GetUID());
+		return GetStorage<T>().Get(uid);
+	}
+
+	template<typename T>
+	bool HasComponent(const uint32_t uid) {
+		return GetStorage<T>().Contains(uid);
 	}
 
 	/**

@@ -30,9 +30,6 @@ public:
 		//_dense = std::vector<T>(_denseCapacity);
 		_denseIndex = std::vector<int>(_denseCapacity);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
-
-
-		COMETA_MSG("initialized SparseSet with capacity: ", _capacity);
 	}
 
 	void Add(size_t index, const T& value) {
