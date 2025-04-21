@@ -1,9 +1,6 @@
-//
-// Created by Daniel Laplana Gimeno on 19/4/25.
-//
-
 #include "World.h"
 
+#include "world/Entity.h"
 #include "world/Components.h"
 #include "world/ComponentRegistry.h"
 
@@ -14,7 +11,7 @@ World::World()
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entitiesSparseSet = SparseSet<Entity>();
-    // _componentRegistry= ComponentRegistry();
+    _componentRegistry = new ComponentRegistry();
 }
 World::~World()
 {
@@ -33,13 +30,7 @@ Entity* World::CreateEntity(const std::string& name)
     uint32_t newUid = newEntity.GetUID();
     _entitiesSparseSet.Add(newEntity.GetUID(), newEntity);
 
-    Transform* transform = _componentRegistry.CreateComponent<Transform>(&newEntity);
-
-    std::cout << "new entity created: " << newEntity.GetUID() << " with transform: x: " << transform->translation.x << std::endl;
-    transform->translation.x = 1;
-
-    Transform* otherTransformRef = _componentRegistry.GetComponent<Transform>(&newEntity);
-    std::cout << "Other entity ref: " << newEntity.GetUID() << " with transform: x: " << otherTransformRef->translation.x << std::endl;
+    _componentRegistry->CreateComponent<Transform>(&newEntity);
 
     return _entitiesSparseSet.Get(newUid);
 }

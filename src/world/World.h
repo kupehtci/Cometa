@@ -5,17 +5,20 @@
 #ifndef COMETA_WORLD_H
 #define COMETA_WORLD_H
 
-#include "world/Entity.h"
+// #include "world/Entity.h"
 #include "types/SparseSet.h"
-#include "ComponentRegistry.h"
+// #include "world/ComponentRegistry.h"
 
 #include <vector>
+
+class ComponentRegistry;
+class Entity;
 
 
 class World {
   private:
     SparseSet<Entity> _entitiesSparseSet;
-    ComponentRegistry _componentRegistry;
+    ComponentRegistry* _componentRegistry;
 
 public:
     static int worldInstanceCount;

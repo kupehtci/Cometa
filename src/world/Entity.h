@@ -4,14 +4,17 @@
 #include <ostream>
 #include <string>
 
+#include "world/World.h"
+
 class Entity {
 
 private:
-    uint32_t _uid;
+    uint32_t _uid = 0;
     static uint32_t AvailableUid;
 
     std::string _name = "Default";
 
+    World* _parentWorld = nullptr;
 
 public:
     Entity();
@@ -22,25 +25,28 @@ public:
     template<typename T>
     void CreateComponent()
     {
-        // TODO: Continue implementing this
+        std::cout << "Creating component of type: " << typeid(T).name() << std::endl;
     }
 
     template<typename T>
     T* GetComponent()
     {
-        
+        std::cout << "Getting component of type: " << typeid(T).name() << std::endl;
+        return nullptr;
     }
 
     template<typename T>
     void RemoveComponent()
     {
-        // TODO: Continue implementing this
+        std::cout << "Removing component of type: " << typeid(T).name() << std::endl;
     }
+
 
     template<typename T>
     bool HasComponent()
     {
-
+        std::cout << "Entity::HasComponent()" << typeid(T).name() << std::endl;
+        return false;
     }
 
 
@@ -64,6 +70,9 @@ public:
     // --------- GETTERS AND SETTERS ---------
     [[nodiscard]] uint32_t GetUID() const { return _uid;}
     [[nodiscard]] std::string GetName() const { return _name;}
+    // [[nodiscard]] World* GetParentWorld() const { return _parentWorld;}
+
+    void SetName(const std::string& name) { _name = name;}
 
     friend class World;
 };

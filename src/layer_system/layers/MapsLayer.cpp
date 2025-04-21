@@ -8,6 +8,7 @@
 #include "render/Shader.h"
 
 #include "world/World.h"
+#include "world/Components.h"
 
 MapsLayer::MapsLayer()
 {
@@ -37,6 +38,10 @@ void MapsLayer::Init()
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
     std::cout << "New created entity UID: " << ent0->GetUID() << std::endl;
+    ent0->HasComponent<Transform>();
+    ent0->HasComponent<Renderable>();
+
+    ent0->GetComponent<Transform>();
 }
 
 void MapsLayer::Update()
