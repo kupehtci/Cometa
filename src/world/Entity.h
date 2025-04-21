@@ -18,6 +18,31 @@ public:
     ~Entity();
     explicit Entity(const std::string& name);
 
+    // ------------ COMPONENTS MANAGEMENT ------------
+    template<typename T>
+    void CreateComponent()
+    {
+        // TODO: Continue implementing this
+    }
+
+    template<typename T>
+    T* GetComponent()
+    {
+        
+    }
+
+    template<typename T>
+    void RemoveComponent()
+    {
+        // TODO: Continue implementing this
+    }
+
+    template<typename T>
+    bool HasComponent()
+    {
+
+    }
+
 
 public:
     // ------------ OPERATOR OVERLOAD ------------
@@ -25,6 +50,14 @@ public:
     {
         os << "Entity UID: " << entity._uid << std::endl;
         return os;
+    }
+
+    bool operator==(const Entity& other) const {
+        return _uid == other._uid;
+    }
+
+    bool operator!=(const Entity& other) const {
+        return _uid != other._uid;
     }
 
 public:
