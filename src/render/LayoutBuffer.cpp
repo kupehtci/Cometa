@@ -44,11 +44,11 @@ void LayoutBuffer::Enable() {
 		case DataType::Float3: 
 		case DataType::Float4: 
 			glVertexAttribPointer(layout._position, 
-								DataTypeCalculateNumberElements(layout._type),
+								static_cast<int>(DataTypeCalculateNumberElements(layout._type)),
 								GL_FLOAT, 
 								GL_FALSE, 
-								_size, 
-								(void*)(layout._offset));
+								static_cast<int>(_size),
+								reinterpret_cast<void*>(layout._offset));
 			glEnableVertexAttribArray(layout._position); 
 			break; 
 
@@ -78,8 +78,8 @@ void LayoutBuffer::Unbind() {
 }
 
 void LayoutBuffer::Debug() {
-	for (auto layout : _layouts) {
-		std::cout << "Layout: " << layout._position << " " << layout._name << " type: " << (int)layout._type << " with stride: " << layout._size << " and offset: " << layout._offset << std::endl;
+	for (auto const& layout : _layouts) {
+		std::cout << "Layout: " << layout._position << " " << layout._name << " type: " << static_cast<int>(layout._type) << " with stride: " << layout._size << " and offset: " << layout._offset << std::endl;
 	}
 }
 

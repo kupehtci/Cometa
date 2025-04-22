@@ -162,16 +162,25 @@ void MapsLayer::Update()
     VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
     IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
 
+    vBuffer0.Bind();
+    iBuffer0.Bind();
 
-    LayoutBuffer layoutBuffer = {
+    // LayoutBuffer layoutBuffer = {
+    //         {0, DataType::Float3, "aPos"},
+    //         {1, DataType::Float3, "aNormal"},
+    //         {2, DataType::Float3, "aColor"},
+    //         {3, DataType::Float2, "aTexCoord"}
+    // };
+
+    vBuffer0.SetLayoutBuffer({
             {0, DataType::Float3, "aPos"},
             {1, DataType::Float3, "aNormal"},
             {2, DataType::Float3, "aColor"},
             {3, DataType::Float2, "aTexCoord"}
-    };
+    });
 
-    layoutBuffer.Build();
-    layoutBuffer.Bind();
+    vBuffer0.GetLayoutBuffer().Build();
+    vBuffer0.GetLayoutBuffer().Bind();
 
     // Update camera and its proyection
     _camera.OnUpdate();
@@ -192,14 +201,17 @@ void MapsLayer::Update()
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     // ------------------ DRAW MORE CUBES ---------------------------
-    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, -4.0f)));
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    for (int i = 0; i < 6; i++)
+    {
+        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
+        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    }
 
-    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -5.0f)));
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-
-    mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, -6.0f)));
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    for (int i = 0; i < 6; i++)
+    {
+        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
+        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    }
     // ------------------ END OF DRAWING MORE CUBES ---------------------------
 
 

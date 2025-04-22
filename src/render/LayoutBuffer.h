@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "./Buffer.h"
+#include "debug/Assertion.h"
 #include "./DataType.h"
 
 struct Layout { 
@@ -34,11 +34,11 @@ struct Layout {
 };
 
 
-class LayoutBuffer  : public Buffer {
+class LayoutBuffer {
 
-private: 
-	std::vector<Layout> _layouts;	// Array of layouts that compose the structure of the LayoutBuffer
-	uint32_t _size;					// Total stride of the LayoutBuffer
+private:
+	std::vector<Layout> _layouts;		// Array of layouts that compose the structure of the LayoutBuffer
+	uint32_t _size = 0;					// Total stride of the LayoutBuffer
 
 public: 
 	/**
@@ -76,12 +76,12 @@ public:
 	/**
 	*	Enable the LayoutBuffer by enabling each layout
 	*/
-	void Bind() override; 
+	void Bind();
 
 	/**
 	*	Disable the LayoutBuffer by disabling each layout
 	*/
-	void Unbind() override;
+	void Unbind();
 
 	/**
 	* Debug function that print by console the properties of each layout within the LayoutBuffer
