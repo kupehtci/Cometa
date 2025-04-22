@@ -1,70 +1,106 @@
 #ifndef COMETA_COMPONENTS_H
 #define COMETA_COMPONENTS_H
 
-#include "Entity.h"
 #include "render/Texture.h"
 
-#include <stdio.h>
+#include <iostream>
 #include <string>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <utility>
+
+class Entity;
 
 class Component {
-protected: 
-	// Entity* _owner; 
+public: 
+	virtual ~Component() = default;
+public:
+	Entity* _owner = nullptr;
+
+	
+	// ------------ GETTERS AND SETTERS ------------
+	Entity* GetOwner() const { return _owner; }
+	
+
+	friend class Entity;
+	friend class ComponentRegistry;
 };
 
-class TransformComponent : public Component {
+class Transform : public Component {
 public: 
 
-	glm::vec3 translation = { 0.0f, 0.0f, 0.0f }; 
+	glm::vec3 position = { 0.0f, 0.0f, 0.0f }; 
 	glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale = { 1.0f, 1.0f, 1.0f }; 
 
-	TransformComponent() = default; 
-	TransformComponent(const TransformComponent&) = default; 
-	TransformComponent(const glm::vec3& translation) {
-		this->translation = translation; 
+	Transform() = default;
+	explicit Transform(const glm::vec3& position)
+	{
+		this->position = position;
+		this->rotation = { 0.0f, 0.0f, 0.0f };
+		this->scale = { 1.0f, 1.0f, 1.0f };
+	}
+	Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale) {};
+	Transform(const Transform& other)
+	{
+		position = other.position;
+		rotation = other.rotation;
+		scale = other.scale;
+	};
+
+	[[nodiscard]] glm::mat4 GetTransform() const {
+		const glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
+		return glm::translate(glm::mat4(1.0f), position) * rotation * glm::scale(glm::mat4(1.0f), scale);
 	}
 
-	glm::mat4 GetTransform() {
-
-		glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
-		return glm::translate(glm::mat4(1.0f), translation) * rotation * glm::scale(glm::mat4(1.0f), scale);
+	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
+	{
+		os << "owner: "	 << "Transform";
+		return os;
 	}
-	
 };
 
-class RendererComponent : public Component {
-	RendererComponent() = default; 
-	RendererComponent(const RendererComponent&) = default; 
+class Renderable : public Component {
+public:
+	Renderable() = default;
+	Renderable(const Renderable&) = default;
 };
 
-class SpriteRendererComponent : public Component {
+class SpriteRenderable : public Component {
 public: 
 	Texture texture; 
 	glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	SpriteRendererComponent() = default;
-	SpriteRendererComponent(const SpriteRendererComponent&) = default;
+	SpriteRenderable() = default;
+	SpriteRenderable(const SpriteRenderable&) = default;
 };
 
-class ColliderComponent : public Component {
+class Collider : public Component {
 public: 
-	ColliderComponent() = default; 
-	ColliderComponent(const ColliderComponent&) = default;
+	Collider() = default;
+	Collider(const Collider&) = default;
 };
 
-class TagComponent : public Component {
+class RigidBody : public Component
+{
+public:
+	glm::vec3 linearVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
+	float mass = 1.0f;
+
+	RigidBody() = default;
+};
+
+class Tag : public Component {
 private: 
 	std::string _tag = ""; 
 public: 
-	TagComponent() = default;
-	TagComponent(const TagComponent&) = default;
-	TagComponent(const std::string& tag) : _tag(tag) {}
+	Tag() = default;
+	Tag(const Tag&) = default;
+	explicit Tag(std::string  tag) : _tag(std::move(tag)) {}
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }

@@ -7,6 +7,9 @@
 #include "render/Renderer.h"
 #include "render/Shader.h"
 
+#include "world/Entity.h"
+#include "world/World.h"
+#include "world/Components.h"
 
 MapsLayer::MapsLayer()
 {
@@ -20,8 +23,6 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
-    std::cout << "Maps layer init" << std::endl;
-
     _texture = new Texture("./resources/macos_example.jpg");
     _camera = Camera();
 
@@ -32,12 +33,46 @@ void MapsLayer::Init()
                                     2.0f,
                                     "resources/bricks_diffuse_map.jpg",
                                     "resources/bricks_specular_map.jpg",
-                                    "resources/rocket_cometa.png");
+                                    "resources/black.jpg");
+
+    World world0 = World();
+    Entity* ent0 = world0.CreateEntity("Entity0");
+    Renderable* rend = ent0->CreateComponent<Renderable>();
+
+    ent0->CreateComponent<Collider>();
+
+    if (ent0->HasComponent<Transform>())
+    {
+        std::cout << "Has transform ent0 " << std::endl;
+    }
+
+    if (ent0->HasComponent<Renderable>())
+    {
+        std::cout << "Has renderable ent0 " << std::endl;
+    }
+
+    if (ent0->HasComponent<SpriteRenderable>())
+    {
+        std::cout << "Has sprite renderable ent0 " << std::endl;
+    }
+
+    if (ent0->HasComponent<Collider>())
+    {
+        std::cout << "Has collider ent0 " << std::endl;
+    }
+
+    Entity* ent1 = world0.CreateEntity("Entity1");
+    
+
+    // Debug the world created
+    world0.DebugPrint();
 }
 
 void MapsLayer::Update()
 {
-    Shader* mainShader = new Shader("Main Shader", "src/render/shaders/light_map_shader.vert", "src/render/shaders/light_map_shader.frag");
+    Shader* mainShader = new Shader("Main Shader",
+        "src/render/shaders/light_map_shader.vert",
+        "src/render/shaders/light_map_shader.frag");
     mainShader->Bind();
 
     Texture* materialDiffuseMap = _mat.GetDiffuseMap();
