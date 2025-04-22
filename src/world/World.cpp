@@ -68,7 +68,9 @@ void World::DebugPrint(){
     std::cout << "\n--- ENTITIES ---" << std::endl;
     for (size_t i = 0; i < _entities.Size(); i++) {
         Entity* entity = _entities.Get(_entities.GetDenseIndex(i));
+
         if (entity) {
+            std::cout << "Processing entity: " << entity->GetUID() << std::endl;
             std::cout << "Entity UID: " << entity->GetUID() << ", Name: " << entity->GetName() << std::endl;
 
             if (entity->HasComponent<Transform>()) {

@@ -42,8 +42,8 @@ public:
 
 		// Create the new component in the Dense
 		this->_sparse[index] = this->_size;
-		this->_dense[this->_size] = T();
-		this->_denseIndex[this->_size] = index;
+		this->_dense.push_back(T());
+		this->_denseIndex.push_back(index);
 
 		this->_size++;
 		return &this->_dense[this->_size - 1];

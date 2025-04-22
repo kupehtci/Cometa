@@ -62,8 +62,7 @@ void MapsLayer::Init()
     }
 
     Entity* ent1 = world0.CreateEntity("Entity1");
-    world0.RemoveEntity(ent0->GetUID());
-    world0.RemoveEntity(ent1->GetUID());
+    
 
     // Debug the world created
     world0.DebugPrint();
