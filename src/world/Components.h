@@ -10,6 +10,7 @@
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <utility>
 
 class Entity;
 
@@ -20,8 +21,8 @@ public:
 	Entity* _owner = nullptr;
 
 	
-	// GETTERS AND SETTERS
-	Entity* GetOwner() { return _owner; }
+	// ------------ GETTERS AND SETTERS ------------
+	Entity* GetOwner() const { return _owner; }
 	
 
 	friend class Entity;
@@ -31,27 +32,28 @@ public:
 class Transform : public Component {
 public: 
 
-	glm::vec3 translation = { 0.0f, 0.0f, 0.0f }; 
+	glm::vec3 position = { 0.0f, 0.0f, 0.0f }; 
 	glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale = { 1.0f, 1.0f, 1.0f }; 
 
 	Transform() = default;
+	explicit Transform(const glm::vec3& position)
+	{
+		this->position = position;
+		this->rotation = { 0.0f, 0.0f, 0.0f };
+		this->scale = { 1.0f, 1.0f, 1.0f };
+	}
+	Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale) {};
 	Transform(const Transform& other)
 	{
-		translation = other.translation;
+		position = other.position;
 		rotation = other.rotation;
 		scale = other.scale;
 	};
 
-	explicit Transform(const glm::vec3& translation) {
-		this->translation = translation;
-		this->rotation = { 0.0f, 0.0f, 0.0f };
-		this->scale = { 1.0f, 1.0f, 1.0f };
-	}
-
 	[[nodiscard]] glm::mat4 GetTransform() const {
 		const glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
-		return glm::translate(glm::mat4(1.0f), translation) * rotation * glm::scale(glm::mat4(1.0f), scale);
+		return glm::translate(glm::mat4(1.0f), position) * rotation * glm::scale(glm::mat4(1.0f), scale);
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
@@ -85,6 +87,10 @@ public:
 class RigidBody : public Component
 {
 public:
+	glm::vec3 linearVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
+	float mass = 1.0f;
+
 	RigidBody() = default;
 };
 
@@ -94,7 +100,7 @@ private:
 public: 
 	Tag() = default;
 	Tag(const Tag&) = default;
-	Tag(const std::string& tag) : _tag(tag) {}
+	explicit Tag(std::string  tag) : _tag(std::move(tag)) {}
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }

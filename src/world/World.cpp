@@ -74,9 +74,9 @@ void World::DebugPrint(){
             if (entity->HasComponent<Transform>()) {
                 Transform* transform = entity->GetComponent<Transform>();
                 std::cout << "  - Transform: " 
-                          << "Pos(" << transform->translation.x << ", " 
-                          << transform->translation.y << ", " 
-                          << transform->translation.z << "), "
+                          << "Pos(" << transform->position.x << ", "
+                          << transform->position.y << ", "
+                          << transform->position.z << "), "
                           << "Rot(" << transform->rotation.x << ", " 
                           << transform->rotation.y << ", " 
                           << transform->rotation.z << "), "
