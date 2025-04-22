@@ -28,7 +28,7 @@ public:
 
 		_dense.reserve(_denseCapacity);
 		//_dense = std::vector<T>(_denseCapacity);
-		_denseIndex = std::vector<int>(_denseCapacity);
+		_denseIndex.reserve(_denseCapacity);  // = std::vector<int>(_denseCapacity);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
 	}
 
@@ -43,8 +43,8 @@ public:
 		// Increase dense and dense Index capacity if full
 		if (_size >= _denseCapacity) {
 			_denseCapacity = _denseCapacity * 2;
-			_dense.resize(_denseCapacity);
-			_denseIndex.resize(_denseCapacity);
+			_dense.reserve(_denseCapacity);
+			_denseIndex.reserve(_denseCapacity);
 		}
 		// Increase sparse if index to insert is out of scope
 		while (_capacity <= index)
@@ -56,10 +56,8 @@ public:
 		std::cout << "Added value at index: " << index << " dense capacity: " << _denseCapacity << std::endl;
 
 		_sparse[index] = _size;
-		_dense[_size] = value;
-		_denseIndex[_size] = static_cast<int>(index);
-
-		//_lastInsertedSparse = index;
+		_dense.push_back(value);
+		_denseIndex.push_back(static_cast<int>(index));
 
 		_size++;
 	}
