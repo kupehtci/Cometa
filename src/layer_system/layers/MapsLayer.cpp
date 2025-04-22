@@ -39,6 +39,8 @@ void MapsLayer::Init()
     Entity* ent0 = world0.CreateEntity("Entity0");
     Renderable* rend = ent0->CreateComponent<Renderable>();
 
+    ent0->CreateComponent<Collider>();
+
     if (ent0->HasComponent<Transform>())
     {
         std::cout << "HAs transform ent0 " << std::endl;
@@ -53,6 +55,18 @@ void MapsLayer::Init()
     {
         std::cout << "HAs sprite renderable ent0 " << std::endl;
     }
+
+    if (ent0->HasComponent<Collider>())
+    {
+        std::cout << "HAs collider ent0 " << std::endl;
+    }
+
+    Entity* ent1 = world0.CreateEntity("Entity1");
+    world0.RemoveEntity(ent0->GetUID());
+    world0.RemoveEntity(ent1->GetUID());
+
+    // Debug the world created
+    world0.DebugPrint();
 }
 
 void MapsLayer::Update()

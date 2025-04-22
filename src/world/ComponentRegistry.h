@@ -35,6 +35,7 @@ public:
 	/**
 	 * Create the specified T component and assign to the Entity
 	 * @tparam T new component to be created for the entity
+	 * @param uid Unique ID of the Entity to create component for
 	 * @param ent Entity to assign the component to.
 	 * @return pointer to the new component created
 	 */
@@ -46,10 +47,11 @@ public:
 	/**
 	 * Remove the component from the entity
 	 * @tparam T Component to delete
+	 * @param uid Unique ID of the entity to remove component of
 	 * @param ent Entity pointer to delete the component from
 	 */
 	template<typename T>
-	void RemoveComponent(const uint32_t uid) {
+	void RemoveComponent(const uint32_t& uid) {
 		GetStorage<T>().Pop(uid);
 	}
 
@@ -60,13 +62,13 @@ public:
 	 * @return Pointer to the component stored in the ComponentStorage
 	 */
 	template<typename T>
-	T* GetComponent(const uint32_t uid) {
+	T* GetComponent(const uint32_t& uid) {
 		// Get returns a pointer to the element stored in the Sparse Set
 		return GetStorage<T>().Get(uid);
 	}
 
 	template<typename T>
-	bool HasComponent(const uint32_t uid) {
+	bool HasComponent(const uint32_t& uid) {
 		return GetStorage<T>().Contains(uid);
 	}
 

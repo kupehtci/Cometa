@@ -68,10 +68,6 @@ public:
 		if (!Contains(index)) return;
 
 		// Swap deleted item with the last one and update both sparse's values
-		// _dense[_sparse[index]] = _dense[_size - 1];
-		// _sparse[_lastInsertedSparse] = _sparse[index];
-		// _sparse[index] = -1;
-		// _size--;
 		int lastDenseIndex = _size-1;
 
 		_dense[_sparse[index]] = _dense[lastDenseIndex];
@@ -94,7 +90,7 @@ public:
 		return _size == 0 ? nullptr : &_dense[_size - 1];
 	}
 	
-	bool Contains (const size_t value) const {
+	[[nodiscard]] bool Contains (const size_t value) const {
 		return (value < _capacity && _sparse[value] != -1);
 	}
 
@@ -118,6 +114,11 @@ public:
 		_size = 0;
 	}
 
+	int GetDenseIndex(size_t i)
+	{
+		return _denseIndex[i];
+	}
+
 	void Print() const {
 		for (size_t i = 0; i < _size; i++) {
 			std::cout << "SparseSet [" << i << "] : " << _dense[i] << " dense capacity:  " << std::endl;
@@ -136,9 +137,9 @@ public:
 
 	// --------- GETTERS AND SETTERS ---------
 public: 
-	[[nodiscard]] size_t GetSize() const { return _size;  }
-	[[nodiscard]] size_t GetCapacity() const{ return _capacity;  }
-	[[nodiscard]] size_t GetDenseCapacity() const{ return _denseCapacity;  }
+	[[nodiscard]] size_t Size() const { return _size;  }
+	[[nodiscard]] size_t Capacity() const{ return _capacity;  }
+	[[nodiscard]] size_t DenseCapacity() const{ return _denseCapacity;  }
 
 	// ITERATION IMPLEMENTATION
 	// This allows to use the class with a for each loop, example:

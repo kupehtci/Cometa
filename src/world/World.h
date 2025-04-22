@@ -11,7 +11,7 @@ class World {
     friend class Entity;
 
   private:
-    SparseSet<Entity> _entitiesSparseSet;
+    SparseSet<Entity> _entities;
     ComponentRegistry _componentRegistry;
 
 public:
@@ -21,23 +21,18 @@ public:
 
     // ------------ ENTITIES METHODS ------------
     Entity* CreateEntity(const std::string& name);
-    bool DeleteEntity(Entity* entity);
+    bool RemoveEntity(const uint32_t& uid);
 
 
-    // // ------------ COMPONENT METHODS ------------
-    // // This methods serve as a wrapper between Entity and ComponentRegistry
-    //
-    // template<typename T>
-    // T* CreateComponent(Entity* ent)
-    // {
-    //     return _componentRegistry->CreateComponent<T>(ent);
-    // }
-    //
-    // template<typename T>
-    // void DeleteComponent(Entity* ent)
-    // {
-    //     _componentRegistry->RemoveComponent<T>(ent);
-    // }
+    // ------------ DEBUG METHODS ------------
+    /**
+     * Print in console some debug information that indicated the entities stored in World
+     * and its components information
+     */
+    void DebugPrint();
+
+    // ------------ GETTERS AND SETTERS ------------
+    size_t GetNumEntities() {return _entities.Size();}
 
 };
 

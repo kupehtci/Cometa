@@ -12,8 +12,7 @@ World::World()
 {
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
-    _entitiesSparseSet = SparseSet<Entity>();
-    // _componentRegistry = ComponentRegistry();
+    _entities = SparseSet<Entity>();
 }
 World::~World()
 {
@@ -31,31 +30,90 @@ Entity* World::CreateEntity(const std::string& name)
     Entity newEntity = Entity(name);
     uint32_t newUid = newEntity.GetUID();
     newEntity._parentWorld = this;
-    _entitiesSparseSet.Add(newUid, newEntity);
-    std::cout << "previous to create component transform " << std::endl;
+    _entities.Add(newUid, newEntity);
+    // std::cout << "previous to create component transform " << std::endl;
 
-    Transform* transform = newEntity.CreateComponent<Transform>();
+    // Create an initial transform component for the entity
+    newEntity.CreateComponent<Transform>();
 
-    std::cout << "Created entity with transform : " << transform->translation.x << std::endl;
-    transform->translation.x = 1;
-    transform = newEntity.GetComponent<Transform>();
-    std::cout << "Created entity with transform : " << transform->translation.x << std::endl;
-
-    return _entitiesSparseSet.Get(newUid);
+    return _entities.Get(newUid);
 }
 
 
 /**
  * Delete an entity and its components associated
- * @param entity Entity* to delete
+ * @param uid Unique ID of the Entity to remove from this world
  * @return bool that indicated the success in deleting the Entity. It will return false if Entity is not contained in this World or cannot delete.
  */
-bool World::DeleteEntity(Entity* entity)
+bool World::RemoveEntity(const uint32_t& uid)
 {
-    return false;
+    if (!_entities.Contains(uid))
+    {
+        COMETA_WARNING("[WORLD] Tried to delete entity that doesnt exist or its not contained in this world");
+        return false;
+    }
+    _entities.Pop(uid);
+    return true;
 }
 
-// --------------- ENTITIES METHODS IMPLEMENTATIONS ---------------
 
 
-// --------------- END OF ENTITIES METHODS IMPLEMENTATIONS ---------------
+
+void World::DebugPrint(){
+    std::cout << "=== WORLD DEBUG INFO ===" << std::endl;
+    std::cout << "World instance: " << worldInstanceCount << std::endl;
+    std::cout << "Number of entities: " << _entities.Size() << std::endl;
+    
+    // Print all entities with its components
+    std::cout << "\n--- ENTITIES ---" << std::endl;
+    for (size_t i = 0; i < _entities.Size(); i++) {
+        Entity* entity = _entities.Get(_entities.GetDenseIndex(i));
+        if (entity) {
+            std::cout << "Entity UID: " << entity->GetUID() << ", Name: " << entity->GetName() << std::endl;
+
+            if (entity->HasComponent<Transform>()) {
+                Transform* transform = entity->GetComponent<Transform>();
+                std::cout << "  - Transform: " 
+                          << "Pos(" << transform->translation.x << ", " 
+                          << transform->translation.y << ", " 
+                          << transform->translation.z << "), "
+                          << "Rot(" << transform->rotation.x << ", " 
+                          << transform->rotation.y << ", " 
+                          << transform->rotation.z << "), "
+                          << "Scale(" << transform->scale.x << ", " 
+                          << transform->scale.y << ", " 
+                          << transform->scale.z << ")" << std::endl;
+            }
+
+            if (entity->HasComponent<Renderable>()) {
+                std::cout << "  - Renderable: Yes" << std::endl;
+            }
+
+            if (entity->HasComponent<SpriteRenderable>()) {
+                SpriteRenderable* sprite = entity->GetComponent<SpriteRenderable>();
+                std::cout << "  - SpriteRenderable: Color(" 
+                          << sprite->color.r << ", " 
+                          << sprite->color.g << ", " 
+                          << sprite->color.b << ", " 
+                          << sprite->color.a << ")" << std::endl;
+            }
+
+            if (entity->HasComponent<Collider>()) {
+                std::cout << "  - Collider: Yes" << std::endl;
+            }
+
+            if (entity->HasComponent<RigidBody>()) {
+                std::cout << "  - RigidBody: Yes" << std::endl;
+            }
+
+            if (entity->HasComponent<Tag>()) {
+                Tag* tag = entity->GetComponent<Tag>();
+                std::cout << "  - Tag: " << tag->GetTag() << std::endl;
+            }
+            
+            std::cout << std::endl;
+        }
+    }
+    
+    std::cout << "=== END WORLD DEBUG INFO ===" << std::endl;
+}
