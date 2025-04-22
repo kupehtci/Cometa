@@ -179,7 +179,7 @@ void MapsLayer::Update()
             {3, DataType::Float2, "aTexCoord"}
     });
 
-    vBuffer0.GetLayoutBuffer().Build();
+    // vBuffer0.GetLayoutBuffer().Build();
     vBuffer0.GetLayoutBuffer().Bind();
 
     // Update camera and its proyection

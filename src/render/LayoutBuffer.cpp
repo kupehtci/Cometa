@@ -14,7 +14,6 @@ LayoutBuffer::~LayoutBuffer() {
 }
 
 void LayoutBuffer::Build() {
-
 	_size = 0;
 
 	if (_layouts.empty()) {
@@ -39,30 +38,30 @@ void LayoutBuffer::Enable() {
 	// Enable each layout in the LayoutBuffer depending on its type of data
 	for (const Layout layout : _layouts) {
 		switch (layout._type) {
-		case DataType::Float: 
-		case DataType::Float2: 
-		case DataType::Float3: 
-		case DataType::Float4: 
-			glVertexAttribPointer(layout._position, 
+		case DataType::Float:
+		case DataType::Float2:
+		case DataType::Float3:
+		case DataType::Float4:
+			glVertexAttribPointer(layout._position,
 								static_cast<int>(DataTypeCalculateNumberElements(layout._type)),
-								GL_FLOAT, 
-								GL_FALSE, 
+								GL_FLOAT,
+								GL_FALSE,
 								static_cast<int>(_size),
 								reinterpret_cast<void*>(layout._offset));
-			glEnableVertexAttribArray(layout._position); 
-			break; 
+			glEnableVertexAttribArray(layout._position);
+			break;
 
-		default: 
-			std::cout << "not implemented yet mat3 and mat4 layout implementation" << std::endl; 
-			break; 
-		} 
+		default:
+			std::cout << "not implemented yet mat3 and mat4 layout implementation" << std::endl;
+			break;
+		}
 
 	}
 }
 
 // TODO: Replace Enable with Bind
 void LayoutBuffer::Bind() {
-	Enable(); 
+	Enable();
 }
 
 void LayoutBuffer::Unbind() {

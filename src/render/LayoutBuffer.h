@@ -52,8 +52,12 @@ public:
 	*		LayoutBuffer layBuffer = {{0, DataType::Float3, "_position"}, {1, DataType::Float3, "_color"}}; 
 	* 
 	* In a format like a struct declaration
+	* Once the layout buffer is set, it gets build to calculate each Layout's offset and size
 	*/
-	LayoutBuffer(std::initializer_list<Layout> layouts) : _layouts(layouts), _size(0) {}; 
+	LayoutBuffer(std::initializer_list<Layout> layouts) : _layouts(layouts), _size(0)
+	{
+		Build();
+	};
 
 
 	/**
