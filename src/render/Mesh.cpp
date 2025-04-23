@@ -4,6 +4,17 @@
 
 #include "Mesh.h"
 
+// ------------ CONSTRUCTOR AND DESTRUCTOR ------------
+
+Mesh::Mesh()
+{
+    _vao = VertexArray();
+
+}
+
+
+// ------------ CUSTOM MESH METHODS ------------
+
 void Mesh::AddVertices(float* vertices, uint32_t numVertices)
 {
     _vertices.insert(_vertices.end(), vertices, vertices + numVertices);

@@ -20,7 +20,7 @@ private:
     uint32_t _numIndices = 0;
 
 public:
-    Mesh() = default;
+    Mesh();
     ~Mesh() = default;
 
     // ------------ CUSTOM MESH METHODS ------------
