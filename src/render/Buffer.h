@@ -65,7 +65,7 @@ public:
 */
 class IndexBuffer : public Buffer{
 
-private: 
+private:
 	uint32_t _count; 
 
 public:

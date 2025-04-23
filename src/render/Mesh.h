@@ -11,7 +11,7 @@
 
 class Mesh {
 private:
-    VertexArray _vao;
+    std::shared_ptr<VertexArray> _vao = nullptr;
 
     std::vector<float> _vertices;
     uint32_t _numVertices = 0;
@@ -28,6 +28,7 @@ public:
     void AddVertices(float* vertices, uint32_t numVertices);
     void AddIndices(uint32_t* indices, uint32_t numIndices);
 
+    void Build();
 
     // ------------ DEBUG ------------
 
@@ -36,7 +37,7 @@ public:
 
     // ------------ GETTERS AND SETTERS ------------
 
-    VertexArray& GetVertexArray() { return _vao; }
+    std::shared_ptr<VertexArray>& GetVertexArray() { return _vao; }
     [[nodiscard]] uint32_t GetNumVertices() const { return _numVertices; }
     [[nodiscard]] uint32_t GetNumIndices() const { return _numIndices; }
 };
