@@ -29,11 +29,14 @@ public:
     void AddIndices(uint32_t* indices, uint32_t numIndices);
 
     void Build();
+    void Draw();
+
+    void Bind();
+    void Unbind();
 
     // ------------ DEBUG ------------
 
     void Debug();
-
 
     // ------------ GETTERS AND SETTERS ------------
 

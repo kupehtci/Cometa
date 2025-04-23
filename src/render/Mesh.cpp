@@ -5,10 +5,6 @@
 #include "Mesh.h"
 
 // TODO: Delete this three references
-#include "Texture.h"
-#include "Shader.h"
-#include "Material.h"
-#include "Camera.h"
 
 // ------------ CONSTRUCTOR AND DESTRUCTOR ------------
 
@@ -35,7 +31,7 @@ void Mesh::AddIndices(uint32_t* indices, uint32_t numIndices)
 
 void Mesh::Build()
 {
-    std::cout << "################# MESH BUILD METHOD #################" << std::endl;
+    // std::cout << "################# MESH BUILD METHOD #################" << std::endl;
 
     // VertexArray vao = VertexArray();
     _vao->CreateVertexBuffer(_vertices.data(), _numVertices * sizeof(float));
@@ -51,12 +47,25 @@ void Mesh::Build()
 
     _vao->Bind();
 
-
-    _vao->Bind();
-    glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
-    std::cout << "################# END OF MESH BUILD METHOD #################" << std::endl;
+    // std::cout << "################# END OF MESH BUILD METHOD #################" << std::endl;
 }
 
+void Mesh::Draw()
+{
+    _vao->Bind();
+    glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
+}
+
+
+void Mesh::Bind()
+{
+    _vao->Bind();
+}
+
+void Mesh::Unbind()
+{
+    _vao->Unbind();
+}
 
 void Mesh::Debug()
 {

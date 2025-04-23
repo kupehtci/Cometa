@@ -69,15 +69,6 @@ void MapsLayer::Init()
 
     // Debug the world created
     world0.DebugPrint();
-
-    Mesh mesh0 = Mesh();
-    float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
-    uint32_t indices[] = {1, 2, 3, 4};
-    mesh0.AddIndices(indices, 4);
-    mesh0.AddIndices(indices, 4);
-    mesh0.AddVertices(vertices, 9);
-    mesh0.AddVertices(vertices, 9);
-    mesh0.Debug();
 }
 
 void MapsLayer::Update()
@@ -175,53 +166,27 @@ void MapsLayer::Update()
         20, 21, 22,   22, 23, 20   // Left
     };
 
-
-    // VertexArray vArray0 = VertexArray();
-    // // VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
-    // // IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
-    // // vArray0.AddIndexBuffer(iBuffer0);
-    //
-    // vArray0.CreateVertexBuffer(vertices, sizeof(vertices));
-    // vArray0.CreateIndexBuffer(indices, sizeof(indices));
-    //
-    // vArray0.GetVertexBuffers()[0]->SetLayoutBuffer({
-    //         {0, DataType::Float3, "aPos"},
-    //         {1, DataType::Float3, "aNormal"},
-    //         {2, DataType::Float3, "aColor"},
-    //         {3, DataType::Float2, "aTexCoord"}
-    // });
-    // vArray0.GetVertexBuffers()[0]->GetLayoutBuffer().Bind();
-    //
-    // // vArray0.AddVertexBuffer(vBuffer0);
-    //
-    //
-    // vArray0.Bind();
-    //
-    //
-    // // mainShader->Bind();
-    //
-    // vArray0.Bind();
-    //
-    // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    //
     Mesh mesh0 = Mesh();
     mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
     mesh0.AddIndices(indices, sizeof(indices) / sizeof(uint32_t));
     mesh0.Build();
+    mesh0.Draw();
     // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     // ------------------ DRAW MORE CUBES ---------------------------
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
-    //     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    // }
-    //
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
-    //     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    // }
+    for (int i = 0; i < 6; i++)
+    {
+        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
+        mesh0.Draw();
+        // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    }
+
+    for (int i = 0; i < 6; i++)
+    {
+        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
+        mesh0.Draw();
+        // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    }
     // ------------------ END OF DRAWING MORE CUBES ---------------------------
 
 
@@ -229,21 +194,21 @@ void MapsLayer::Update()
 
 
     // --------- Draw LIGHT POINT ---------
-    //
-    // Shader* lightShader = new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    // lightShader->Bind();
-    //
-    // lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    // glm::mat4 lightPosMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
-    // lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
-    //
-    // lightShader->SetMatrix4("uModel", lightPosMatrix);
-    //
-    // vArray0.Bind();
-    //
-    // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    //
-    // lightShader->Unbind();
+
+    Shader* lightShader = new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    lightShader->Bind();
+
+    lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
+    glm::mat4 lightPosMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
+    lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
+
+    lightShader->SetMatrix4("uModel", lightPosMatrix);
+
+    mesh0.Bind();
+    mesh0.Draw();
+    //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+    lightShader->Unbind();
 
     // --------- END OF DRAWING LIGHT POINT ---------
 }
