@@ -35,22 +35,7 @@ void Mesh::AddIndices(uint32_t* indices, uint32_t numIndices)
 
 void Mesh::Build()
 {
-
-
-
-
     std::cout << "################# MESH BUILD METHOD #################" << std::endl;
-    // std::cout << "vertices: " << numVertices << std::endl;
-    // std::cout << "indices: " << numIndices << std::endl;
-    // for (uint32_t i = 0; i < numVertices; i++)
-    // {
-    //     std::cout << "vertices: " << vertices[i] << std::endl;
-    // }
-    //
-    // for (uint32_t i = 0; i < numIndices; i++)
-    // {
-    //     std::cout << "indices: " << indices[i] << std::endl;
-    // }
 
     // VertexArray vao = VertexArray();
     _vao->CreateVertexBuffer(_vertices.data(), _numVertices * sizeof(float));
@@ -75,7 +60,6 @@ void Mesh::Build()
 
 void Mesh::Debug()
 {
-
     std::cout << "Vertices: " << _numVertices << std::endl;
     for (int i = 0 ; i < _numVertices ; i++)
     {
