@@ -70,14 +70,14 @@ void MapsLayer::Init()
     // Debug the world created
     world0.DebugPrint();
 
-    Mesh mesh0 = Mesh();
-    float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
-    uint32_t indices[] = {1, 2, 3, 4};
-    mesh0.AddIndices(indices, 4);
-    mesh0.AddIndices(indices, 4);
-    mesh0.AddVertices(vertices, 9);
-    mesh0.AddVertices(vertices, 9);
-    mesh0.Debug();
+    // Mesh mesh0 = Mesh();
+    // float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+    // uint32_t indices[] = {1, 2, 3, 4};
+    // mesh0.AddIndices(indices, 4);
+    // mesh0.AddIndices(indices, 4);
+    // mesh0.AddVertices(vertices, 9);
+    // mesh0.AddVertices(vertices, 9);
+    // mesh0.Debug();
 }
 
 void MapsLayer::Update()
@@ -113,7 +113,7 @@ void MapsLayer::Update()
     glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
     mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
+    mainShader->SetFloat3("light.ambient", glm::vec3(0.1f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
     mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
@@ -166,21 +166,31 @@ void MapsLayer::Update()
     };
 
 
+    // VertexArray vArray0 = VertexArray();
+    // VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
+    // IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
+    // vArray0.AddIndexBuffer(iBuffer0);
+    //
+    // vArray0.SetLayoutBuffer({
+    //         {0, DataType::Float3, "aPos"},
+    //         {1, DataType::Float3, "aNormal"},
+    //         {2, DataType::Float3, "aColor"},
+    //         {3, DataType::Float2, "aTexCoord"}
+    // });
 
 
-    VertexArray vArray0 = VertexArray();
-    VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
-    IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
-    vArray0.AddIndexBuffer(iBuffer0);
-
-    vBuffer0.SetLayoutBuffer({
+    Mesh mesh0;
+    mesh0.AddIndices(indices, sizeof(indices) / sizeof(unsigned int));
+    mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
+    mesh0.SetLayoutBuffer({
             {0, DataType::Float3, "aPos"},
             {1, DataType::Float3, "aNormal"},
             {2, DataType::Float3, "aColor"},
             {3, DataType::Float2, "aTexCoord"}
     });
 
-    vArray0.AddVertexBuffer(vBuffer0);
+
+    // vArray0.AddVertexBuffer(vBuffer0);
 
     // Update camera and its proyection
     _camera.OnUpdate();
@@ -191,27 +201,37 @@ void MapsLayer::Update()
     glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
     mainShader->SetMatrix4("uModel", modelRotated);
 
-    vArray0.Bind();
+    // vArray0.Bind();
+    // mesh0.Bind();
 
+    mesh0.Bind();
+    mesh0.Build();
+
+    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "mesh0 size of vbo's array: " << mesh0.GetVertexArray().GetVertexBuffers().size() << std::endl;
+    std::cout << "--------------------------------------------------" << std::endl;
 
     mainShader->Bind();
 
-    vArray0.Bind();
+    // vArray0.Bind();
+    mesh0.Bind();
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // mesh0.Debug();
+    mesh0.Draw();
 
     // ------------------ DRAW MORE CUBES ---------------------------
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
-        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
-        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-    }
+    // for (int i = 0; i < 6; i++)
+    // {
+    //     mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
+    //     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // }
+    //
+    // for (int i = 0; i < 6; i++)
+    // {
+    //     mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
+    //     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // }
     // ------------------ END OF DRAWING MORE CUBES ---------------------------
 
 
@@ -229,9 +249,10 @@ void MapsLayer::Update()
 
     lightShader->SetMatrix4("uModel", lightPosMatrix);
 
-    vArray0.Bind();
-
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+    // vArray0.Bind();
+    mesh0.Bind();
+    mesh0.Draw();
+    // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     lightShader->Unbind();
 

@@ -33,7 +33,20 @@ void LayoutBuffer::Build() {
 	}
 }
 
-void LayoutBuffer::Enable() {
+
+void LayoutBuffer::Add(const Layout& layout)
+{
+	_layouts.push_back(layout);
+	Build();
+}
+
+
+void LayoutBuffer::Bind() {
+	if (_size == 0)
+	{
+		COMETA_WARNING("[LayoutBuffer] Need to build before Bind() or Enable()");
+		return;
+	}
 
 	// Enable each layout in the LayoutBuffer depending on its type of data
 	for (const Layout layout : _layouts) {
@@ -51,23 +64,25 @@ void LayoutBuffer::Enable() {
 			glEnableVertexAttribArray(layout._position);
 			break;
 
+		case DataType::Int:
+		case DataType::Int2:
+		case DataType::Int3:
+		case DataType::Int4:
+			glVertexAttribPointer(layout._position,
+						static_cast<int>(DataTypeCalculateNumberElements(layout._type)),
+						GL_INT,
+						GL_FALSE,
+						static_cast<int>(_size),
+						reinterpret_cast<void*>(layout._offset));
+			glEnableVertexAttribArray(layout._position);
+			break;
+
 		default:
 			std::cout << "not implemented yet mat3 and mat4 layout implementation" << std::endl;
 			break;
 		}
 
 	}
-}
-
-void LayoutBuffer::Add(const Layout& layout)
-{
-	_layouts.push_back(layout);
-	Build();
-}
-
-
-void LayoutBuffer::Bind() {
-	Enable();
 }
 
 void LayoutBuffer::Unbind() {

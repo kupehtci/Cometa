@@ -11,7 +11,7 @@
 #include "debug/Assertion.h"
 #include "./DataType.h"
 
-#include "render/LayoutBuffer.h"
+// #include "render/LayoutBuffer.h"
 
 /**
 * Buffer abstract class that define the minimal structure of a Renderer API Buffer
@@ -39,7 +39,7 @@ public:
 class VertexBuffer : public Buffer{
 
 private:
-	LayoutBuffer _layoutBuffer;
+	//LayoutBuffer _layoutBuffer;
 
 public:
 	VertexBuffer();
@@ -56,8 +56,8 @@ public:
 	void Bind() override; 
 	void Unbind() override;
 
-	LayoutBuffer& GetLayoutBuffer() { return _layoutBuffer; }
-	void SetLayoutBuffer(const LayoutBuffer& layoutBuffer) { _layoutBuffer = layoutBuffer; }
+	// LayoutBuffer& GetLayoutBuffer() { return _layoutBuffer; }
+	// void SetLayoutBuffer(const LayoutBuffer& layoutBuffer) { _layoutBuffer = layoutBuffer; }
 };
 
 /**

@@ -28,6 +28,13 @@ public:
     void AddVertices(float* vertices, uint32_t numVertices);
     void AddIndices(uint32_t* indices, uint32_t numIndices);
 
+    // Generates the VAO (VertexArray), VBO(VertexBuffer) and EBO(IndexBuffer)
+    void Build();
+
+    void Bind();
+    void Unbind();
+
+    void Draw();
 
     // ------------ DEBUG ------------
 
@@ -35,7 +42,7 @@ public:
 
 
     // ------------ GETTERS AND SETTERS ------------
-
+    void SetLayoutBuffer(const LayoutBuffer& layoutBuffer){_vao.SetLayoutBuffer(layoutBuffer); }
     VertexArray& GetVertexArray() { return _vao; }
     [[nodiscard]] uint32_t GetNumVertices() const { return _numVertices; }
     [[nodiscard]] uint32_t GetNumIndices() const { return _numIndices; }

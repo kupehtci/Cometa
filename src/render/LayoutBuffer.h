@@ -54,8 +54,9 @@ public:
 	* In a format like a struct declaration
 	* Once the layout buffer is set, it gets build to calculate each Layout's offset and size
 	*/
-	LayoutBuffer(std::initializer_list<Layout> layouts) : _layouts(layouts), _size(0)
+	LayoutBuffer(std::initializer_list<Layout> layouts) : _layouts(layouts)
 	{
+		// _size = layouts.size();
 		Build();
 	};
 
@@ -63,18 +64,26 @@ public:
 	*	Default destructor of LayoutBuffer
 	*	Unbind all layout before destroy
 	*/
-	~LayoutBuffer(); 
+	~LayoutBuffer();
+
+	/**
+	 * Overlaod assingment operator so the copy also build this LayoutBuffer
+	 * @param other
+	 * @return
+	 */
+	LayoutBuffer& operator = (const LayoutBuffer& other)
+	{
+		this->_layouts.clear();
+		this->_layouts.assign(other._layouts.begin(), other._layouts.end());
+		this->_size = other._size;
+		this->Build();
+		return *this;
+	}
 
 	/**
 	*   Build the layout buffer by calculating the stride and offset of each layout
 	*/
-	void Build(); 
-
-
-	/**
-	*	Enable the LayoutBuffer by enabling each layout
-	*/
-	void Enable();
+	void Build();
 
 	/**
 	 * Add a new layout to the LayoutBuffer and re-build it
@@ -96,6 +105,10 @@ public:
 	* Debug function that print by console the properties of each layout within the LayoutBuffer
 	*/
 	void Debug() const;
+
+
+	// ------------ GETTERS AND SETTERS ------------
+	[[nodiscard]] bool IsSet() const {return !_layouts.empty() && _size > 0;}
 };
 
 #endif // AURAGL_LAYOUTBUFFER_H

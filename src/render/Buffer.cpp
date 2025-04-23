@@ -24,7 +24,8 @@ VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
 }
 
 VertexBuffer::~VertexBuffer() {
-	glDeleteBuffers(1, &_uid); 
+	glDeleteBuffers(1, &_uid);
+	std::cout << "Vertex Buffer Deleted with uid: " << _uid << std::endl;
 }
 
 void VertexBuffer::Bind() {
@@ -51,7 +52,8 @@ IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t size) {
 }
 
 IndexBuffer::~IndexBuffer() {
-	glDeleteBuffers(1, &_uid); 
+	glDeleteBuffers(1, &_uid);
+	std::cout << "Index Buffer Deleted with uid: " << _uid << std::endl;
 }
 
 void IndexBuffer::Bind() {
