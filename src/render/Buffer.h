@@ -19,6 +19,7 @@
 class Buffer {
 protected:
 	uint32_t _uid = 0;
+	bool _empty = true;
 public:
 	virtual ~Buffer() = default;
 	/**
@@ -40,11 +41,9 @@ class VertexBuffer : public Buffer{
 private:
 	LayoutBuffer _layoutBuffer;
 
-public: 
-	/**
-	* Create a Vertex Buffer with the specified size
-	* Data is not defined, so can be added as SubData for Dynamic Drawing
-	*/
+public:
+	VertexBuffer();
+
 	VertexBuffer(uint32_t size); 
 
 	/**
@@ -70,7 +69,7 @@ private:
 	uint32_t _count; 
 
 public:
-	
+	IndexBuffer(); 
 	IndexBuffer(uint32_t* indices, uint32_t size);
 	~IndexBuffer() final;
 

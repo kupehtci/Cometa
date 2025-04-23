@@ -17,11 +17,11 @@ void LayoutBuffer::Build() {
 	_size = 0;
 
 	if (_layouts.empty()) {
-		COMETA_ASSERT("Building an empty layout buffer"); 
-		return; 
+		COMETA_ASSERT("Building an empty layout buffer");
+		return;
 	}
 
-	uint32_t calcOffset = 0; 
+	uint32_t calcOffset = 0;
 	
 	// For each layout position, sum the stride and size
 	// 
@@ -59,7 +59,13 @@ void LayoutBuffer::Enable() {
 	}
 }
 
-// TODO: Replace Enable with Bind
+void LayoutBuffer::Add(const Layout& layout)
+{
+	_layouts.push_back(layout);
+	Build();
+}
+
+
 void LayoutBuffer::Bind() {
 	Enable();
 }
@@ -76,7 +82,7 @@ void LayoutBuffer::Unbind() {
 	_size = 0; 
 }
 
-void LayoutBuffer::Debug() {
+void LayoutBuffer::Debug() const {
 	for (auto const& layout : _layouts) {
 		std::cout << "Layout: " << layout._position << " " << layout._name << " type: " << static_cast<int>(layout._type) << " with stride: " << layout._size << " and offset: " << layout._offset << std::endl;
 	}

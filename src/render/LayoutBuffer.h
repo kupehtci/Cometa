@@ -25,7 +25,7 @@ struct Layout {
 	*  Complete constructor by defining minimal structure
 	*  Intended to calculate offset next
 	*/
-	Layout(const uint32_t position, const DataType type, const std::string name) :
+	Layout(const uint32_t position, const DataType type, const std::string& name) :
 		_position(position), _type(type),  _name(name), 
 		_offset(0)
 	{
@@ -59,7 +59,6 @@ public:
 		Build();
 	};
 
-
 	/**
 	*	Default destructor of LayoutBuffer
 	*	Unbind all layout before destroy
@@ -75,7 +74,13 @@ public:
 	/**
 	*	Enable the LayoutBuffer by enabling each layout
 	*/
-	void Enable(); 
+	void Enable();
+
+	/**
+	 * Add a new layout to the LayoutBuffer and re-build it
+	 * @param layout new Layout to add
+	 */
+	void Add(const Layout& layout);
 
 	/**
 	*	Enable the LayoutBuffer by enabling each layout
@@ -90,7 +95,7 @@ public:
 	/**
 	* Debug function that print by console the properties of each layout within the LayoutBuffer
 	*/
-	void Debug(); 
+	void Debug() const;
 };
 
 #endif // AURAGL_LAYOUTBUFFER_H

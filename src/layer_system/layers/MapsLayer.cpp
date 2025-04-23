@@ -157,20 +157,9 @@ void MapsLayer::Update()
 
 
     VertexArray vArray0 = VertexArray();
-    vArray0.Bind();
-
     VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
     IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
-
-    vBuffer0.Bind();
-    iBuffer0.Bind();
-
-    // LayoutBuffer layoutBuffer = {
-    //         {0, DataType::Float3, "aPos"},
-    //         {1, DataType::Float3, "aNormal"},
-    //         {2, DataType::Float3, "aColor"},
-    //         {3, DataType::Float2, "aTexCoord"}
-    // };
+    vArray0.AddIndexBuffer(iBuffer0);
 
     vBuffer0.SetLayoutBuffer({
             {0, DataType::Float3, "aPos"},
@@ -179,13 +168,12 @@ void MapsLayer::Update()
             {3, DataType::Float2, "aTexCoord"}
     });
 
-    // vBuffer0.GetLayoutBuffer().Build();
-    vBuffer0.GetLayoutBuffer().Bind();
+    vArray0.AddVertexBuffer(vBuffer0);
 
     // Update camera and its proyection
     _camera.OnUpdate();
     mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    mainShader->SetFloat3("viewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
+    mainShader->SetFloat3("uViewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
 
 
     glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
@@ -331,7 +319,7 @@ void MapsLayer::Update()
     // // Update camera and its proyection
     // _camera.OnUpdate();
     // mainShader1->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    // mainShader1->SetFloat3("viewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
+    // mainShader1->SetFloat3("uViewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
     //
     //
     // glm::mat4 modelRotated1 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, -3.0f));

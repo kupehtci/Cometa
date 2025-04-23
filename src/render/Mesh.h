@@ -5,10 +5,27 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <vector>
+
 #include "render/VertexArray.h"
 
 class Mesh {
+private:
+    VertexArray _vao;
+    std::vector<float> _vertices;
 
+public:
+
+
+    // ------------ CUSTOM MESH METHODS ------------
+
+    void AddVertices(float* vertices)
+    {
+        _vertices.insert(_vertices.end(), vertices, vertices + 24);
+    }
+
+
+    VertexArray& GetVertexArray() { return _vao; }
 };
 
 
