@@ -28,7 +28,7 @@ void VertexArray::AddVertexBuffer(VertexBuffer& vertexBuffer)
 
 	vertexBuffer.Bind();
 	vertexBuffer.GetLayoutBuffer().Bind();
-	_vertexBuffers.push_back(vertexBuffer);
+	// _vertexBuffers.push_back(vertexBuffer);
 }
 
 void VertexArray::AddIndexBuffer(IndexBuffer& indexBuffer)
@@ -36,5 +36,22 @@ void VertexArray::AddIndexBuffer(IndexBuffer& indexBuffer)
 	glBindVertexArray(_uid);
 
 	indexBuffer.Bind();
+	// _indexBuffer = indexBuffer;
+}
+
+void VertexArray::CreateVertexBuffer(float* vertices, uint32_t size)
+{
+	glBindVertexArray(_uid);
+	std::shared_ptr<VertexBuffer> vertexBuffer = std::make_shared<VertexBuffer>(vertices, size);
+	vertexBuffer->Bind();
+	vertexBuffer->GetLayoutBuffer().Bind();
+
+	_vertexBuffers.push_back(vertexBuffer);
+}
+void VertexArray::CreateIndexBuffer(uint32_t* indices, uint32_t size)
+{
+	glBindVertexArray(_uid);
+	std::shared_ptr<IndexBuffer> indexBuffer = std::make_shared<IndexBuffer>(indices, size);
+	indexBuffer->Bind();
 	_indexBuffer = indexBuffer;
 }

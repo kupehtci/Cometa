@@ -6,8 +6,8 @@
 class VertexArray : public Buffer {
 
 private: 
-	std::vector<VertexBuffer> _vertexBuffers;
-	IndexBuffer _indexBuffer;
+	std::vector<std::shared_ptr<VertexBuffer>> _vertexBuffers;
+	std::shared_ptr<IndexBuffer> _indexBuffer;
 public: 
 	VertexArray();
 	~VertexArray() override;
@@ -18,6 +18,10 @@ public:
 	void AddVertexBuffer(VertexBuffer& vertexBuffer);
 	void AddIndexBuffer(IndexBuffer& indexBuffer);
 
-	std::vector<VertexBuffer>& GetVertexBuffers() { return _vertexBuffers; }
-	IndexBuffer& GetIndexBuffer() { return _indexBuffer; }
+	// Take into account that size is in bytes
+	void CreateVertexBuffer(float* vertices, uint32_t size);
+	void CreateIndexBuffer(uint32_t* indices, uint32_t size);
+
+	std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() { return _vertexBuffers; }
+	std::shared_ptr<IndexBuffer>& GetIndexBuffer() { return _indexBuffer; }
 };

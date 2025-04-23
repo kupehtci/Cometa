@@ -166,21 +166,23 @@ void MapsLayer::Update()
     };
 
 
-
-
     VertexArray vArray0 = VertexArray();
-    VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
-    IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
-    vArray0.AddIndexBuffer(iBuffer0);
+    // VertexBuffer vBuffer0 = VertexBuffer(vertices, sizeof(vertices));
+    // IndexBuffer iBuffer0 = IndexBuffer(indices, sizeof(indices));
+    // vArray0.AddIndexBuffer(iBuffer0);
 
-    vBuffer0.SetLayoutBuffer({
+    vArray0.CreateVertexBuffer(vertices, sizeof(vertices));
+    vArray0.CreateIndexBuffer(indices, sizeof(indices));
+
+    vArray0.GetVertexBuffers()[0]->SetLayoutBuffer({
             {0, DataType::Float3, "aPos"},
             {1, DataType::Float3, "aNormal"},
             {2, DataType::Float3, "aColor"},
             {3, DataType::Float2, "aTexCoord"}
     });
+    vArray0.GetVertexBuffers()[0]->GetLayoutBuffer().Bind();
 
-    vArray0.AddVertexBuffer(vBuffer0);
+    // vArray0.AddVertexBuffer(vBuffer0);
 
     // Update camera and its proyection
     _camera.OnUpdate();
