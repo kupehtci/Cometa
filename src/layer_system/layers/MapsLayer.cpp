@@ -205,6 +205,8 @@ void MapsLayer::Update()
     // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
     //
     Mesh mesh0 = Mesh();
+    mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
+    mesh0.AddIndices(indices, sizeof(indices) / sizeof(uint32_t));
     mesh0.Build();
     // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
