@@ -6,10 +6,13 @@
 
 #include "render/Renderer.h"
 #include "render/Shader.h"
+#include "render/Mesh.h"
 
 #include "world/Entity.h"
 #include "world/World.h"
 #include "world/Components.h"
+
+
 
 MapsLayer::MapsLayer()
 {
@@ -66,6 +69,15 @@ void MapsLayer::Init()
 
     // Debug the world created
     world0.DebugPrint();
+
+    Mesh mesh0 = Mesh();
+    float vertices[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+    uint32_t indices[] = {1, 2, 3, 4};
+    mesh0.AddIndices(indices, 4);
+    mesh0.AddIndices(indices, 4);
+    mesh0.AddVertices(vertices, 9);
+    mesh0.AddVertices(vertices, 9);
+    mesh0.Debug();
 }
 
 void MapsLayer::Update()

@@ -12,20 +12,33 @@
 class Mesh {
 private:
     VertexArray _vao;
+
     std::vector<float> _vertices;
+    uint32_t _numVertices = 0;
+
+    std::vector<uint32_t> _indices;
+    uint32_t _numIndices = 0;
 
 public:
-
+    Mesh() = default;
+    ~Mesh() = default;
 
     // ------------ CUSTOM MESH METHODS ------------
 
-    void AddVertices(float* vertices)
-    {
-        _vertices.insert(_vertices.end(), vertices, vertices + 24);
-    }
+    void AddVertices(float* vertices, uint32_t numVertices);
+    void AddIndices(uint32_t* indices, uint32_t numIndices);
 
+
+    // ------------ DEBUG ------------
+
+    void Debug();
+
+
+    // ------------ GETTERS AND SETTERS ------------
 
     VertexArray& GetVertexArray() { return _vao; }
+    [[nodiscard]] uint32_t GetNumVertices() const { return _numVertices; }
+    [[nodiscard]] uint32_t GetNumIndices() const { return _numIndices; }
 };
 
 
