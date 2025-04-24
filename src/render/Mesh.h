@@ -43,6 +43,8 @@ public:
     std::shared_ptr<VertexArray>& GetVertexArray() { return _vao; }
     [[nodiscard]] uint32_t GetNumVertices() const { return _numVertices; }
     [[nodiscard]] uint32_t GetNumIndices() const { return _numIndices; }
+
+    void SetLayoutBuffer(const LayoutBuffer& layoutBuffer) const {_vao->SetLayoutBuffer(layoutBuffer);}
 };
 
 

@@ -169,8 +169,16 @@ void MapsLayer::Update()
     Mesh mesh0 = Mesh();
     mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
     mesh0.AddIndices(indices, sizeof(indices) / sizeof(uint32_t));
+    mesh0.SetLayoutBuffer(
+    {
+        {0, DataType::Float3, "aPos"},
+        {1, DataType::Float3, "aNormal"},
+        {2, DataType::Float3, "aColor"},
+        {3, DataType::Float2, "aTexCoord"}
+        });
     mesh0.Build();
     mesh0.Draw();
+
     // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     // ------------------ DRAW MORE CUBES ---------------------------
