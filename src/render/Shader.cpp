@@ -4,6 +4,7 @@
 
 #include "Shader.h"
 #include <filesystem>
+#include "debug/Assertion.h"
 
 
 //Shader::Shader() {
@@ -100,7 +101,8 @@ std::string Shader::LoadFromFile(std::string filePath){
     stream << file.rdbuf();
     file.close();
 
-    // std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
+    // Set as not compiled to handle new compilation
+    _isCompiled = false;
 
     return stream.str();
 }
@@ -125,6 +127,7 @@ unsigned int Shader::CompileShader(GLenum shaderType) {
     }
 
     // _shaderUID = uid;
+    _isCompiled = true;
     return uid;
 }
 
@@ -164,6 +167,11 @@ void Shader::CompileShaderProgram(){
 }
 
 void Shader::Bind(){
+    if (!_isCompiled)
+    {
+        COMETA_ERROR(" [SHADER] Tried to bind a non compiled shader");
+        return;
+    }
     glUseProgram(_shaderUID);
 }
 
@@ -175,7 +183,10 @@ void Shader::Delete(){
     if(_shaderUID == 0){
         std::cout << "ERROR::SHADER::Trying to delete a not compiled shader" << std::endl;
     }
-    glDeleteProgram(_shaderUID);
+    else
+    {
+        glDeleteProgram(_shaderUID);
+    }
 
     _shaderUID = 0;
 }

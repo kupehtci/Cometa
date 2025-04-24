@@ -177,23 +177,21 @@ void MapsLayer::Update()
         {3, DataType::Float2, "aTexCoord"}
         });
     mesh0.Build();
+
     mesh0.Draw();
 
-    // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     // ------------------ DRAW MORE CUBES ---------------------------
     for (int i = 0; i < 6; i++)
     {
         mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
         mesh0.Draw();
-        // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
     }
 
     for (int i = 0; i < 6; i++)
     {
         mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
         mesh0.Draw();
-        // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
     }
     // ------------------ END OF DRAWING MORE CUBES ---------------------------
 
