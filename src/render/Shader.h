@@ -20,7 +20,6 @@
 class Shader {
 
 private:
-
     unsigned int _shaderUID;
     std::unordered_map<GLenum, std::string> _shaderSources;         // Store as a map (Shader type - source code)
     std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)

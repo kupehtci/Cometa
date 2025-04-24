@@ -40,6 +40,7 @@ Shader::Shader(const std::string& name, const std::string& vertexShaderSource, c
 Shader::~Shader(){
     _shaderSources.clear();
     _filePaths.clear();
+    Delete();
 }
 
 // ------------ UNIFORM METHODS ------------
