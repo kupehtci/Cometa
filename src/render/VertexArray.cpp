@@ -27,7 +27,7 @@ void VertexArray::AddVertexBuffer(VertexBuffer& vertexBuffer)
 	glBindVertexArray(_uid);
 
 	vertexBuffer.Bind();
-	vertexBuffer.GetLayoutBuffer().Bind();
+	_layoutBuffer.Bind();
 	// _vertexBuffers.push_back(vertexBuffer);
 }
 
@@ -44,7 +44,7 @@ void VertexArray::CreateVertexBuffer(float* vertices, uint32_t size)
 	glBindVertexArray(_uid);
 	std::shared_ptr<VertexBuffer> vertexBuffer = std::make_shared<VertexBuffer>(vertices, size);
 	vertexBuffer->Bind();
-	vertexBuffer->GetLayoutBuffer().Bind();
+	_layoutBuffer.Bind();
 
 	_vertexBuffers.push_back(vertexBuffer);
 }

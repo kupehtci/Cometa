@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Buffer.h"
+#include "render/LayoutBuffer.h"
 
 
 class VertexArray : public Buffer {
@@ -10,6 +11,8 @@ class VertexArray : public Buffer {
 private: 
 	std::vector<std::shared_ptr<VertexBuffer>> _vertexBuffers;
 	std::shared_ptr<IndexBuffer> _indexBuffer;
+
+	LayoutBuffer _layoutBuffer;
 public: 
 	VertexArray();
 	~VertexArray() override;
@@ -26,4 +29,7 @@ public:
 
 	std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() { return _vertexBuffers; }
 	std::shared_ptr<IndexBuffer>& GetIndexBuffer() { return _indexBuffer; }
+
+	LayoutBuffer& GetLayoutBuffer() { return _layoutBuffer; }
+	void SetLayoutBuffer(const LayoutBuffer& layoutBuffer) { _layoutBuffer = layoutBuffer; }
 };
