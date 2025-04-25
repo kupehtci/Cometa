@@ -43,7 +43,8 @@ fi
 compile_for_windows_vstudio() {
     echo "Compiling a Visual Studio Solution for windows using premake5"
     ./premake5.exe clean
-
+    rm *.sln
+    rm *.vcxproj*
     ./premake5.exe vs2022 --os=windows 
 }
 
@@ -61,12 +62,12 @@ compile_for_macos_gmake () {
         echo "Premake5 is installed"
     else
         echo "Premake5 is not installed and cannot be compiled without it"
-        echo "Install it using: "
+        exit 1;
     fi
 
     echo "Transcription for MacOS using premake5"
+    
     premake5 clean
-
     premake5 gmake --cc=gcc --os=macosx
 
     echo "Compiling MakeFiles"
@@ -76,7 +77,7 @@ compile_for_macos_gmake () {
 
     #  take into account that needs to be called from here to set the current path from here
     #  If its called from inside the folder, the current path or called' path is going to be taken from the debug folder
-    bin/Debug/AuraGL
+    bin/Debug/CometaGL
 }
 
 

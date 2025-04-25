@@ -4,6 +4,8 @@
 
 #include "Shader.h"
 #include <filesystem>
+#include "debug/Assertion.h"
+
 
 //Shader::Shader() {
 //    _shaderUID = 0;
@@ -39,7 +41,52 @@ Shader::Shader(const std::string& name, const std::string& vertexShaderSource, c
 Shader::~Shader(){
     _shaderSources.clear();
     _filePaths.clear();
+    Delete();
 }
+
+// ------------ UNIFORM METHODS ------------
+
+void Shader::SetBool(const std::string& variableName, const bool& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1i(location,(int)value);
+}
+
+void Shader::SetFloat(const std::string& variableName, const float& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1f(location, value);
+}
+
+void Shader::SetFloat2(const std::string &variableName, const glm::vec2 &value) const {
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform2f(location, value.x, value.y);
+}
+
+void Shader::SetFloat3(const std::string& variableName, const glm::vec3& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform3f(location, value.x, value.y, value.z);
+}
+
+void Shader::SetFloat4(const std::string& variableName, const glm::vec4& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform4f(location, value.x, value.y, value.z, value.w);
+}
+
+void Shader::SetInt(const std::string& variableName, const int& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1i(location, value);
+}
+
+void Shader::SetIntArray(const std::string& variableName, const int* values, uint32_t count) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str());
+    glUniform1iv(location, count, values);
+}
+
+void Shader::SetMatrix4(const std::string& variableName, const glm::mat4& value) const{
+    int location = glGetUniformLocation(_shaderUID, variableName.c_str()); 
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+
 
 std::string Shader::LoadFromFile(std::string filePath){
 
@@ -54,7 +101,8 @@ std::string Shader::LoadFromFile(std::string filePath){
     stream << file.rdbuf();
     file.close();
 
-    // std::cout << "Read shader that contains: " << std::endl <<  _sourceCode.c_str() << std::endl;
+    // Set as not compiled to handle new compilation
+    _isCompiled = false;
 
     return stream.str();
 }
@@ -79,6 +127,7 @@ unsigned int Shader::CompileShader(GLenum shaderType) {
     }
 
     // _shaderUID = uid;
+    _isCompiled = true;
     return uid;
 }
 
@@ -117,11 +166,27 @@ void Shader::CompileShaderProgram(){
     _shaderUID = shaderProgramID;
 }
 
+void Shader::Bind(){
+    if (!_isCompiled)
+    {
+        COMETA_ERROR(" [SHADER] Tried to bind a non compiled shader");
+        return;
+    }
+    glUseProgram(_shaderUID);
+}
+
+void Shader::Unbind() {
+    glUseProgram(0);
+}
+
 void Shader::Delete(){
     if(_shaderUID == 0){
         std::cout << "ERROR::SHADER::Trying to delete a not compiled shader" << std::endl;
     }
-    glDeleteProgram(_shaderUID);
+    else
+    {
+        glDeleteProgram(_shaderUID);
+    }
 
     _shaderUID = 0;
 }

@@ -1,7 +1,8 @@
 -- Include file that defines "clean" action for removing build files
 include "clean.lua"
 
-workspace "Aura"
+-- Define main workspace
+workspace "Cometa"
 	configurations { "Debug", "Release" }
 
     -- Compile for x64 format. For 32 bits set to x86
@@ -12,6 +13,7 @@ IncludeDir = {}
 IncludeDir["GLM"] = "vendor/glm/glm"
 IncludeDir["GLFW"] = "vendor/GLFW/include"
 IncludeDir["GLAD"] = "vendor/glad/include"
+IncludeDir["STB_IMAGE"] = "vendor/stb_image"
 
 
 -- Include other Premake5 files for:
@@ -19,13 +21,14 @@ IncludeDir["GLAD"] = "vendor/glad/include"
 
 include "vendor/glad"
 
-project "AuraGL"
-	kind "ConsoleApp"  
+project "CometaGL"
+	kind "ConsoleApp"
 	language "C++"
     cppdialect "C++17"
-        
+
     includedirs {
         "src"
+        --"vendor/GLFW/src"
 --             "src/debug",
 --             "src/core",
 --             "src/components",
@@ -45,23 +48,29 @@ project "AuraGL"
     targetdir ("bin/%{cfg.buildcfg}")
     objdir ("bin/obj/%{cfg.buildcfg}")
 
-
+    -- MACOS specifications
     filter "system:macosx"
 
         includedirs{
             "%{IncludeDir.GLFW}",
             "%{IncludeDir.GLM}",
-            "%{IncludeDir.GLAD}"
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.STB_IMAGE}",
+            "/opt/homebrew/include",
+            --"/vendor/GLFW/include/GLFW_macos"
         }
 
         libdirs{
-            "vendor/glad/bin"
+            "vendor/glad/bin",
+            "vendor/GLFW/lib_macos_arm"
         }
 
         links{
-            "glfw",
+            "glfw3",
             "OpenGL.framework",
-            "glad"
+            "glad",
+            "Cocoa.framework",
+            "IOKit.framework"
         }
 
         defines { "PLATFORM_MACOS" }
@@ -73,7 +82,8 @@ project "AuraGL"
         includedirs{
             "%{IncludeDir.GLFW}",
             "%{IncludeDir.GLM}",
-            "%{IncludeDir.GLAD}"
+            "%{IncludeDir.GLAD}",
+            "%{IncludeDir.STB_IMAGE}"
         }
         libdirs{
             "vendor/GLFW/lib"
@@ -85,10 +95,10 @@ project "AuraGL"
         defines { "PLATFORM_WINDOWS" }
 
 
-	filter { "configurations:Debug" }  
-        defines { "DEBUG" }  
-        symbols "On"  
-	  
-	filter { "configurations:Release" }  
-        defines { "NDEBUG" }  
+	filter { "configurations:Debug" }
+        defines { "DEBUG" }
+        symbols "On"
+
+	filter { "configurations:Release" }
+        defines { "NDEBUG" }
         optimize "On"

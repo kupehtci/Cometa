@@ -4,17 +4,34 @@
 #define GL_SILENCE_DEPRECATION
 
 #include "Window.h"
-#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm.hpp>
 
-#include "Shader.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#include <core/Application.h>
+#include <input/Input.h>
+
+#include "render/Renderer.h"
+#include "core/Application.h"
+
+
+// ------------ FUNCTION DECLARATION ------------
+/**
+ * Callback to handle the window resize through OpenGL function
+ * @param window Window pointer passed through the OpenGL callback
+ * @param width New width passed through the OpenGL callback
+ * @param height New height passed through the OpenGL callback
+ */
+void HandleResizeCallback(GLFWwindow *window, int width, int height);
+
 
 // Window constructor
 Window::Window()
 {
-    this->_resolution = nullptr; 
+    this->_resolution = nullptr;
     this->_window = nullptr;
     this->_title = "none";
 }
@@ -23,21 +40,14 @@ Window::Window()
  * Window destructor
  */
 Window::~Window(){
-//    if(this->_window !=  nullptr){
-//        glfwDestroyWindow(this->_window);
-//    }
-//
-//    delete this->_resolution;
-//    delete this->_title;
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+        delete _window;
+    }
+
+    delete _resolution;
 }
 
-/**
- * Callback to handle the window resize through OpenGL function
- * @param window Window pointer passed through the OpenGL callback
- * @param width New width passed through the OpenGL callback
- * @param height New height passed through the OpenGL callback
- */
-void HandleResizeCallback(GLFWwindow *window, int width, int height);
 
 
 
@@ -59,43 +69,103 @@ void Window::Create(int width, int height, const char *title) {
     // Set Callbacks
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
-
     glfwMakeContextCurrent(_window);
 }
+
+void Window::Init() {
+
+}
+
 
 void Window::Update() {
     Render();
 }
 
+
 void Window::Render() {
 
-    glClearColor(0.2f, 0.1f, 0.3f, 1.0f); // Set background color
-    glClear(GL_COLOR_BUFFER_BIT);         // Clear the screen
+//    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
+
+    glfwSwapBuffers(_window);
+    glfwPollEvents();
+    glEnable(GL_DEPTH_TEST); 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen
+}
 
 
+
+
+bool Window::ShouldHandleCloseWindow(){
+    return glfwWindowShouldClose(this->_window);
+}
+
+/**
+ * Close the window and clean it
+ * Also clean the rest of parameters of the window
+ */
+void Window::Close() {
+
+    if(this->_window !=  nullptr){
+        glfwDestroyWindow(this->_window);
+    }
+
+    delete this->_resolution;
+    this->_resolution = nullptr;
+
+    COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
+}
+
+/**
+ * Handle the resize of the window
+ */
+void Window::HandleResize(GLFWwindow* window, int width, int height) {
+    Quad previousResolution = *_resolution;
+
+    // glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
+    glfwGetFramebufferSize(_window, &_resolution->x, &_resolution->y);
+    
+    // COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y)).c_str());
+
+    // modify viewport resolution
+    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
+}
+
+
+/**
+ * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
+ * This function is called from OpenGL as a callback
+ * @param window (GLFWwindow*) window pointer of the main window that is being resized
+ * @param width (int) new width value of the window
+ * @param height (int) new height value of the window
+ */
+void HandleResizeCallback(GLFWwindow* window, int width, int height){
+    Window::GetInstancePtr()->HandleResize(window, width, height);
+}
+
+
+// Previus used function to show colors
+void TestingFunctionShaderColors(GLFWwindow* window, int key, int scancode, int action, int mods) {
     // ------------------------------------------------------------------------------------
     // TESTING
     // ------------------------------------------------------------------------------------
-
-    unsigned int vertexShaderID;
-    unsigned int fragmentShaderID;
-    unsigned int shaderProgramID;
-
-    // Error handling variables
-    int  success;
-    char infoLog[512];
 
     Shader mainShader = Shader("Main Shader", "src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
 
     // Set shader as current and delete the compiled shaders
     glUseProgram(mainShader.GetShaderUID());
 
-
     float vertices[] = {
             -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
             0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
     };
+
+    // Testing uniform value update
+    float timeValue = glfwGetTime();
+    float greenValue = sin(timeValue) / 2.0f + 0.5f;
+    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -133,57 +203,6 @@ void Window::Render() {
     // Once all is used, delete the resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgramID);
 
-    // ------------------------------------------------------------------------------------
-
-
-
-    glfwSwapBuffers(_window);
-    glfwPollEvents();
-
-}
-
-bool Window::ShouldHandleCloseWindow(){
-    return !glfwWindowShouldClose(this->_window);
-}
-
-/**
- * Close the window and clean it
- * Also clean the rest of parameters of the window
- */
-void Window::Close() {
-
-    if(this->_window !=  nullptr){
-        glfwDestroyWindow(this->_window);
-    }
-
-    delete this->_resolution;
-    this->_resolution = nullptr;
-    // delete this->_title;
-    // this->_title = nullptr;
-}
-
-/**
- * Handle the resize of the window
- */
-void Window::HandleResize(GLFWwindow* window, int width, int height) {
-    Quad previousResolution = *_resolution;
-
-    glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
-
-    std::cout << "Handling resize from " << previousResolution.x << ", " << previousResolution.y << " to " << _resolution->x << ", " << _resolution->y << std::endl;
-
-    // modify viewport resolution
-    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
-}
-
-/**
- * Callback that is called from GLFW library and calls the Window HandleResize method to handle the resize of the window
- * @param window
- * @param width
- * @param height
- */
-void HandleResizeCallback(GLFWwindow* window, int width, int height){
-    Window::GetInstancePtr()->HandleResize(window, width, height);
+    mainShader.Delete();
 }

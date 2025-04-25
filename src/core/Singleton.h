@@ -9,6 +9,9 @@
 
 
 
+/**
+* Singleton class
+*/
 template<class T>
 class Singleton{
 
@@ -18,7 +21,7 @@ public:
     Singleton(){};
     ~Singleton(){};
 
-    inline static void Create(){
+    inline static void Create() {
         if(!instance){
             instance = new T();
         }
@@ -27,11 +30,16 @@ public:
         }
     }
 
+    /** 
+    * Get the a pointer to the instance
+    * returns (T*) Pointer to the singleton instance
+    * 
+    */
     inline static T* GetInstancePtr(){
         if(!instance){
             Create();
             return instance;
-//            return nullptr;
+//            return nullptr; // in this case if instance is not initialized, return nullprt
         }
         else{
             return instance;
