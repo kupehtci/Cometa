@@ -3,6 +3,7 @@
 
 #include <glm.hpp>
 #include "render/Texture.h"
+#include "render/Shader.h"
 
 /**
  * Material class that doesn't have light maps, only values
@@ -36,6 +37,7 @@ public:
 class Material
 {
 private:
+    // Material properties
     glm::vec3 _color = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec3 _ambient = glm::vec3(1.0f, 0.5f, 0.32f);
     glm::vec3 _diffuse = glm::vec3(1.0f, 0.5f, 0.32f);
@@ -52,7 +54,12 @@ private:
     bool _hasSpecularMap = false;
     bool _hasEmissionMap = false;
 
+    // Shader properties
+    std::shared_ptr<Shader> _shader = nullptr;
+
 public:
+
+    // Constructors
     Material() = default;
     Material(glm::vec3 color, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float shininess) :
         _color(color), _ambient(ambient), _diffuse(diffuse), _specular(specular), _shininess(shininess)
@@ -74,13 +81,26 @@ public:
         _hasEmissionMap = true;
     }
 
-    // Load maps functions
+    // Load maps methods
     void LoadDiffuseMap(const std::string& diffuseMapPath);
     void LoadSpecularMap(const std::string& specularMapPath);
     void LoadEmissionMap(const std::string& emissionMapPath);
 
+    // Shader methods
+    void LoadShader(const Shader& shader);
+    void LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    void UnsetShader();
 
-    // --------- GETTERS AND SETTERS ---------
+
+    // --------- SETTERS ---------
+    void SetColor(glm::vec3 color) { _color = color; }
+    void SetAmbient(glm::vec3 ambient) { _ambient = ambient; }
+    void SetDiffuse(glm::vec3 diffuse) { _diffuse = diffuse; }
+    void SetSpecular(glm::vec3 specular) { _specular = specular; }
+    void SetShininess(float shininess) {_shininess = shininess; }
+
+    // --------- GETTERS ---------
+    // Material properties getters
     [[nodiscard]] glm::vec3 GetColor() const { return _color; }
     [[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
     [[nodiscard]] glm::vec3 GetDiffuse() const { return _diffuse; }
@@ -91,6 +111,9 @@ public:
     [[nodiscard]] inline Texture* GetDiffuseMap() const { return _diffuseMap; }
     [[nodiscard]] inline Texture* GetSpecularMap() const { return _specularMap; }
     [[nodiscard]] inline Texture* GetEmissionMap() const { return _emissionMap; }
+
+    // Shader getters
+    [[nodiscard]] std::shared_ptr<Shader> GetShader() const { return _shader; }
 };
 
 #endif

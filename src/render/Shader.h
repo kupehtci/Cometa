@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+#include <map>
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
@@ -20,13 +20,13 @@
 class Shader {
 
 private:
-    unsigned int _shaderUID;
+    unsigned int _shaderUID;                                        // UID of the shader once it has been compiled
     std::unordered_map<GLenum, std::string> _shaderSources;         // Store as a map (Shader type - source code)
     std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)
-    std::string _debugName;
-    bool _isCompiled = false;
+    std::string _debugName;                                         // Name for debugging purposes or UI
+    bool _isCompiled = false;                                       // Keep track if Render backend has the shader compiled
 
-    // std::unordered_map<std::string, unsigned int> _shadersCache;    // Cache of all the shaders
+    static std::unordered_map<std::string, std::shared_ptr<Shader>> _shadersCache;    // Cache of all the shaders
 
 public:
 
@@ -43,6 +43,11 @@ public:
      * Default destructor of the shader
      */
     ~Shader();
+
+    // ------------ CACHED METHODS ------------
+
+    static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+
 
     // ------------ UNIFORMS METHODS ------------
         
@@ -156,33 +161,10 @@ public:
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:
-    /**
-     * Get the source code of one of the loaded shaders
-     */
-    inline std::string GetSourceCode(GLenum shaderType){
-        return _shaderSources[GL_FRAGMENT_SHADER];
-    }
-
-    /**
-     * Get the file path of the shader that is loaded
-     * @return
-     */
-    inline std::string GetFilePath(GLenum shaderType){
-        return _filePaths[shaderType];
-    }
-
-    /**
-     * Get the Shader's Unique ID
-     * If shader has not be compiled yet correctly the UID will be 0
-     * @returns (unsigned int) Shader's Unique ID that can be used as a reference to it
-     */
-     inline unsigned int GetShaderUID() const{
-         return _shaderUID;
-     }
-
-    [[nodiscard]] inline bool IsCompiled() const{
-        return _isCompiled;
-    }
+    inline std::string GetSourceCode(GLenum shaderType){ return _shaderSources[GL_FRAGMENT_SHADER]; }
+    inline std::string GetFilePath(GLenum shaderType){ return _filePaths[shaderType];}
+    inline unsigned int GetShaderUID() const{ return _shaderUID; }
+    [[nodiscard]] inline bool IsCompiled() const{ return _isCompiled; }
 
 };
 

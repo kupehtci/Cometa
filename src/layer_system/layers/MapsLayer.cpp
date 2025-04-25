@@ -73,7 +73,10 @@ void MapsLayer::Init()
 
 void MapsLayer::Update()
 {
-    Shader* mainShader = new Shader("Main Shader",
+    // Shader* mainShader = new Shader("Main Shader",
+    //     "src/render/shaders/light_map_shader.vert",
+    //     "src/render/shaders/light_map_shader.frag");
+    std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
     mainShader->Bind();
