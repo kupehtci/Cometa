@@ -14,15 +14,14 @@ LayoutBuffer::~LayoutBuffer() {
 }
 
 void LayoutBuffer::Build() {
-
 	_size = 0;
 
 	if (_layouts.empty()) {
-		COMETA_ASSERT("Building an empty layout buffer"); 
-		return; 
+		COMETA_ASSERT("Building an empty layout buffer");
+		return;
 	}
 
-	uint32_t calcOffset = 0; 
+	uint32_t calcOffset = 0;
 	
 	// For each layout position, sum the stride and size
 	// 
@@ -39,30 +38,36 @@ void LayoutBuffer::Enable() {
 	// Enable each layout in the LayoutBuffer depending on its type of data
 	for (const Layout layout : _layouts) {
 		switch (layout._type) {
-		case DataType::Float: 
-		case DataType::Float2: 
-		case DataType::Float3: 
-		case DataType::Float4: 
-			glVertexAttribPointer(layout._position, 
-								DataTypeCalculateNumberElements(layout._type),
-								GL_FLOAT, 
-								GL_FALSE, 
-								_size, 
-								(void*)(layout._offset));
-			glEnableVertexAttribArray(layout._position); 
-			break; 
+		case DataType::Float:
+		case DataType::Float2:
+		case DataType::Float3:
+		case DataType::Float4:
+			glVertexAttribPointer(layout._position,
+								static_cast<int>(DataTypeCalculateNumberElements(layout._type)),
+								GL_FLOAT,
+								GL_FALSE,
+								static_cast<int>(_size),
+								reinterpret_cast<void*>(layout._offset));
+			glEnableVertexAttribArray(layout._position);
+			break;
 
-		default: 
-			std::cout << "not implemented yet mat3 and mat4 layout implementation" << std::endl; 
-			break; 
-		} 
+		default:
+			std::cout << "not implemented yet mat3 and mat4 layout implementation" << std::endl;
+			break;
+		}
 
 	}
 }
 
-// TODO: Replace Enable with Bind
+void LayoutBuffer::Add(const Layout& layout)
+{
+	_layouts.push_back(layout);
+	Build();
+}
+
+
 void LayoutBuffer::Bind() {
-	Enable(); 
+	Enable();
 }
 
 void LayoutBuffer::Unbind() {
@@ -77,9 +82,9 @@ void LayoutBuffer::Unbind() {
 	_size = 0; 
 }
 
-void LayoutBuffer::Debug() {
-	for (auto layout : _layouts) {
-		std::cout << "Layout: " << layout._position << " " << layout._name << " type: " << (int)layout._type << " with stride: " << layout._size << " and offset: " << layout._offset << std::endl;
+void LayoutBuffer::Debug() const {
+	for (auto const& layout : _layouts) {
+		std::cout << "Layout: " << layout._position << " " << layout._name << " type: " << static_cast<int>(layout._type) << " with stride: " << layout._size << " and offset: " << layout._offset << std::endl;
 	}
 }
 

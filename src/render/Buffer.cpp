@@ -5,6 +5,12 @@
 
 // --------- Vertex Buffer ---------
 
+VertexBuffer::VertexBuffer()
+{
+	_empty = true;
+	_uid = 0;
+}
+
 VertexBuffer::VertexBuffer(uint32_t size) {
 	glGenBuffers(1, &_uid); 
 	glBindBuffer(GL_ARRAY_BUFFER, _uid); 
@@ -18,7 +24,7 @@ VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
 }
 
 VertexBuffer::~VertexBuffer() {
-	glDeleteBuffers(1, &_uid); 
+	// glDeleteBuffers(1, &_uid);
 }
 
 void VertexBuffer::Bind() {
@@ -32,6 +38,11 @@ void VertexBuffer::Unbind() {
 
 // ---------- Index Buffer ---------
 
+IndexBuffer::IndexBuffer()
+{
+	_empty = true;
+}
+
 IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t size) {
 	_count = size; 
 	glGenBuffers(1, &_uid);
@@ -40,7 +51,7 @@ IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t size) {
 }
 
 IndexBuffer::~IndexBuffer() {
-	glDeleteBuffers(1, &_uid); 
+	// glDeleteBuffers(1, &_uid);
 }
 
 void IndexBuffer::Bind() {

@@ -20,13 +20,13 @@
 class Shader {
 
 private:
-
     unsigned int _shaderUID;
     std::unordered_map<GLenum, std::string> _shaderSources;         // Store as a map (Shader type - source code)
     std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)
     std::string _debugName;
+    bool _isCompiled = false;
 
-    std::unordered_map<std::string, unsigned int> _shadersCache;    // Cache of all the shaders
+    // std::unordered_map<std::string, unsigned int> _shadersCache;    // Cache of all the shaders
 
 public:
 
@@ -179,6 +179,10 @@ public:
      inline unsigned int GetShaderUID() const{
          return _shaderUID;
      }
+
+    [[nodiscard]] inline bool IsCompiled() const{
+        return _isCompiled;
+    }
 
 };
 
