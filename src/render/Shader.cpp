@@ -6,22 +6,10 @@
 #include <filesystem>
 #include "debug/Assertion.h"
 
+// Implement the cache for the shaders
+// Static member
+std::unordered_map<std::string, std::shared_ptr<Shader>> Shader::_shadersCache = std::unordered_map<std::string, std::shared_ptr<Shader>>(20);
 
-//Shader::Shader() {
-//    _shaderUID = 0;
-//    _shaderType = GL_NONE;
-//    _sourceCode = "";
-//    _filePath = "";
-//}
-
-//Shader::Shader(std::string filePath, GLenum shaderType){
-//    _shaderUID = 0;
-//    _sourceCode = "";
-//    _filePath = filePath;
-//    _shaderType = shaderType;
-//    LoadFromFile(filePath);
-//    CompileShader();
-//}
 
 Shader::Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource){
 
@@ -43,6 +31,28 @@ Shader::~Shader(){
     _filePaths.clear();
     Delete();
 }
+
+// ------------ CACHED METHODS ------------
+
+// Static method to load shaders
+std::shared_ptr<Shader> Shader::LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+{
+    const std::string key = vertexShaderPath + "__" + fragmentShaderPath;
+
+    // Check if its contained in the cache
+    // std::unordered_map<std::string,std::shared_ptr<Shader>>::iterator
+    auto cacheIterator = _shadersCache.find(key);
+
+    if (cacheIterator != _shadersCache.end()){
+        return cacheIterator->second;
+    }
+
+    // Otherwise, if has not been stored in cache, create a new one, cache it and return it
+    std::shared_ptr<Shader> shader = std::make_shared<Shader>(name, vertexShaderPath, fragmentShaderPath);
+    _shadersCache.insert( {key,shader});
+    return shader;
+}
+
 
 // ------------ UNIFORM METHODS ------------
 
