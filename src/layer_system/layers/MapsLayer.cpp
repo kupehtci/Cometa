@@ -73,39 +73,42 @@ void MapsLayer::Init()
 
 void MapsLayer::Update()
 {
-    // Shader* mainShader = new Shader("Main Shader",
+    // std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
     //     "src/render/shaders/light_map_shader.vert",
     //     "src/render/shaders/light_map_shader.frag");
-    std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
+    // mainShader->Bind();
+    //
+    // std::shared_ptr<Texture> materialDiffuseMap = _mat.GetDiffuseMap();
+    // int diffuseMapIndex = 0;
+    // mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
+    // materialDiffuseMap->Bind(diffuseMapIndex);
+    //
+    // std::shared_ptr<Texture> materialSpecularMap = _mat.GetSpecularMap();
+    // int specularMapIndex = 1;
+    // mainShader->SetInt("material.specularMap", specularMapIndex);
+    // materialSpecularMap->Bind(specularMapIndex);
+    //
+    // std::shared_ptr<Texture> materialEmissionMap = _mat.GetEmissionMap();
+    // int emissionMapIndex = 2;
+    // mainShader->SetInt("material.emissionMap", emissionMapIndex);
+    // materialEmissionMap->Bind(emissionMapIndex);
+    //
+    // mainShader->SetBool("material.hasDiffuseMap", true);
+    // mainShader->SetBool("material.hasSpecularMap", true);
+    // mainShader->SetBool("material.hasEmissionMap", true);
+    //
+    // mainShader->SetFloat3("material.color", _mat.GetColor());
+    // mainShader->SetFloat3("material.ambient", _mat.GetAmbient());
+    // mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
+    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
+    // mainShader->SetFloat("material.shininess", _mat.GetShininess());
+
+    _mat.LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
-    mainShader->Bind();
 
-    std::shared_ptr<Texture> materialDiffuseMap = _mat.GetDiffuseMap();
-    int diffuseMapIndex = 0;
-    mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
-    materialDiffuseMap->Bind(diffuseMapIndex);
-
-    std::shared_ptr<Texture> materialSpecularMap = _mat.GetSpecularMap();
-    int specularMapIndex = 1;
-    mainShader->SetInt("material.specularMap", specularMapIndex);
-    materialSpecularMap->Bind(specularMapIndex);
-
-    std::shared_ptr<Texture> materialEmissionMap = _mat.GetEmissionMap();
-    int emissionMapIndex = 2;
-    mainShader->SetInt("material.emissionMap", emissionMapIndex);
-    materialEmissionMap->Bind(emissionMapIndex);
-
-    mainShader->SetBool("material.hasDiffuseMap", true);
-    mainShader->SetBool("material.hasSpecularMap", true);
-    mainShader->SetBool("material.hasEmissionMap", true);
-
-
-    mainShader->SetFloat3("material.color", _mat.GetColor());
-    mainShader->SetFloat3("material.ambient", _mat.GetAmbient());
-    mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    mainShader->SetFloat3("material.specular", _mat.GetSpecular());
-    mainShader->SetFloat("material.shininess", _mat.GetShininess());
+    _mat.Bind();
+    std::shared_ptr<Shader> mainShader = _mat.GetShader();
 
     // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
     glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
