@@ -4,16 +4,16 @@
 // Load maps methods
 void Material::LoadDiffuseMap(const std::string& diffuseMapPath)
 {
-    _diffuseMap = new Texture(diffuseMapPath);
+    _diffuseMap = std::make_shared<Texture>(diffuseMapPath);
 }
 void Material::LoadSpecularMap(const std::string& specularMapPath)
 {
-    _specularMap = new Texture(specularMapPath);
+    _specularMap = std::make_shared<Texture>(specularMapPath);
 }
 
 void Material::LoadEmissionMap(const std::string& emissionMapPath)
 {
-    _emissionMap = new Texture(emissionMapPath);
+    _emissionMap = std::make_shared<Texture>(emissionMapPath);
 }
 
 void Material::LoadShader(const Shader& shader)
@@ -31,6 +31,10 @@ void Material::UnsetShader()
 }
 
 // Rendering methods
-void Material::UploadToGPU(){
+
+/**
+ * Binds imply to setting all the GPU uniforms and structures with the data stored in the object
+ */
+void Material::Bind(){
 
 }

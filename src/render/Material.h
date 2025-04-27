@@ -45,9 +45,9 @@ private:
     float _shininess = 256.0f;
 
     // Maps
-    Texture* _diffuseMap = nullptr;
-    Texture* _specularMap = nullptr;
-    Texture* _emissionMap = nullptr;
+    std::shared_ptr<Texture> _diffuseMap = nullptr;
+    std::shared_ptr<Texture> _specularMap = nullptr;
+    std::shared_ptr<Texture> _emissionMap = nullptr;
 
     // checks
     bool _hasDiffuseMap = false;
@@ -92,7 +92,7 @@ public:
     void UnsetShader();
 
     // Rendering methods
-    void UploadToGPU();
+    void Bind();
 
 
     // --------- SETTERS ---------
@@ -111,9 +111,9 @@ public:
     [[nodiscard]] float GetShininess() const { return _shininess; }
 
     // Maps getters
-    [[nodiscard]] inline Texture* GetDiffuseMap() const { return _diffuseMap; }
-    [[nodiscard]] inline Texture* GetSpecularMap() const { return _specularMap; }
-    [[nodiscard]] inline Texture* GetEmissionMap() const { return _emissionMap; }
+    [[nodiscard]] inline std::shared_ptr<Texture> GetDiffuseMap() const { return _diffuseMap; }
+    [[nodiscard]] inline std::shared_ptr<Texture> GetSpecularMap() const { return _specularMap; }
+    [[nodiscard]] inline std::shared_ptr<Texture> GetEmissionMap() const { return _emissionMap; }
 
     // Shader getters
     [[nodiscard]] std::shared_ptr<Shader> GetShader() const { return _shader; }

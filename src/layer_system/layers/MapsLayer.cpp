@@ -81,17 +81,17 @@ void MapsLayer::Update()
         "src/render/shaders/light_map_shader.frag");
     mainShader->Bind();
 
-    Texture* materialDiffuseMap = _mat.GetDiffuseMap();
+    std::shared_ptr<Texture> materialDiffuseMap = _mat.GetDiffuseMap();
     int diffuseMapIndex = 0;
     mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
     materialDiffuseMap->Bind(diffuseMapIndex);
 
-    Texture* materialSpecularMap = _mat.GetSpecularMap();
+    std::shared_ptr<Texture> materialSpecularMap = _mat.GetSpecularMap();
     int specularMapIndex = 1;
     mainShader->SetInt("material.specularMap", specularMapIndex);
     materialSpecularMap->Bind(specularMapIndex);
 
-    Texture* materialEmissionMap = _mat.GetEmissionMap();
+    std::shared_ptr<Texture> materialEmissionMap = _mat.GetEmissionMap();
     int emissionMapIndex = 2;
     mainShader->SetInt("material.emissionMap", emissionMapIndex);
     materialEmissionMap->Bind(emissionMapIndex);
