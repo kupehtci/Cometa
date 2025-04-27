@@ -48,7 +48,6 @@ public:
 
     static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
-
     // ------------ UNIFORMS METHODS ------------
         
     /**
