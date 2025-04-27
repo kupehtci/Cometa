@@ -83,31 +83,35 @@ void MapsLayer::Update()
 
     Texture* materialDiffuseMap = _mat.GetDiffuseMap();
     int diffuseMapIndex = 0;
-    mainShader->SetInt("material.diffuse", diffuseMapIndex);
+    mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
     materialDiffuseMap->Bind(diffuseMapIndex);
 
     Texture* materialSpecularMap = _mat.GetSpecularMap();
     int specularMapIndex = 1;
-    mainShader->SetInt("material.specular", specularMapIndex);
+    mainShader->SetInt("material.specularMap", specularMapIndex);
     materialSpecularMap->Bind(specularMapIndex);
 
     Texture* materialEmissionMap = _mat.GetEmissionMap();
     int emissionMapIndex = 2;
-    mainShader->SetInt("material.emission", emissionMapIndex);
+    mainShader->SetInt("material.emissionMap", emissionMapIndex);
     materialEmissionMap->Bind(emissionMapIndex);
+
+    mainShader->SetBool("material.hasDiffuseMap", true);
+    mainShader->SetBool("material.hasSpecularMap", true);
+    mainShader->SetBool("material.hasEmissionMap", true);
 
 
     mainShader->SetFloat3("material.color", _mat.GetColor());
-    // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
+    mainShader->SetFloat3("material.ambient", _mat.GetAmbient());
     mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
+    mainShader->SetFloat3("material.specular", _mat.GetSpecular());
     mainShader->SetFloat("material.shininess", _mat.GetShininess());
 
     // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
     glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
     mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
+    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
     mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 

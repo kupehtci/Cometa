@@ -24,9 +24,13 @@ void Material::LoadShader(const std::string& name, const std::string& vertexShad
 {
     // _shader = std::make_shared<Shader>(name, vertexShaderPath, fragmentShaderPath);
     _shader = Shader::LoadShader(name, vertexShaderPath, fragmentShaderPath);
-
 }
 void Material::UnsetShader()
 {
+    _shader = nullptr;
+}
+
+// Rendering methods
+void Material::UploadToGPU(){
 
 }

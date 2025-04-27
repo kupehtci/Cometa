@@ -91,6 +91,9 @@ public:
     void LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
     void UnsetShader();
 
+    // Rendering methods
+    void UploadToGPU();
+
 
     // --------- SETTERS ---------
     void SetColor(glm::vec3 color) { _color = color; }

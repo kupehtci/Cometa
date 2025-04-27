@@ -2,9 +2,17 @@
 out vec4 FragColor;
 
 struct Material {
-    sampler2D diffuse;
-    sampler2D specular;
-    sampler2D emission;
+    sampler2D diffuseMap;
+    sampler2D specularMap;
+    sampler2D emissionMap;
+
+    bool hasDiffuseMap;
+    bool hasSpecularMap;
+    bool hasEmissionMap;
+
+    vec3 diffuse;
+    vec3 specular;
+
     vec3 color;
     vec3 ambient;
     float shininess;
@@ -29,27 +37,60 @@ uniform Light light;
 void main()
 {
     // ambient
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, texCoord));
+    vec3 ambient = vec3(0.0, 0.0, 0.0);
+
+    if(material.hasDiffuseMap){
+        ambient = light.ambient * vec3(texture(material.diffuseMap, texCoord));
+    }
+    else {
+        ambient = light.ambient * material.ambient;
+    }
 
     // diffuse
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
 
-    vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, texCoord)));
+    vec3 diffuse = vec3(0.0, 0.0, 0.0);
+
+    if(material.hasDiffuseMap){
+        diffuse = light.diffuse * (diff * vec3(texture(material.diffuseMap, texCoord)));
+    }
+    else {
+        diffuse = light.diffuse * (diff * material.diffuse);
+    }
 
     // specular
     vec3 viewDir = normalize(uViewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * vec3(texture(material.specular, texCoord)));
+
+    vec3 specular = vec3(0.0, 0.0, 0.0);
+
+    if(material.hasSpecularMap){
+        specular = light.specular * (spec * vec3(texture(material.specularMap, texCoord)));
+    }
+    else {
+        specular = light.specular * (spec * material.specular);
+    }
+
 
     // emission
-    vec3 emission = texture(material.emission, texCoord).rgb;
+    vec3 emission = vec3(0.0, 0.0, 0.0);
 
-    // Results
-    vec3 result = (ambient + diffuse + specular + emission) * material.color;
-    //  TEST NORMALs // FragColor = vec4(ourNormal, 1.0);
+    if(material.hasEmissionMap){
+        emission = texture(material.emissionMap, texCoord).rgb;
+    }
+
+    // results
+    vec3 result = vec3(0.0);
+    if(material.hasDiffuseMap && material.hasEmissionMap && material.hasSpecularMap){
+        result = (ambient + diffuse + specular + emission) * material.color;
+    }
+    else {
+        result = vec3(1.0);
+    }
+
     FragColor = vec4(result, 1.0);
 
 }
