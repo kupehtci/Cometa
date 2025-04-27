@@ -31,7 +31,6 @@ Entity* World::CreateEntity(const std::string& name)
     uint32_t newUid = newEntity.GetUID();
     newEntity._parentWorld = this;
     _entities.Add(newUid, newEntity);
-    // std::cout << "previous to create component transform " << std::endl;
 
     // Create an initial transform component for the entity
     newEntity.CreateComponent<Transform>();
@@ -53,10 +52,9 @@ bool World::RemoveEntity(const uint32_t& uid)
         return false;
     }
     _entities.Pop(uid);
+    // TODO: remains to implement component pop all when entity is deleted
     return true;
 }
-
-
 
 
 void World::DebugPrint(){

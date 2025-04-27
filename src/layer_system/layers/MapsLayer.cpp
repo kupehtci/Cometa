@@ -40,29 +40,8 @@ void MapsLayer::Init()
 
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
-    Renderable* rend = ent0->CreateComponent<Renderable>();
-
+    ent0->CreateComponent<Renderable>();
     ent0->CreateComponent<Collider>();
-
-    if (ent0->HasComponent<Transform>())
-    {
-        std::cout << "Has transform ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Renderable>())
-    {
-        std::cout << "Has renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<SpriteRenderable>())
-    {
-        std::cout << "Has sprite renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Collider>())
-    {
-        std::cout << "Has collider ent0 " << std::endl;
-    }
 
     Entity* ent1 = world0.CreateEntity("Entity1");
     
