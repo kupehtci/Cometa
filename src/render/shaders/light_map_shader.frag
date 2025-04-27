@@ -82,15 +82,10 @@ void main()
         emission = texture(material.emissionMap, texCoord).rgb;
     }
 
-    // results
-    vec3 result = vec3(0.0);
-    if(material.hasDiffuseMap && material.hasEmissionMap && material.hasSpecularMap){
-        result = (ambient + diffuse + specular + emission) * material.color;
-    }
-    else {
-        result = vec3(1.0);
-    }
 
+
+    // results
+    vec3 result = (ambient + diffuse + specular + emission) * material.color;
     FragColor = vec4(result, 1.0);
 
 }
