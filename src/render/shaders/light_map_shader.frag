@@ -24,6 +24,12 @@ struct Light {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    bool isDirectional;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 in vec3 FragPos;

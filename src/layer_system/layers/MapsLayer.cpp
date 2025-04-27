@@ -208,7 +208,8 @@ void MapsLayer::Update()
 
     // --------- Draw LIGHT POINT ---------
 
-    Shader* lightShader = new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    mesh0.Bind();
+    std::shared_ptr<Shader> lightShader = Shader::LoadShader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag"); // new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
     lightShader->Bind();
 
     lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
@@ -217,7 +218,6 @@ void MapsLayer::Update()
 
     lightShader->SetMatrix4("uModel", lightPosMatrix);
 
-    mesh0.Bind();
     mesh0.Draw();
     //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
