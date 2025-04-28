@@ -19,7 +19,6 @@
 
 Renderer::Renderer() {
     this->_window = nullptr;
-    this->_objectShader = nullptr; 
 
     _depthCulling = true; 
     _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_NONE; 
@@ -94,8 +93,6 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-    // TODO: delete this if its unused
-    _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
 
 }
 
@@ -114,7 +111,7 @@ void Renderer::Update(){
     }
 
     // iterate only through renderable components
-    ComponentStorage<Renderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<Renderable>();
+    ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
 
     std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
     for (auto renderable : _renderables)

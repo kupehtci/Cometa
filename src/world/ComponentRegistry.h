@@ -14,7 +14,7 @@ class ComponentRegistry {
 private:
 	std::tuple<
 		ComponentStorage<Transform>,
-		ComponentStorage<Renderable>,
+		ComponentStorage<MeshRenderable>,
 		ComponentStorage<SpriteRenderable>,
 		ComponentStorage<Collider>,
 		ComponentStorage<RigidBody>,

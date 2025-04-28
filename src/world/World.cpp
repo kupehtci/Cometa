@@ -85,8 +85,8 @@ void World::DebugPrint(){
                           << transform->scale.z << ")" << std::endl;
             }
 
-            if (entity->HasComponent<Renderable>()) {
-                std::cout << "  - Renderable: Yes" << std::endl;
+            if (entity->HasComponent<MeshRenderable>()) {
+                std::cout << "  - MeshRenderable: Yes" << std::endl;
             }
 
             if (entity->HasComponent<SpriteRenderable>()) {

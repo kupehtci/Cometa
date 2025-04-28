@@ -42,11 +42,11 @@ void MapsLayer::Init()
     WorldManagerRef->SetCurrentWorld(0);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
-    ent0->CreateComponent<Renderable>();
+    ent0->CreateComponent<MeshRenderable>();
     ent0->CreateComponent<Collider>();
 
     Entity* ent1 = world0->CreateEntity("Entity1");
-    // ent1->CreateComponent<Renderable>();
+    // ent1->CreateComponent<MeshRenderable>();
     
 
     // Debug the world created
