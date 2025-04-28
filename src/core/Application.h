@@ -11,15 +11,17 @@
 
 
 #include "layer_system/Onion.h"
-
+#include "world/WorldManager.h"
 
 class Application : public Singleton<Application>{
     friend class Window;
     friend class Input;
     friend class Renderer;
+    friend class WorldManager;
 
 private :
     bool _isRunning;
+    WorldManager* _worldManager;
     Renderer* _renderer;
     Time* _time; 
     Input* _input; 
