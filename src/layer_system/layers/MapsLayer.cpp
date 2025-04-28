@@ -26,7 +26,6 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
-    _texture = new Texture("./resources/macos_example.jpg");
     _camera = Camera();
 
     _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -100,7 +99,7 @@ void MapsLayer::Update()
     // Update camera and its proyection
     _camera.OnUpdate();
     mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    mainShader->SetFloat3("uViewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
+    mainShader->SetFloat3("uViewPos", _camera.GetPosition());
 
 
     glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));

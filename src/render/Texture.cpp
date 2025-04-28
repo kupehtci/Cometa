@@ -51,7 +51,7 @@ Texture::Texture(const std::string& filePath){
 		stbi_image_free(data);
 	}
 	else {
-		COMETA_ERROR("Unable to load texture"); 
+		COMETA_ERROR("[TEUnable to load texture");
 		return; 
 	}
 

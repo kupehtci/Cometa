@@ -43,7 +43,7 @@ public:
     template<typename T>
     void RemoveComponent()
     {
-        std::cout << "Removing component of type: " << typeid(T).name() << std::endl;
+        // std::cout << "Removing component of type: " << typeid(T).name() << std::endl;
         _parentWorld->_componentRegistry.RemoveComponent<T>(this->_uid);
     }
 
