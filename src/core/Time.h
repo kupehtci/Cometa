@@ -19,13 +19,11 @@ private:
 	float _lastFrameTime;	// Used to store last frame time to calculate _deltaTime
 
 public: 
-	Time(); 
+	Time();
+	~Time() override = default;
 
-
-	void Init() override; 
-
+	void Init() override;
 	void Update() override; 
-	
 	void Close() override; 
 
 

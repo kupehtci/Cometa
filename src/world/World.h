@@ -5,14 +5,16 @@
 #include "world/ComponentRegistry.h"
 
 class Entity;
-
+class WorldManager;
 
 class World {
     friend class Entity;
+    friend class WorldManager;
 
   private:
     SparseSet<Entity> _entities;
     ComponentRegistry _componentRegistry;
+    int _uid = -1;
 
 public:
     static int worldInstanceCount;

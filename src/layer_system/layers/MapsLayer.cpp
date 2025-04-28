@@ -9,7 +9,7 @@
 #include "render/Mesh.h"
 
 #include "world/Entity.h"
-#include "world/World.h"
+#include "world/WorldManager.h" // #include "world/World.h"
 #include "world/Components.h"
 
 
@@ -37,16 +37,20 @@ void MapsLayer::Init()
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
-    World world0 = World();
-    Entity* ent0 = world0.CreateEntity("Entity0");
+    WorldManagerRef->CreateWorld(0);
+    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
+    WorldManagerRef->SetCurrentWorld(0);
+
+    Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->CreateComponent<Renderable>();
     ent0->CreateComponent<Collider>();
 
-    Entity* ent1 = world0.CreateEntity("Entity1");
+    Entity* ent1 = world0->CreateEntity("Entity1");
     
 
     // Debug the world created
-    world0.DebugPrint();
+    std::shared_ptr<World> currentWorld = WorldManagerRef->GetCurrentWorld();
+    currentWorld->DebugPrint();
 }
 
 void MapsLayer::Update()
