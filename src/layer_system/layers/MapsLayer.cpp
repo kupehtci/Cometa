@@ -26,7 +26,6 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
-    _texture = new Texture("./resources/macos_example.jpg");
     _camera = Camera();
 
     _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -40,29 +39,8 @@ void MapsLayer::Init()
 
     World world0 = World();
     Entity* ent0 = world0.CreateEntity("Entity0");
-    Renderable* rend = ent0->CreateComponent<Renderable>();
-
+    ent0->CreateComponent<Renderable>();
     ent0->CreateComponent<Collider>();
-
-    if (ent0->HasComponent<Transform>())
-    {
-        std::cout << "Has transform ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Renderable>())
-    {
-        std::cout << "Has renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<SpriteRenderable>())
-    {
-        std::cout << "Has sprite renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Collider>())
-    {
-        std::cout << "Has collider ent0 " << std::endl;
-    }
 
     Entity* ent1 = world0.CreateEntity("Entity1");
     
@@ -73,48 +51,55 @@ void MapsLayer::Init()
 
 void MapsLayer::Update()
 {
-    // Shader* mainShader = new Shader("Main Shader",
+    // std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
     //     "src/render/shaders/light_map_shader.vert",
     //     "src/render/shaders/light_map_shader.frag");
-    std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
+    // mainShader->Bind();
+    //
+    // std::shared_ptr<Texture> materialDiffuseMap = _mat.GetDiffuseMap();
+    // int diffuseMapIndex = 0;
+    // mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
+    // materialDiffuseMap->Bind(diffuseMapIndex);
+    //
+    // std::shared_ptr<Texture> materialSpecularMap = _mat.GetSpecularMap();
+    // int specularMapIndex = 1;
+    // mainShader->SetInt("material.specularMap", specularMapIndex);
+    // materialSpecularMap->Bind(specularMapIndex);
+    //
+    // std::shared_ptr<Texture> materialEmissionMap = _mat.GetEmissionMap();
+    // int emissionMapIndex = 2;
+    // mainShader->SetInt("material.emissionMap", emissionMapIndex);
+    // materialEmissionMap->Bind(emissionMapIndex);
+    //
+    // mainShader->SetBool("material.hasDiffuseMap", true);
+    // mainShader->SetBool("material.hasSpecularMap", true);
+    // mainShader->SetBool("material.hasEmissionMap", true);
+    //
+    // mainShader->SetFloat3("material.color", _mat.GetColor());
+    // mainShader->SetFloat3("material.ambient", _mat.GetAmbient());
+    // mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
+    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
+    // mainShader->SetFloat("material.shininess", _mat.GetShininess());
+
+    _mat.LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
-    mainShader->Bind();
 
-    Texture* materialDiffuseMap = _mat.GetDiffuseMap();
-    int diffuseMapIndex = 0;
-    mainShader->SetInt("material.diffuse", diffuseMapIndex);
-    materialDiffuseMap->Bind(diffuseMapIndex);
-
-    Texture* materialSpecularMap = _mat.GetSpecularMap();
-    int specularMapIndex = 1;
-    mainShader->SetInt("material.specular", specularMapIndex);
-    materialSpecularMap->Bind(specularMapIndex);
-
-    Texture* materialEmissionMap = _mat.GetEmissionMap();
-    int emissionMapIndex = 2;
-    mainShader->SetInt("material.emission", emissionMapIndex);
-    materialEmissionMap->Bind(emissionMapIndex);
-
-
-    mainShader->SetFloat3("material.color", _mat.GetColor());
-    // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
-    mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
-    mainShader->SetFloat("material.shininess", _mat.GetShininess());
+    _mat.Bind();
+    std::shared_ptr<Shader> mainShader = _mat.GetShader();
 
     // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
     glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
     mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
+    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
     mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Update camera and its proyection
     _camera.OnUpdate();
     mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    mainShader->SetFloat3("uViewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
+    mainShader->SetFloat3("uViewPos", _camera.GetPosition());
 
 
     glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
@@ -204,7 +189,8 @@ void MapsLayer::Update()
 
     // --------- Draw LIGHT POINT ---------
 
-    Shader* lightShader = new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    mesh0.Bind();
+    std::shared_ptr<Shader> lightShader = Shader::LoadShader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag"); // new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
     lightShader->Bind();
 
     lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
@@ -213,7 +199,6 @@ void MapsLayer::Update()
 
     lightShader->SetMatrix4("uModel", lightPosMatrix);
 
-    mesh0.Bind();
     mesh0.Draw();
     //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 

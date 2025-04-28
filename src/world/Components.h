@@ -1,8 +1,6 @@
 #ifndef COMETA_COMPONENTS_H
 #define COMETA_COMPONENTS_H
 
-#include "render/Texture.h"
-
 #include <iostream>
 #include <string>
 
@@ -12,18 +10,25 @@
 #include <gtc/matrix_transform.hpp>
 #include <utility>
 
+#include "render/Texture.h"
+#include "render/Mesh.h"
+#include "render/Material.h"
+
 class Entity;
 
+/**
+ * Component virtual class
+ */
 class Component {
-public: 
-	virtual ~Component() = default;
-public:
+private:
 	Entity* _owner = nullptr;
 
-	
+public:
+	virtual ~Component() = default;
+
 	// ------------ GETTERS AND SETTERS ------------
-	Entity* GetOwner() const { return _owner; }
-	
+	[[nodiscard]] Entity* GetOwner() const { return _owner; }
+	void SetOwner(Entity* newOwner) { _owner = newOwner; }
 
 	friend class Entity;
 	friend class ComponentRegistry;
@@ -58,16 +63,28 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
 	{
-		os << "owner: "	 << "Transform";
+		os << "  - Transform: "
+						  << "Pos(" << transform.position.x << ", "
+						  << transform.position.y << ", "
+						  << transform.position.z << "), "
+						  << "Rot(" << transform.rotation.x << ", "
+						  << transform.rotation.y << ", "
+						  << transform.rotation.z << "), "
+						  << "Scale(" << transform.scale.x << ", "
+						  << transform.scale.y << ", "
+						  << transform.scale.z << ")" << std::endl;
 		return os;
 	}
 };
 
 class Renderable : public Component {
+private:
+	Mesh mesh;
 public:
 	Renderable() = default;
 	Renderable(const Renderable&) = default;
 };
+
 
 class SpriteRenderable : public Component {
 public: 

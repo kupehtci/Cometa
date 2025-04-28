@@ -30,7 +30,7 @@ public:
     T* CreateComponent()
     {
         T* newComponent = _parentWorld->_componentRegistry.CreateComponent<T>(this->GetUID());
-        newComponent->_owner = this;
+        newComponent->SetOwner(this);
         return newComponent;
     }
 
@@ -43,7 +43,7 @@ public:
     template<typename T>
     void RemoveComponent()
     {
-        std::cout << "Removing component of type: " << typeid(T).name() << std::endl;
+        // std::cout << "Removing component of type: " << typeid(T).name() << std::endl;
         _parentWorld->_componentRegistry.RemoveComponent<T>(this->_uid);
     }
 

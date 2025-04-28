@@ -2,8 +2,8 @@
 // Created by Daniel Laplana Gimeno on 18/4/25.
 //
 
-#ifndef MAPSLAYER_H
-#define MAPSLAYER_H
+#ifndef COMETA_MAPSLAYER_H
+#define COMETA_MAPSLAYER_H
 
 #include <iostream>
 #include <render/Material.h>
@@ -15,8 +15,6 @@
 class MapsLayer : public Layer{
 
 private:
-    Texture* _texture = nullptr;
-
     Camera _camera;
     Material _mat;
 
@@ -32,6 +30,4 @@ public:
     void HandleEvent(Event& event) override;
 };
 
-
-
-#endif //MAPSLAYER_H
+#endif //COMETA_MAPSLAYER_H
