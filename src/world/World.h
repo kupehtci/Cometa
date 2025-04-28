@@ -6,10 +6,12 @@
 
 class Entity;
 class WorldManager;
+class Renderer;
 
 class World {
     friend class Entity;
     friend class WorldManager;
+    friend class Renderer;
 
   private:
     SparseSet<Entity> _entities;
@@ -34,7 +36,8 @@ public:
     void DebugPrint();
 
     // ------------ GETTERS AND SETTERS ------------
-    size_t GetNumEntities() {return _entities.Size();}
+    [[nodiscard]] size_t GetNumEntities() const {return _entities.Size();}
+    [[nodiscard]] ComponentRegistry& GetComponentRegistry() {return _componentRegistry;}
 
 };
 

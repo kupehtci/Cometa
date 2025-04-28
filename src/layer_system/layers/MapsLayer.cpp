@@ -46,6 +46,7 @@ void MapsLayer::Init()
     ent0->CreateComponent<Collider>();
 
     Entity* ent1 = world0->CreateEntity("Entity1");
+    // ent1->CreateComponent<Renderable>();
     
 
     // Debug the world created

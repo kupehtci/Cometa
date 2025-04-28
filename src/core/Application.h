@@ -21,6 +21,8 @@ class Application : public Singleton<Application>{
 
 private :
     bool _isRunning;
+
+    // references to singletons managers
     WorldManager* _worldManager;
     Renderer* _renderer;
     Time* _time; 

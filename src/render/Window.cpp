@@ -78,11 +78,11 @@ void Window::Init() {
 
 
 void Window::Update() {
-    Render();
+    // Render();
 }
 
 
-void Window::Render() {
+void Window::SwapBuffers() {
 
 //    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the screen

@@ -43,9 +43,9 @@ public:
 
     void Init(); 
     void Update();
-    void Render();
     void Close();
 
+    void SwapBuffers();
 
     // Check if window should close
     bool ShouldHandleCloseWindow();

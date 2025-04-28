@@ -11,6 +11,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "world/WorldManager.h"
+#include "world/ComponentStorage.h"
+#include "world/Components.h"
+#include "world/Entity.h"
+
 
 Renderer::Renderer() {
     this->_window = nullptr;
@@ -89,12 +94,40 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
+    // TODO: delete this if its unused
     _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
+
 }
 
 void Renderer::Update(){
     // Update current window
     _window->Update();
+
+    // render the world elements
+    WorldManager* worldManager = WorldManagerRef;
+    std::shared_ptr<World> currentWorld = worldManager->GetCurrentWorld();
+
+    if (currentWorld == nullptr)
+    {
+        COMETA_MSG("[RENDERER] Current world is not set, cannot render");
+        return;
+    }
+
+    // iterate only through renderable components
+    ComponentStorage<Renderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<Renderable>();
+
+    std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
+    for (auto renderable : _renderables)
+    {
+        std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
+    }
+    std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
+
+
+
+
+    // Swap buffers to render into screen
+    _window->SwapBuffers();
 }
 
 void Renderer::Close(){

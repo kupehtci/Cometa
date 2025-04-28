@@ -31,26 +31,26 @@ class Renderer : public SingletonManager<Renderer>
 
 private:
     Window* _window;
-    Shader* _objectShader;    
+    Shader* _objectShader;
 
     bool _depthCulling = true;
     FACE_CULLING_MODE _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_CLOCKWISE; 
 
 public:
     Renderer();
-    ~Renderer();
+    ~Renderer() override;
 
 public:
     void Init() override;
     void Update() override;
     void Close() override;
 
-    inline Window* GetWindow(){ return _window; }
-    inline Shader* GetObjectShader(){ return _objectShader; }
+    [[nodiscard]] inline Window* GetWindow() const { return _window; }
+    [[nodiscard]] inline Shader* GetObjectShader() const { return _objectShader; }
 
+    // TODO: Remain to implement
     inline void SetDepthCulling(bool value) { _depthCulling = value;  }
-    inline void SetFaceCulling(FACE_CULLING_MODE value) { 
-        // TODO: Remain to implement
+    inline void SetFaceCulling(FACE_CULLING_MODE value) {
     }
 };
 
