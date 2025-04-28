@@ -30,7 +30,7 @@ public:
     T* CreateComponent()
     {
         T* newComponent = _parentWorld->_componentRegistry.CreateComponent<T>(this->GetUID());
-        newComponent->_owner = this;
+        newComponent->SetOwner(this);
         return newComponent;
     }
 

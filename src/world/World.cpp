@@ -14,6 +14,7 @@ World::World()
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entities = SparseSet<Entity>();
 }
+
 World::~World()
 {
 
@@ -37,7 +38,6 @@ Entity* World::CreateEntity(const std::string& name)
 
     return _entities.Get(newUid);
 }
-
 
 /**
  * Delete an entity and its components associated
