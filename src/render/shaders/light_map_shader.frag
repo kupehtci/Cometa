@@ -32,13 +32,42 @@ struct Light {
     float quadratic;
 };
 
+struct DirectionalLight {
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+// Position of the fragment
 in vec3 FragPos;
+// defines the normal of the fragment
 in vec3 Normal;
+// Texture coordinate
 in vec2 texCoord;
 
 uniform vec3 uViewPos;
 uniform Material material;
 uniform Light light;
+
+uniform DirectionalLight directionalLight;
+
+vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 fragNormal, vec3 viewDirection)
+{
+    vec3 lightDirection = normalize(-dirLight.direction);
+    float diff = max(dot(fragNormal, lightDirection), 0.0);
+
+    vec3 reflectedDirection = reflect(-lightDirection, fragNormal);
+    float spec = pow(max(dot(viewDirection, reflectedDirection), 0.0), material.shininess);
+
+    vec3 ambient = dirLight.ambient * vec3(texture(material.diffuseMap, texCoord));
+    vec3 diffuse = dirLight.diffuse * diff * vec3(texture(material.diffuseMap, texCoord));
+    vec3 specular = dirLight.specular * spec * vec3(texture(material.specularMap, texCoord));
+
+    vec3 result = ambient + diffuse + specular;
+    return result;
+}
 
 void main()
 {
@@ -92,6 +121,9 @@ void main()
 
     // results
     vec3 result = (ambient + diffuse + specular + emission) * material.color;
+
+    result += CalculateDirectionalLight(directionalLight, norm, viewDir);
+
     FragColor = vec4(result, 1.0);
 
 }
