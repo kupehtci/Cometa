@@ -138,9 +138,14 @@ void MapsLayer::Update()
     glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
     mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-    mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    mainShader->SetFloat3("light.ambient", glm::vec3(0.0f));
+    mainShader->SetFloat3("light.diffuse", glm::vec3(0.0f));
+    mainShader->SetFloat3("light.specular", glm::vec3(0.0f));
+
+    mainShader->SetFloat3("directionalLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+    mainShader->SetFloat3("directionalLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+    mainShader->SetFloat3("directionalLight.diffuse", glm::vec3(0.35f, 0.4f, 0.35f));
+    mainShader->SetFloat3("directionalLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Update camera and its projection
     _camera.OnUpdate();
