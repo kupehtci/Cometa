@@ -87,6 +87,14 @@ void World::DebugPrint(){
 
             if (entity->HasComponent<MeshRenderable>()) {
                 std::cout << "  - MeshRenderable: Yes" << std::endl;
+                MeshRenderable* renderable = entity->GetComponent<MeshRenderable>();
+                if (renderable->GetMesh() != nullptr){
+                    std::cout << "      - Has mesh" << std::endl;
+                }
+
+                if (renderable->GetMaterial() != nullptr){
+                    std::cout << "      - Has material" << std::endl;
+                }
             }
 
             if (entity->HasComponent<SpriteRenderable>()) {

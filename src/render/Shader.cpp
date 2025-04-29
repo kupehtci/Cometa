@@ -54,6 +54,18 @@ std::shared_ptr<Shader> Shader::LoadShader(const std::string& name, const std::s
 }
 
 
+void Shader::Debug()
+{
+    unsigned int i = 0;
+    for (auto shader : _shadersCache)
+    {
+        std::cout << "Shader cached [" << i << "] : " << shader.second->_debugName << std::endl;
+        std::cout << "   VERTEX SHADER     source code path: " << shader.second->GetFilePath(GL_VERTEX_SHADER) << std::endl;
+        std::cout << "   FRAGMENT SHADER   source code path: " << shader.second->GetFilePath(GL_FRAGMENT_SHADER) << std::endl;
+    }
+}
+
+
 // ------------ UNIFORM METHODS ------------
 
 void Shader::SetBool(const std::string& variableName, const bool& value) const{

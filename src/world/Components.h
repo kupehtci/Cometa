@@ -93,6 +93,7 @@ public:
 
 	// ------------ GETTERS ------------
 	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _mesh; }
+	[[nodiscard]] std::shared_ptr<Material> GetMaterial() const { return _material; }
 };
 
 

@@ -113,13 +113,12 @@ void Renderer::Update(){
     // iterate only through renderable components
     ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
 
-    std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
-    for (auto renderable : _renderables)
-    {
-        std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
-    }
-    std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
-
+    // std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
+    // for (auto renderable : _renderables)
+    // {
+    //     std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
+    // }
+    // std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
 
 
 

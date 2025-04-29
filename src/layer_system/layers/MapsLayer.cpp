@@ -26,6 +26,56 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
+    float vertices[] = {
+        // Front face
+        // positions          // normals           // colors            // texture coords
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+
+        // Back face
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+
+        // Top face
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+
+        // Bottom face
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+
+        // Right face
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+
+        // Left face
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f
+    };
+
+    unsigned int indices[] = {
+        0,  1,  2,    2,  3,  0,   // Front
+        4,  5,  6,    6,  7,  4,   // Back
+        8,  9,  10,   10, 11, 8,   // Top
+        12, 13, 14,   14, 15, 12,  // Bottom
+        16, 17, 18,   18, 19, 16,  // Right
+        20, 21, 22,   22, 23, 20   // Left
+    };
+
+
+
     _camera = Camera();
 
     _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -42,12 +92,33 @@ void MapsLayer::Init()
     WorldManagerRef->SetCurrentWorld(0);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
-    ent0->CreateComponent<MeshRenderable>();
+    MeshRenderable* renderable =  ent0->CreateComponent<MeshRenderable>();
     ent0->CreateComponent<Collider>();
+
+    std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    2.0f,
+                                    "resources/bricks_diffuse_map.jpg",
+                                    "resources/bricks_specular_map.jpg",
+                                    "resources/black.jpg");
+    renderable->SetMaterial(material0);
+
+    std::shared_ptr<Mesh> mesh0 = std::make_shared<Mesh>();
+    mesh0->AddVertices(vertices, sizeof(vertices) / sizeof(float));
+    mesh0->AddIndices(indices, sizeof(indices) / sizeof(unsigned int));
+    mesh0->SetLayoutBuffer({
+        {0, DataType::Float3, "aPos"},
+        {1, DataType::Float3, "aNormal"},
+        {2, DataType::Float3, "aColor"},
+        {3, DataType::Float2, "aTexCoord"}
+        });
+    mesh0->Build();
+    renderable->SetMesh(mesh0);
 
     Entity* ent1 = world0->CreateEntity("Entity1");
     // ent1->CreateComponent<MeshRenderable>();
-    
 
     // Debug the world created
     std::shared_ptr<World> currentWorld = WorldManagerRef->GetCurrentWorld();
@@ -56,36 +127,6 @@ void MapsLayer::Init()
 
 void MapsLayer::Update()
 {
-    // std::shared_ptr<Shader> mainShader = Shader::LoadShader("Main Shader",
-    //     "src/render/shaders/light_map_shader.vert",
-    //     "src/render/shaders/light_map_shader.frag");
-    // mainShader->Bind();
-    //
-    // std::shared_ptr<Texture> materialDiffuseMap = _mat.GetDiffuseMap();
-    // int diffuseMapIndex = 0;
-    // mainShader->SetInt("material.diffuseMap", diffuseMapIndex);
-    // materialDiffuseMap->Bind(diffuseMapIndex);
-    //
-    // std::shared_ptr<Texture> materialSpecularMap = _mat.GetSpecularMap();
-    // int specularMapIndex = 1;
-    // mainShader->SetInt("material.specularMap", specularMapIndex);
-    // materialSpecularMap->Bind(specularMapIndex);
-    //
-    // std::shared_ptr<Texture> materialEmissionMap = _mat.GetEmissionMap();
-    // int emissionMapIndex = 2;
-    // mainShader->SetInt("material.emissionMap", emissionMapIndex);
-    // materialEmissionMap->Bind(emissionMapIndex);
-    //
-    // mainShader->SetBool("material.hasDiffuseMap", true);
-    // mainShader->SetBool("material.hasSpecularMap", true);
-    // mainShader->SetBool("material.hasEmissionMap", true);
-    //
-    // mainShader->SetFloat3("material.color", _mat.GetColor());
-    // mainShader->SetFloat3("material.ambient", _mat.GetAmbient());
-    // mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
-    // mainShader->SetFloat("material.shininess", _mat.GetShininess());
-
     _mat.LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
