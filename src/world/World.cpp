@@ -13,6 +13,8 @@ World::World()
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entities = SparseSet<Entity>();
+
+    // TODO: Implement camera search between each one of the instances
 }
 
 World::~World()

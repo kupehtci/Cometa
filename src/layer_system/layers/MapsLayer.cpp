@@ -88,8 +88,8 @@ void MapsLayer::Init()
                                     "resources/black.jpg");
 
     WorldManagerRef->CreateWorld(0);
-    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
     WorldManagerRef->SetCurrentWorld(0);
+    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
 
     Entity* ent0 = world0->CreateEntity("Entity0");
     MeshRenderable* renderable =  ent0->CreateComponent<MeshRenderable>();
@@ -142,7 +142,7 @@ void MapsLayer::Update()
     mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
     mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    // Update camera and its proyection
+    // Update camera and its projection
     _camera.OnUpdate();
     mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
     mainShader->SetFloat3("uViewPos", _camera.GetPosition());

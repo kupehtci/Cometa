@@ -1,6 +1,8 @@
 #ifndef COMETA_WORLD_H
 #define COMETA_WORLD_H
 
+#include <render/Camera.h>
+
 #include "types/SparseSet.h"
 #include "world/ComponentRegistry.h"
 
@@ -16,6 +18,7 @@ class World {
   private:
     SparseSet<Entity> _entities;
     ComponentRegistry _componentRegistry;
+    Camera* _camera = nullptr;
     int _uid = -1;
 
 public:
@@ -38,6 +41,9 @@ public:
     // ------------ GETTERS AND SETTERS ------------
     [[nodiscard]] size_t GetNumEntities() const {return _entities.Size();}
     [[nodiscard]] ComponentRegistry& GetComponentRegistry() {return _componentRegistry;}
+
+    [[nodiscard]] Camera* GetCamera() const {return _camera;}
+    [[nodiscard]] int GetUID() const {return _uid;}
 
 };
 
