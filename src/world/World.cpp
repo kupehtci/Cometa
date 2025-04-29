@@ -13,6 +13,8 @@ World::World()
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entities = SparseSet<Entity>();
+
+    // TODO: Implement camera search between each one of the instances
 }
 
 World::~World()
@@ -85,8 +87,16 @@ void World::DebugPrint(){
                           << transform->scale.z << ")" << std::endl;
             }
 
-            if (entity->HasComponent<Renderable>()) {
-                std::cout << "  - Renderable: Yes" << std::endl;
+            if (entity->HasComponent<MeshRenderable>()) {
+                std::cout << "  - MeshRenderable: Yes" << std::endl;
+                MeshRenderable* renderable = entity->GetComponent<MeshRenderable>();
+                if (renderable->GetMesh() != nullptr){
+                    std::cout << "      - Has mesh" << std::endl;
+                }
+
+                if (renderable->GetMaterial() != nullptr){
+                    std::cout << "      - Has material" << std::endl;
+                }
             }
 
             if (entity->HasComponent<SpriteRenderable>()) {

@@ -16,13 +16,13 @@ WorldManager::~WorldManager(){
 // ------------ Singleton Manager methods ------------
 
 void WorldManager::Init(){
-
+    // std::cout << "WorldManager::Init()" << std::endl;
 }
 void WorldManager::Update(){
-
+    // std::cout << "WorldManager::Update()" << std::endl;
 }
 void WorldManager::Close(){
-
+    // std::cout << "WorldManager::Close()" << std::endl;
 }
 
 // ------------ World management methods ------------

@@ -11,6 +11,7 @@
 
 Application::Application(){
     this->_isRunning = true;
+    _worldManager = nullptr;
     _renderer = nullptr; 
     _time = nullptr;
     _onion = Onion();
@@ -24,7 +25,10 @@ void Application::Init(){
     // Create managers
     Time::Create();
     _time = Time::GetInstancePtr();
-    
+
+    WorldManager::Create();
+    _worldManager = WorldManager::GetInstancePtr();
+
     Renderer::Create();
     _renderer = Renderer::GetInstancePtr();
 
@@ -46,6 +50,7 @@ void Application::Init(){
 
 
     // Initialize managers
+    _worldManager->Init();
     _renderer->Init();
     _time->Init();
     _input->Init();
@@ -58,6 +63,7 @@ void Application::Running() {
 
         // Update the managers
         _time->Update();
+        _worldManager->Update();
         _renderer->Update();
         _input->Update();
 
@@ -74,6 +80,7 @@ void Application::Running() {
 void Application::Close() {
     _input->Update();
     _renderer->Close();
+    _worldManager->Close();
     _time->Close();
 
     COMETA_ASSERT("Application closed correctly");

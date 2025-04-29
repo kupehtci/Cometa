@@ -77,12 +77,23 @@ public:
 	}
 };
 
-class Renderable : public Component {
+class MeshRenderable : public Component {
 private:
-	Mesh mesh;
+	std::shared_ptr<Mesh> _mesh = nullptr;
+	std::shared_ptr<Material> _material = nullptr;
+
 public:
-	Renderable() = default;
-	Renderable(const Renderable&) = default;
+	MeshRenderable() = default;
+	MeshRenderable(const MeshRenderable&) = default;
+
+	// Properties management methods
+
+	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
+	void SetMaterial(const std::shared_ptr<Material>& material) {_material = material;}
+
+	// ------------ GETTERS ------------
+	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _mesh; }
+	[[nodiscard]] std::shared_ptr<Material> GetMaterial() const { return _material; }
 };
 
 
@@ -94,6 +105,7 @@ public:
 	SpriteRenderable() = default;
 	SpriteRenderable(const SpriteRenderable&) = default;
 };
+
 
 class Collider : public Component {
 public: 

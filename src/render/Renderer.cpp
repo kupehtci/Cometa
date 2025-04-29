@@ -11,10 +11,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "world/WorldManager.h"
+#include "world/ComponentStorage.h"
+#include "world/Components.h"
+#include "world/Entity.h"
+
 
 Renderer::Renderer() {
     this->_window = nullptr;
-    this->_objectShader = nullptr; 
 
     _depthCulling = true; 
     _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_NONE; 
@@ -89,12 +93,37 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-    _objectShader = new Shader("Main Shader", "src/render/shaders/vertex_shader_coords.vert", "src/render/shaders/fragment_shader.frag");
+
 }
 
 void Renderer::Update(){
     // Update current window
     _window->Update();
+
+    // render the world elements
+    WorldManager* worldManager = WorldManagerRef;
+    std::shared_ptr<World> currentWorld = worldManager->GetCurrentWorld();
+
+    if (currentWorld == nullptr)
+    {
+        COMETA_MSG("[RENDERER] Current world is not set, cannot render");
+        return;
+    }
+
+    // iterate only through renderable components
+    ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
+
+    // std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
+    // for (auto renderable : _renderables)
+    // {
+    //     std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
+    // }
+    // std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
+
+
+
+    // Swap buffers to render into screen
+    _window->SwapBuffers();
 }
 
 void Renderer::Close(){

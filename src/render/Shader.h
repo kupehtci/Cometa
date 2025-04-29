@@ -48,6 +48,8 @@ public:
 
     static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
+    static void Debug();
+
     // ------------ UNIFORMS METHODS ------------
         
     /**
@@ -58,14 +60,12 @@ public:
      */
     void SetBool(const std::string& variableName, const bool& value)const;
 
-
     /**
      * Set the value of a float uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (float) new value of the variable
      */
     void SetFloat(const std::string& variableName, const float& value) const;
-
 
     /**
      * Set the value of a 2 float vector uniform variable
@@ -74,14 +74,12 @@ public:
      */
     void SetFloat2(const std::string& variableName, const glm::vec2& value) const;
 
-
     /**
      * Set the value of a 3 floats vector uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (glm::vec3) new value of the variable
      */
     void SetFloat3(const std::string& variableName, const glm::vec3& value) const;
-
 
     /**
      * Set the value of a 4 floats vector uniform variable
@@ -90,14 +88,12 @@ public:
      */
     void SetFloat4(const std::string& variableName, const glm::vec4& value) const;
 
-
     /**
      * Set the value of an int  uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (int) new value of the variable
      */
     void SetInt(const std::string& variableName, const int& value) const;
-
 
     /**
      * Set the value of an array of int uniform variable
@@ -107,7 +103,6 @@ public:
      * @param count (uint32_t) number of values within the int array
      */
     void SetIntArray(const std::string& variableName, const int* values, uint32_t count) const;
-
 
     /**
      * Set the value of an Matrix 4 x 4 uniform variable
