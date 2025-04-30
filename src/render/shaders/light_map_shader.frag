@@ -25,8 +25,6 @@ struct Light {
     vec3 diffuse;
     vec3 specular;
 
-    bool isDirectional;
-
     float constant;
     float linear;
     float quadratic;
@@ -49,9 +47,56 @@ in vec2 texCoord;
 
 uniform vec3 uViewPos;
 uniform Material material;
-uniform Light light;
+
+#define MAX_LIGHTS_CONSTANT 16
+uniform int number_lights;                                 // Number of lights to process
+uniform Light lights[MAX_LIGHTS_CONSTANT];
 
 uniform DirectionalLight directionalLight;
+
+// Calculates the directional light sum of ambien, diffuse and specular
+// param DirectionalLight dirLight:     directional light struct object
+// param vec3 fragNormal:               Normal of the fragment
+// param vec3 viewDirection:            view direction from the fragment to the viewing position (Camera)
+vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 fragNormal, vec3 viewDirection);
+
+// Calculates the point light sum of the anbient, diffuse and specular
+// param LIght pointLight:              Point light struct object
+// param vec3 fragNormal:               Normal vector of the fragment
+// param vec2 fragPos:                  Position vector of the fragment
+// param vec2 viewDirection:            Viewing vector normalized. This vector is calculated using camera position and fragment position
+vec3 CalculatePointLights(Light pointLight, vec3 fragNormal, vec3 fragPos,  vec3 viewDirection);
+
+// Main execution
+//
+void main()
+{
+    vec3 result = vec3(0.0, 0.0, 0.0);
+
+    vec3 viewDir = normalize(uViewPos - FragPos);
+    vec3 norm = normalize(Normal);
+
+    for(int i = 0; i < number_lights; ++i){
+        result += CalculatePointLights(lights[i], norm, FragPos, viewDir);
+    }
+
+    // emission
+    vec3 emission = vec3(0.0, 0.0, 0.0);
+
+    if(material.hasEmissionMap){
+        emission = texture(material.emissionMap, texCoord).rgb;
+    }
+    result += emission;
+
+    // results
+    result *= material.color;
+
+    result += CalculateDirectionalLight(directionalLight, norm, viewDir);
+
+    FragColor = vec4(result, 1.0);
+
+}
+
 
 vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 fragNormal, vec3 viewDirection)
 {
@@ -69,61 +114,52 @@ vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 fragNormal, vec3 
     return result;
 }
 
-void main()
+vec3 CalculatePointLights(Light pointLight, vec3 fragNormal, vec3 fragPos,  vec3 viewDirection)
 {
     // ambient
     vec3 ambient = vec3(0.0, 0.0, 0.0);
 
     if(material.hasDiffuseMap){
-        ambient = light.ambient * vec3(texture(material.diffuseMap, texCoord));
+        ambient = pointLight.ambient * vec3(texture(material.diffuseMap, texCoord));
     }
     else {
-        ambient = light.ambient * material.ambient;
+        ambient = pointLight.ambient * material.ambient;
     }
 
     // diffuse
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 lightDir = normalize(pointLight.position - fragPos);
+    float diff = max(dot(fragNormal, lightDir), 0.0);
 
     vec3 diffuse = vec3(0.0, 0.0, 0.0);
 
     if(material.hasDiffuseMap){
-        diffuse = light.diffuse * (diff * vec3(texture(material.diffuseMap, texCoord)));
+        diffuse = pointLight.diffuse * (diff * vec3(texture(material.diffuseMap, texCoord)));
     }
     else {
-        diffuse = light.diffuse * (diff * material.diffuse);
+        diffuse = pointLight.diffuse * (diff * material.diffuse);
     }
 
     // specular
-    vec3 viewDir = normalize(uViewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+
+    vec3 reflectDir = reflect(-lightDir, fragNormal);
+    float spec = pow(max(dot(viewDirection, reflectDir), 0.0), material.shininess);
 
     vec3 specular = vec3(0.0, 0.0, 0.0);
 
     if(material.hasSpecularMap){
-        specular = light.specular * (spec * vec3(texture(material.specularMap, texCoord)));
+        specular = pointLight.specular * (spec * vec3(texture(material.specularMap, texCoord)));
     }
     else {
-        specular = light.specular * (spec * material.specular);
+        specular = pointLight.specular * (spec * material.specular);
     }
 
+    // atenuation of light
+    float distance = length(pointLight.position - fragPos);
+    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 
-    // emission
-    vec3 emission = vec3(0.0, 0.0, 0.0);
+    ambient *= attenuation;
+    specular *= attenuation;
+    diffuse *= attenuation;
 
-    if(material.hasEmissionMap){
-        emission = texture(material.emissionMap, texCoord).rgb;
-    }
-
-
-
-    // results
-    vec3 result = (ambient + diffuse + specular + emission) * material.color;
-
-    result += CalculateDirectionalLight(directionalLight, norm, viewDir);
-
-    FragColor = vec4(result, 1.0);
-
+    return (ambient + diffuse + specular);
 }
