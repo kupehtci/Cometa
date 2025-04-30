@@ -134,13 +134,39 @@ void MapsLayer::Update()
     _mat.Bind();
     std::shared_ptr<Shader> mainShader = _mat.GetShader();
 
-    // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
-    glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
+    glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f , glm::cos(glfwGetTime()) * 3 );
+    //glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
 
-    mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-    mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    mainShader->SetInt("number_lights", 2);
+    mainShader->SetFloat3("lights[0].position", lightPosition);
+    mainShader->SetFloat3("lights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    mainShader->SetFloat3("lights[0].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
+    mainShader->SetFloat3("lights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    mainShader->SetFloat("lights[0].constant", 1.0f);
+    mainShader->SetFloat("lights[0].linear", 0.07f);
+    mainShader->SetFloat("lights[0].quadratic", 0.017f);
+
+    mainShader->SetFloat3("lights[1].position", -lightPosition);
+    mainShader->SetFloat3("lights[1].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    mainShader->SetFloat3("lights[1].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
+    mainShader->SetFloat3("lights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    mainShader->SetFloat("lights[1].constant", 1.0f);
+    mainShader->SetFloat("lights[1].linear", 0.07f);
+    mainShader->SetFloat("lights[1].quadratic", 0.017f);
+
+    // float distance = glm::length(lightPosition - _camera.GetPosition());
+    // float attenuation = 1.0 / (1.0f + 0.14f * distance + 0.07 * (distance * distance));
+    // std::cout << "distance: " << distance << std::endl;
+    // std::cout << "attenuation: " << attenuation << std::endl;
+
+
+
+    mainShader->SetFloat3("directionalLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+    mainShader->SetFloat3("directionalLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+    mainShader->SetFloat3("directionalLight.diffuse", glm::vec3(0.35f, 0.4f, 0.35f));
+    mainShader->SetFloat3("directionalLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Update camera and its projection
     _camera.OnUpdate();
@@ -246,11 +272,26 @@ void MapsLayer::Update()
     lightShader->SetMatrix4("uModel", lightPosMatrix);
 
     mesh0.Draw();
-    //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
     lightShader->Unbind();
 
     // --------- END OF DRAWING LIGHT POINT ---------
+
+    // --------- DRAWING SECOND LIGHTS FOR TESTING MULTIPLES LIGHTS ------------
+
+    mesh0.Bind();
+    // std::shared_ptr<Shader> lightShader = Shader::LoadShader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag"); // new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    lightShader->Bind();
+
+    lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
+    lightPosMatrix = glm::translate(glm::mat4(1.0f), -lightPosition);
+    lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
+
+    lightShader->SetMatrix4("uModel", lightPosMatrix);
+
+    mesh0.Draw();
+
+    lightShader->Unbind();
 }
 
 
