@@ -106,9 +106,32 @@ void Renderer::Update(){
 
     if (currentWorld == nullptr)
     {
-        COMETA_MSG("[RENDERER] Current world is not set, cannot render");
+        COMETA_MSG("[RENDERER][UPDATE] Current world is not set, cannot render");
         return;
     }
+
+    // Pre-store the directional light
+    DirectionalLight* directionalLight = currentWorld->GetComponentRegistry().GetStorage<DirectionalLight>().GetFirst();
+
+    if (directionalLight == nullptr){
+        COMETA_WARNING("[RENDERER][UPDATE] No directional light found");
+    }
+
+    // Pre-store light points
+    ComponentStorage<PointLight>& pointLightsComponents = currentWorld->GetComponentRegistry().GetStorage<PointLight>();
+    std::vector<std::pair<PointLight*, Transform*>> lights =
+            std::vector<std::pair<PointLight*, Transform*>>(pointLightsComponents.Size());
+
+    std::cout << "=============== POINTLIGHTS START ============" << std::endl;
+    for (PointLight pt : pointLightsComponents)
+    {
+        lights.push_back(std::make_pair(&pt, pt.GetOwner()->GetComponent<Transform>()));
+        Transform* transform = pt.GetOwner()->GetComponent<Transform>();
+        std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
+    }
+    std::cout << "=============== POINTLIGHTS END ============" << std::endl;
+
+
 
     // iterate only through renderable components
     ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();

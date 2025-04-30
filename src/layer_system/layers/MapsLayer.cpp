@@ -97,6 +97,8 @@ void MapsLayer::Init()
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
     std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
 
+    ent0->CreateComponent<PointLight>();
+
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
@@ -121,6 +123,7 @@ void MapsLayer::Init()
 
     Entity* ent1 = world0->CreateEntity("Entity1");
     // ent1->CreateComponent<MeshRenderable>();
+    ent1->CreateComponent<PointLight>();
 
     // Debug the world created
     std::shared_ptr<World> currentWorld = WorldManagerRef->GetCurrentWorld();
