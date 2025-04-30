@@ -89,9 +89,10 @@ void main()
     result += emission;
 
     // results
-    result *= material.color;
 
     result += CalculateDirectionalLight(directionalLight, norm, viewDir);
+
+    result *= material.color;
 
     FragColor = vec4(result, 1.0);
 
