@@ -15,6 +15,7 @@
 #include "render/Material.h"
 
 class Entity;
+class Renderer;
 
 /**
  * Component virtual class
@@ -106,6 +107,41 @@ public:
 	SpriteRenderable(const SpriteRenderable&) = default;
 };
 
+
+class PointLight : public Component{
+	friend class Renderer;
+private:
+	glm::vec3 _ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+	glm::vec3 _diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
+	glm::vec3 _specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	float _constant = 1.0f;
+	float _linear = 0.07f;
+	float _quadratic = 0.017f;
+
+public:
+	PointLight() = default;
+	PointLight(const PointLight&) = default;
+
+	PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic):
+		_ambient(ambient), _diffuse(diffuse), _specular(specular), _constant(constant), _linear(linear), _quadratic(quadratic) {};
+
+	// ------ GETTERS ---------
+	[[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
+	[[nodiscard]] glm::vec3 GetDiffuse() const { return _diffuse; }
+	[[nodiscard]] glm::vec3 GetSpecular() const { return _specular; }
+	[[nodiscard]] float GetConstant() const { return _constant; }
+	[[nodiscard]] float GetLinear() const { return _linear; }
+	[[nodiscard]] float GetQuadratic() const { return _quadratic; }
+
+	// ------ SETTERS ------
+	void SetAmbient(const glm::vec3& ambient) { _ambient = ambient; }
+	void SetDiffuse(const glm::vec3& diffuse) { _diffuse = diffuse; }
+	void SetSpecular(const glm::vec3& specular) { _specular = specular; }
+	void SetConstant(float constant) { _constant = constant; }
+	void SetLinear(float linear) { _linear = linear; }
+	void SetQuadratic(float quadratic) { _quadratic = quadratic; }
+};
 
 class Collider : public Component {
 public: 
