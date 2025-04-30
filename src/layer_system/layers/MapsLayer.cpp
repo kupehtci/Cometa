@@ -94,6 +94,8 @@ void MapsLayer::Init()
     Entity* ent0 = world0->CreateEntity("Entity0");
     MeshRenderable* renderable =  ent0->CreateComponent<MeshRenderable>();
     ent0->CreateComponent<Collider>();
+    PointLight* pointLight = ent0->CreateComponent<PointLight>();
+    std::cout << "Point light ambient: (" << pointLight->GetAmbient().x << ", " << pointLight->GetAmbient().y <<  " , " << pointLight->GetAmbient().x << " )" << std::endl;
 
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
