@@ -84,6 +84,11 @@ public:
 		return &_dense[_sparse[index]];
 	}
 
+	T* GetFirst()
+	{
+		return _size == 0 ? nullptr : &_dense[0];
+	}
+
 	T* GetLast() {
 		return _size == 0 ? nullptr : &_dense[_size - 1];
 	}

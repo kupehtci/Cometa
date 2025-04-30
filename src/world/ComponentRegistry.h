@@ -17,6 +17,7 @@ private:
 		ComponentStorage<MeshRenderable>,
 		ComponentStorage<SpriteRenderable>,
 		ComponentStorage<PointLight>,
+		ComponentStorage<DirectionalLight>,
 		ComponentStorage<Collider>,
 		ComponentStorage<RigidBody>,
 		ComponentStorage<Tag>

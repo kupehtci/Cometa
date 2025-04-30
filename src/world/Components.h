@@ -143,6 +143,32 @@ public:
 	void SetQuadratic(float quadratic) { _quadratic = quadratic; }
 };
 
+class DirectionalLight : public Component
+{
+	friend class Renderer;
+private:
+	glm::vec3 _direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+	glm::vec3 _ambient = glm::vec3(0.05f, 0.05f, 0.05f);
+	glm::vec3 _diffuse = glm::vec3(0.35f, 0.4f, 0.35f);
+	glm::vec3 _specular = glm::vec3(0.5f, 0.5f, 0.5f);
+
+public:
+	DirectionalLight() = default;
+	DirectionalLight(const DirectionalLight&) = default;
+
+	// --------- GETTERS ---------
+	[[nodiscard]] glm::vec3 GetDirection() const { return _direction; }
+	[[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
+	[[nodiscard]] glm::vec3 GetDiffuse() const { return _diffuse; }
+	[[nodiscard]] glm::vec3 GetSpecular() const { return _specular; }
+
+	// --------- SETTERS ---------
+	void SetDirection(const glm::vec3& direction) { _direction = direction; }
+	void SetAmbient(const glm::vec3& ambient) { _ambient = ambient; }
+	void SetDiffuse(const glm::vec3& diffuse) { _diffuse = diffuse; }
+	void SetSpecular(const glm::vec3& specular) { _specular = specular; }
+};
+
 class Collider : public Component {
 public: 
 	Collider() = default;
