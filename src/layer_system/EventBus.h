@@ -10,7 +10,11 @@
 #include "Event.h"
 #include "EventType.h"
 
-class EventBus : Singleton<EventBus>{
+/**
+ * Subscription class that allow Layers to subscribe to the event bus.
+ * This allow that in case of event creation they get notified
+ */
+class EventBus : public Singleton<EventBus>{
 
 private: 
     std::unordered_map<EventType, std::vector<Layer*>> _subscribers; 

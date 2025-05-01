@@ -153,7 +153,7 @@ void Renderer::Update(){
     {
         lights.emplace_back(std::make_pair(&pt, pt.GetOwner()->GetComponent<Transform>()));
         Transform* transform = pt.GetOwner()->GetComponent<Transform>();
-        std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
+        // std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
     }
     // std::cout << "=============== POINTLIGHTS END ============" << std::endl;
 
@@ -164,7 +164,7 @@ void Renderer::Update(){
     // std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
     for (auto& renderable : _renderables)
     {
-        std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
+        // std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
 
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
 

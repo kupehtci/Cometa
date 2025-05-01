@@ -1,5 +1,6 @@
 #include "Input.h"
 
+#include <imgui.h>
 #include <core/Application.h>
 
 // ------------ FUNCTION DECLARATION ------------
@@ -30,13 +31,14 @@ void Input::Init() {
     glfwGetCursorPos(currentWindow, &xpos, &ypos);
     _xpos = static_cast<float>(xpos);
     _ypos = static_cast<float>(ypos);
-    //
+
     // glfwSetKeyCallback(currentWindow, HandleKeyCallback);
     // glfwSetMouseButtonCallback(currentWindow, HandleMouseButtonCallback);
 
+
     // Set initial cursor mode to disabled (Same as locked to the window)
-    glfwSetInputMode(currentWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    _cursorMode = CURSOR_MODE_DISABLED;
+    // glfwSetInputMode(currentWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // _cursorMode = CURSOR_MODE_DISABLED;
 }
 
 void Input::Update() {
@@ -60,7 +62,6 @@ void Input::Update() {
     }
 
     // Process events
-
 }
 
 void Input::Close() {
@@ -118,9 +119,9 @@ glm::vec2 Input::GetMouseDelta() {
  */
 void Input::HandleKey(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    return;
-
+    ImGuiIO& io = ImGui::GetIO();
     // Check if must close window
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         switch (_cursorMode)
@@ -152,10 +153,21 @@ void Input::HandleKey(GLFWwindow* window, int key, int scancode, int action, int
         {
         case CURSOR_MODE_ENABLED:
         case CURSOR_MODE_NONE:
-            // set the cursor to disabled (locked into window) and return no previous position
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfwSetCursorPos(window, _xpos,_ypos );
-            _cursorMode = CURSOR_MODE_DISABLED;
+
+            std::cout << "IO want to capture keyboard: " << io.WantCaptureKeyboard << std::endl;
+            std::cout << "IO want to capture mouse: " << io.WantCaptureMouse << std::endl;
+            if (!io.WantCaptureKeyboard && !io.WantCaptureMouse)
+            {
+                // // set the cursor to disabled (locked into window) and return no previous position
+                // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                // glfwSetCursorPos(window, _xpos,_ypos );
+                // _cursorMode = CURSOR_MODE_DISABLED;
+            }
+            else
+            {
+                io.AddKeyEvent(static_cast<ImGuiKey>(key), true);
+                io.AddMouseButtonEvent(key, true);
+            }
             break;
 
         case CURSOR_MODE_DISABLED:
@@ -176,9 +188,13 @@ void Input::HandleKey(GLFWwindow* window, int key, int scancode, int action, int
 void HandleKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     Input::GetInstancePtr()->HandleKey(window, key, scancode, action, mods);
+    ImGuiIO& io = ImGui::GetIO();
+
 }
 
 void HandleMouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-    Input::GetInstancePtr()->HandleKey(window, button, 0, action, mods);
+    // Input::GetInstancePtr()->HandleKey(window, button, 0, action, mods);
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddMouseButtonEvent(button, action == GLFW_PRESS);
 }

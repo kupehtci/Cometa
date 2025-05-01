@@ -38,6 +38,10 @@ public:
     void Init();
     void Running();
     void Close();
+    void OnEvent();
+
+    // ------------ GETTERS ------------
+    Onion* GetOnion() { return &_onion; }
 
 private:
     /**

@@ -4,6 +4,8 @@
 #include "MapsLayer.h"
 
 //
+#include <layer_system/EventBus.h>
+
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
@@ -157,6 +159,10 @@ void MapsLayer::Init()
     // Debug the world created
     std::shared_ptr<World> currentWorld = WorldManagerRef->GetCurrentWorld();
     currentWorld->DebugPrint();
+
+
+    // Event bus subscription
+    EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
 }
 
 void MapsLayer::Update()
@@ -335,5 +341,25 @@ void MapsLayer::Close()
 }
 
 void MapsLayer::HandleEvent(Event& event){
+    std::cout << "MapsLayer::HandleEvent" << std::endl;
+    std::cout << "EventType: " << event.GetEventType() << std::endl;
+    if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
+    {
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+    }
 
+    switch (event.GetEventType())
+    {
+    case COMETA_MOUSE_BUTTON_PRESS_EVENT:
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    case COMETA_MOUSE_BUTTON_RELEASE_EVENT:
+        std::cout << "MAPS LAYER handled key release: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    default:
+        break;
+    }
 }
