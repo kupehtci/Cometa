@@ -30,9 +30,9 @@ void Input::Init() {
     glfwGetCursorPos(currentWindow, &xpos, &ypos);
     _xpos = static_cast<float>(xpos);
     _ypos = static_cast<float>(ypos);
-
-    glfwSetKeyCallback(currentWindow, HandleKeyCallback);
-    glfwSetMouseButtonCallback(currentWindow, HandleMouseButtonCallback);
+    //
+    // glfwSetKeyCallback(currentWindow, HandleKeyCallback);
+    // glfwSetMouseButtonCallback(currentWindow, HandleMouseButtonCallback);
 
     // Set initial cursor mode to disabled (Same as locked to the window)
     glfwSetInputMode(currentWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -40,6 +40,9 @@ void Input::Init() {
 }
 
 void Input::Update() {
+
+    glfwPollEvents();
+
     GLFWwindow* currentWindow = Renderer::GetInstancePtr()->GetWindow()->GetGlfwWindow();
     double xpos, ypos = 0.0f;
     glfwGetCursorPos(currentWindow, &xpos, &ypos);
@@ -55,6 +58,9 @@ void Input::Update() {
         _xpos = xpos;
         _ypos = ypos;
     }
+
+    // Process events
+
 }
 
 void Input::Close() {
@@ -112,7 +118,7 @@ glm::vec2 Input::GetMouseDelta() {
  */
 void Input::HandleKey(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-
+    return;
 
     // Check if must close window
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
