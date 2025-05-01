@@ -1,9 +1,9 @@
-//
 // Created by Daniel Laplana Gimeno on 18/4/25.
 //
 
 #include "MapsLayer.h"
 
+//
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
@@ -78,18 +78,18 @@ void MapsLayer::Init()
 
     _camera = Camera();
 
-    _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(0.5f, 0.5f, 0.5f),
-                                    2.0f,
-                                    "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg",
-                                    "resources/black.jpg");
+    // _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
+    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
+    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
+    //                                 glm::vec3(0.5f, 0.5f, 0.5f),
+    //                                 2.0f,
+    //                                 "resources/bricks_diffuse_map.jpg",
+    //                                 "resources/bricks_specular_map.jpg",
+    //                                 "resources/black.jpg");
 
-    _mat.LoadShader("Main Shader",
-        "src/render/shaders/light_map_shader.vert",
-        "src/render/shaders/light_map_shader.frag");
+    // _mat.LoadShader("Main Shader",
+    //     "src/render/shaders/light_map_shader.vert",
+    //     "src/render/shaders/light_map_shader.frag");
 
     WorldManagerRef->CreateWorld(0);
     WorldManagerRef->SetCurrentWorld(0);
@@ -148,7 +148,7 @@ void MapsLayer::Init()
     ent1Renderable->SetMesh(mesh0);
     ent1Renderable->SetMaterial(material1);
     ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
-
+    ent1->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
     ent1->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
 
@@ -181,7 +181,7 @@ void MapsLayer::Update()
     // // mainShader->SetFloat("lights[0].linear", 0.07f);
     // // mainShader->SetFloat("lights[0].quadratic", 0.017f);
     // //
-    // // mainShader->SetFloat3("lights[1].position", -lightPosition);
+    // // mainShader->SetFloat3("lights[1].position", -lightPosistion);
     // // mainShader->SetFloat3("lights[1].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     // // mainShader->SetFloat3("lights[1].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
     // // mainShader->SetFloat3("lights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));

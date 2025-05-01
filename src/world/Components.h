@@ -58,7 +58,7 @@ public:
 	};
 
 	[[nodiscard]] glm::mat4 GetTransform() const {
-		const glm::mat4 rotation = glm::toMat4(glm::quat(this->rotation));
+		const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(this->rotation)));
 		return glm::translate(glm::mat4(1.0f), position) * rotation * glm::scale(glm::mat4(1.0f), scale);
 	}
 
