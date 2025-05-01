@@ -16,6 +16,8 @@
 
 #include "render/Renderer.h"
 #include "core/Application.h"
+#include "input/Input.h"
+
 
 
 // ------------ FUNCTION DECLARATION ------------
@@ -42,7 +44,7 @@ Window::Window()
 Window::~Window(){
     if(this->_window !=  nullptr){
         glfwDestroyWindow(this->_window);
-        delete _window;
+        // delete _window;
     }
 
     delete _resolution;
@@ -66,10 +68,82 @@ void Window::Create(int width, int height, const char *title) {
         return;
     }
 
+    glfwMakeContextCurrent(_window);
+
     // Set Callbacks
+
     glfwSetWindowSizeCallback(_window, HandleResizeCallback);
 
-    glfwMakeContextCurrent(_window);
+    glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        Application* app = Application::GetInstancePtr();
+
+        switch (action)
+        {
+            case GLFW_PRESS:
+            {
+                KeyPressEvent event = KeyPressEvent(key);
+                EventBus::GetInstancePtr()->Notify(event);
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+                KeyReleasedEvent event = KeyReleasedEvent(key);
+                EventBus::GetInstancePtr()->Notify(event);
+                break;
+            }
+            case GLFW_REPEAT:
+            {
+                KeyPressEvent event = KeyPressEvent(key, true);
+                EventBus::GetInstancePtr()->Notify(event);
+                break;
+            }
+            default:
+            {
+                COMETA_WARNING("[WINDOW][CREATE] Not specified event for SetKeyCallback()");
+                break;
+            }
+        }
+    });
+
+    glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods)
+    {
+        std::cout << "MOUSE CALL BACK CALLEEDDDDDDD" << std::endl;
+        switch (action)
+        {
+            case GLFW_PRESS:
+            {
+                    std::cout << "MOUSE CALL BACK CALLEEDDDDDDD AND HAS BEENM PRESSEDDDDD" << std::endl;
+                MousePressButtonEvent event = MousePressButtonEvent(button);
+                EventBus::GetInstancePtr()->Notify(event);
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+                    std::cout << "MOUSE CALL BACK CALLEEDDDDDDD AND HAS BEENM RELEASEEEEEDDDD" << std::endl;
+                MouseReleaseButtonEvent event = MouseReleaseButtonEvent(button);
+                EventBus::GetInstancePtr()->Notify(event);
+                break;
+            }
+            default:
+            {
+                COMETA_WARNING("[WINDOW][CREATE] Not specified event for SetMouseButtonCallback()");
+                break;
+            }
+        }
+    });
+
+    glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double x, double y)
+    {
+        MouseMoveEvent event = MouseMoveEvent(static_cast<float>(x), static_cast<float>(y));
+        EventBus::GetInstancePtr()->Notify(event);
+    });
+
+    glfwSetScrollCallback(_window, [](GLFWwindow* window, double offsetX, double offsetY)
+    {
+        MouseScrollEvent event = MouseScrollEvent(static_cast<float>(offsetX), static_cast<float>(offsetY));
+        EventBus::GetInstancePtr()->Notify(event);
+    });
 }
 
 void Window::Init() {
@@ -142,67 +216,4 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
  */
 void HandleResizeCallback(GLFWwindow* window, int width, int height){
     Window::GetInstancePtr()->HandleResize(window, width, height);
-}
-
-
-// Previus used function to show colors
-void TestingFunctionShaderColors(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    // ------------------------------------------------------------------------------------
-    // TESTING
-    // ------------------------------------------------------------------------------------
-
-    Shader mainShader = Shader("Main Shader", "src/render/shaders/vertex_shader.vert", "src/render/shaders/fragment_shader.frag");
-
-    // Set shader as current and delete the compiled shaders
-    glUseProgram(mainShader.GetShaderUID());
-
-    float vertices[] = {
-            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
-            0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // right
-            0.0f,  0.5f, 0.0f ,  0.0f, 0.0f, 1.0f, // top
-    };
-
-    // Testing uniform value update
-    float timeValue = glfwGetTime();
-    float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    mainShader.SetFloat3("attrColor", glm::vec3(1.0f, greenValue, greenValue));
-
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Position attr
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Color attr
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // draw our first triangle
-    glUseProgram(mainShader.GetShaderUID());
-    glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-
-    // Once all is used, delete the resources
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
-    mainShader.Delete();
 }

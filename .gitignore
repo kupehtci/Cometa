@@ -22,3 +22,6 @@ Makefile
 
 # MacOS files
 .DS_Store
+
+# ImGui files
+imgui.ini

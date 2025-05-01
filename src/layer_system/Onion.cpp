@@ -10,6 +10,8 @@ void Onion::Update(){
     for(Layer* layer : _layers){
         layer->Update();
     }
+
+
 }
 
 void Onion::Close(){
