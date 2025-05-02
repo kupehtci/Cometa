@@ -20,7 +20,7 @@ private:
 
 public:
     MapsLayer();
-    ~MapsLayer();
+    ~MapsLayer() override;
 
 public:
     void Init() override;

@@ -7,11 +7,11 @@ void Onion::Init(){
 }
 
 void Onion::Update(){
-    for(Layer* layer : _layers){
-        layer->Update();
+    // Update backwards in order to render correctly
+    for (auto it = _layers.rbegin(); it != _layers.rend(); ++it)
+    {
+        (*it)->Update();
     }
-
-
 }
 
 void Onion::Close(){

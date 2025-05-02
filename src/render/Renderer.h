@@ -38,6 +38,8 @@ public:
     void Update() override;
     void Close() override;
 
+    void Render();
+
     [[nodiscard]] inline Window* GetWindow() const { return _window; }
 
     // TODO: Remain to implement
