@@ -18,7 +18,7 @@
 
 MapsLayer::MapsLayer()
 {
-
+    _name = "MapsLayer";
 }
 
 MapsLayer::~MapsLayer()
@@ -152,8 +152,6 @@ void MapsLayer::Init()
     ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
     ent1->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
     ent1->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
-
-
 
 
     // Debug the world created
