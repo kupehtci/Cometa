@@ -40,7 +40,9 @@ public:
 
 	glm::vec3 position = { 0.0f, 0.0f, 0.0f }; 
 	glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 scale = { 1.0f, 1.0f, 1.0f }; 
+	glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
+
+	Transform* _parent = nullptr;
 
 	Transform() = default;
 	explicit Transform(const glm::vec3& position)
@@ -60,6 +62,15 @@ public:
 	[[nodiscard]] glm::mat4 GetTransform() const {
 		const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(this->rotation)));
 		return glm::translate(glm::mat4(1.0f), position) * rotation * glm::scale(glm::mat4(1.0f), scale);
+	}
+
+	[[nodiscard]] glm::mat4 GetWorldTransform() const{
+		if (_parent != nullptr){
+			return _parent->GetWorldTransform() * GetTransform();
+		}
+		else{
+			return GetTransform();
+		}
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)

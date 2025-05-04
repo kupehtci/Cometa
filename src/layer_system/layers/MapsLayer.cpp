@@ -87,7 +87,7 @@ void MapsLayer::Init()
 
     Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -5.0f);
-    MeshRenderable* renderable =  ent0->CreateComponent<MeshRenderable>();
+    MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
     ent0->CreateComponent<Collider>();
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
     std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
@@ -104,7 +104,7 @@ void MapsLayer::Init()
     material0->LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
-    renderable->SetMaterial(material0);
+    ent0Renderable->SetMaterial(material0);
 
     std::shared_ptr<Mesh> mesh0 = std::make_shared<Mesh>();
     mesh0->AddVertices(vertices, sizeof(vertices) / sizeof(float));
@@ -116,13 +116,24 @@ void MapsLayer::Init()
         {3, DataType::Float2, "aTexCoord"}
         });
     mesh0->Build();
-    renderable->SetMesh(mesh0);
+    ent0Renderable->SetMesh(mesh0);
+
+    // --------- Other entity entity ---------
 
     Entity* ent1 = world0->CreateEntity("Entity1");
-    // ent1->CreateComponent<MeshRenderable>();
-    ent1->CreateComponent<PointLight>();
+    ent1->GetComponent<Transform>()->position = glm::vec3(2.0f, 0.0f, 5.0f);
+    auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
+    ent1->CreateComponent<Collider>();
 
-    MeshRenderable* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
+    ent1Renderable->SetMaterial(material0);
+    ent1Renderable->SetMesh(mesh0);
+
+    // --------- Light entity ---------
+    Entity* ptlight0 = world0->CreateEntity("Light Point 1");
+    // ptlight0->CreateComponent<MeshRenderable>();
+    ptlight0->CreateComponent<PointLight>();
+
+    MeshRenderable* ptlight0Renderable = ptlight0->CreateComponent<MeshRenderable>();
 
     std::shared_ptr<Material> material1 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
@@ -135,11 +146,11 @@ void MapsLayer::Init()
 
     material1->LoadShader("Main Shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
     // mesh0->Bind();
-    ent1Renderable->SetMesh(mesh0);
-    ent1Renderable->SetMaterial(material1);
-    ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
-    ent1->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
-    ent1->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+    ptlight0Renderable->SetMesh(Mesh::CreateSphere());
+    ptlight0Renderable->SetMaterial(material1);
+    ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
+    ptlight0->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
+    ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
 
 
