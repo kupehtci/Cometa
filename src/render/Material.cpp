@@ -23,11 +23,13 @@ void Material::LoadShader(const Shader& shader)
 {
     _shader = std::make_shared<Shader>(shader);
 }
+
 void Material::LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
     // _shader = std::make_shared<Shader>(name, vertexShaderPath, fragmentShaderPath);
     _shader = Shader::LoadShader(name, vertexShaderPath, fragmentShaderPath);
 }
+
 void Material::UnsetShader()
 {
     _shader = nullptr;
