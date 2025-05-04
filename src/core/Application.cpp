@@ -5,6 +5,7 @@
 #include "core/Application.h"
 
 #include "layer_system/layers/MapsLayer.h"
+#include "layer_system/layers/UILayer.h"
 
 #include "layer_system/layers/CometaLayer.h"
 #include "layer_system/layers/MaterialLayer.h"
@@ -45,6 +46,9 @@ void Application::Init(){
     // _onion.PushLayer(matLayer);
 
     // Light maps testing
+    UILayer* uiLayer = new UILayer();
+    _onion.PushLayer(uiLayer);
+
     MapsLayer* mapsLayer = new MapsLayer();
     _onion.PushLayer(mapsLayer);
 
@@ -66,8 +70,11 @@ void Application::Running() {
         _worldManager->Update();
         _renderer->Update();
         _input->Update();
-
         _onion.Update();
+
+
+        // Once all has been loaded, render into screen
+        _renderer->Render();
 
         // Check if window must close
         if (_isRunning)

@@ -40,7 +40,6 @@ public:
     void Create(int width, int height, const char* title);
 
 
-
     void Init(); 
     void Update();
     void Close();

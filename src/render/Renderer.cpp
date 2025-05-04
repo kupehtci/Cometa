@@ -17,6 +17,11 @@
 #include "world/Entity.h"
 
 
+// IMGUI
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
 Renderer::Renderer() {
     this->_window = nullptr;
 
@@ -93,12 +98,12 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-
 }
 
 void Renderer::Update(){
     // Update current window
     _window->Update();
+
 
     // // render the world elements
     WorldManager* worldManager = WorldManagerRef;
@@ -130,7 +135,7 @@ void Renderer::Update(){
     {
         lights.emplace_back(std::make_pair(&pt, pt.GetOwner()->GetComponent<Transform>()));
         Transform* transform = pt.GetOwner()->GetComponent<Transform>();
-        std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
+        // std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
     }
     // std::cout << "=============== POINTLIGHTS END ============" << std::endl;
 
@@ -141,7 +146,7 @@ void Renderer::Update(){
     // std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
     for (auto& renderable : _renderables)
     {
-        std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
+        // std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
 
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
 
@@ -189,12 +194,18 @@ void Renderer::Update(){
     // std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
 
 
+    // Swap buffers to render into screen
+    // _window->SwapBuffers();
+}
 
+void Renderer::Render()
+{
     // Swap buffers to render into screen
     _window->SwapBuffers();
 }
 
 void Renderer::Close(){
+
     _window->Close();
     glfwTerminate();
 }

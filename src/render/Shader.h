@@ -155,9 +155,9 @@ public:
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:
-    inline std::string GetSourceCode(GLenum shaderType){ return _shaderSources[GL_FRAGMENT_SHADER]; }
-    inline std::string GetFilePath(GLenum shaderType){ return _filePaths[shaderType];}
-    inline unsigned int GetShaderUID() const{ return _shaderUID; }
+    [[nodiscard]] std::string GetSourceCode(GLenum shaderType){ return _shaderSources[shaderType]; }
+    [[nodiscard]] std::string GetFilePath(GLenum shaderType){ return _filePaths[shaderType];}
+    [[nodiscard]] unsigned int GetShaderUID() const{ return _shaderUID; }
     [[nodiscard]] inline bool IsCompiled() const{ return _isCompiled; }
 
 };

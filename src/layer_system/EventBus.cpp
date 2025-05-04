@@ -23,5 +23,17 @@ void EventBus::Notify(Event& event){
 
     for(Layer* layer : _subscribers[event.GetEventType()]){
         layer->HandleEvent(event);
+
+        if (event.HasBeenHandled()) break;
+
     }
+
+    // This can be used to debug when an event has not been handled
+    if (!event.HasBeenHandled())
+    {
+        std::cout << "Event has not been handled" << std::endl;
+    }
+
+    // std::cout << "=== End of Event Bus NOTIFY ===" << std::endl;
+
 }

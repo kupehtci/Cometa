@@ -40,6 +40,7 @@ public:
 
     // ------------ GETTERS AND SETTERS ------------
     [[nodiscard]] size_t GetNumEntities() const {return _entities.Size();}
+    [[nodiscard]] SparseSet<Entity>& GetEntities() {return _entities;}
     [[nodiscard]] ComponentRegistry& GetComponentRegistry() {return _componentRegistry;}
 
     [[nodiscard]] Camera* GetCamera() const {return _camera;}

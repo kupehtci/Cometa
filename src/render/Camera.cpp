@@ -76,17 +76,20 @@ void Camera::OnUpdate() {
 
     _right = glm::normalize(glm::cross(_up, _direction)); 
 
-    if(Input::IsKeyPressed(GLFW_KEY_W)) {
-        _position += _direction * _movementSpeed * Time::GetDeltaTime();
-    }
-    if(Input::IsKeyPressed(GLFW_KEY_S)) {
-        _position -= _direction * _movementSpeed * Time::GetDeltaTime();
-    }
-    if(Input::IsKeyPressed(GLFW_KEY_A)) {
-        _position += _right * _movementSpeed * Time::GetDeltaTime();
-    }
-    if(Input::IsKeyPressed(GLFW_KEY_D)) {
-        _position -= _right * _movementSpeed * Time::GetDeltaTime();
+    if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
+    {
+        if(Input::IsKeyPressed(GLFW_KEY_W)) {
+            _position += _direction * _movementSpeed * Time::GetDeltaTime();
+        }
+        if(Input::IsKeyPressed(GLFW_KEY_S)) {
+            _position -= _direction * _movementSpeed * Time::GetDeltaTime();
+        }
+        if(Input::IsKeyPressed(GLFW_KEY_A)) {
+            _position += _right * _movementSpeed * Time::GetDeltaTime();
+        }
+        if(Input::IsKeyPressed(GLFW_KEY_D)) {
+            _position -= _right * _movementSpeed * Time::GetDeltaTime();
+        }
     }
 
 
@@ -95,8 +98,11 @@ void Camera::OnUpdate() {
 
     glm::vec2 mouseDelta = Input::GetMouseDelta();
 
-    _yaw += (mouseDelta.x * _sensitivity);
-    _pitch -= (mouseDelta.y * _sensitivity);
+    if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
+    {
+        _yaw += (mouseDelta.x * _sensitivity);
+        _pitch -= (mouseDelta.y * _sensitivity);
+    }
 
     _pitch = CometaMath::Scope(_pitch, -89.0f, 89.0f);
 
