@@ -108,19 +108,16 @@ void Window::Create(int width, int height, const char *title) {
 
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods)
     {
-        std::cout << "MOUSE CALL BACK CALLEEDDDDDDD" << std::endl;
         switch (action)
         {
             case GLFW_PRESS:
             {
-                    std::cout << "MOUSE CALL BACK CALLEEDDDDDDD AND HAS BEENM PRESSEDDDDD" << std::endl;
                 MousePressButtonEvent event = MousePressButtonEvent(button);
                 EventBus::GetInstancePtr()->Notify(event);
                 break;
             }
             case GLFW_RELEASE:
             {
-                    std::cout << "MOUSE CALL BACK CALLEEDDDDDDD AND HAS BEENM RELEASEEEEEDDDD" << std::endl;
                 MouseReleaseButtonEvent event = MouseReleaseButtonEvent(button);
                 EventBus::GetInstancePtr()->Notify(event);
                 break;
