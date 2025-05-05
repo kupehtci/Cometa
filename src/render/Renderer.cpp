@@ -90,7 +90,7 @@ void Renderer::Init(){
     // Validate maximum number of vertex attributes to use in the shaders
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    COMETA_MSG(("Maximum number of vertex attributes supported by hardware: ", std::to_string(nrAttributes)).c_str());
+    COMETA_MSG("Maximum number of vertex attributes supported by hardware: " , std::to_string(nrAttributes));
 
     COMETA_MSG("Maximum number of textures in buffer: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 

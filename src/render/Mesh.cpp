@@ -208,6 +208,36 @@ std::shared_ptr<Mesh> Mesh::CreateSphere(unsigned int sectorCount, unsigned int 
     return sphereMesh;
 }
 
+std::shared_ptr<Mesh> Mesh::CreatePlane()
+{
+    float vertices[] = {
+        // positions          // normals          // texture coords
+        -0.5f, 0.0f, -0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f,
+         0.5f, 0.0f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+         0.5f, 0.0f,  0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,
+        -0.5f, 0.0f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    std::shared_ptr<Mesh> planeMesh = std::make_shared<Mesh>();
+    planeMesh->AddVertices(vertices, sizeof(vertices) / sizeof(float));
+    planeMesh->AddIndices(indices, sizeof(indices) / sizeof(unsigned int));
+    planeMesh->SetLayoutBuffer({
+        {0, DataType::Float3, "aPos"},
+        {1, DataType::Float3, "aNormal"},
+        {2, DataType::Float2, "aTexCoord"}
+    });
+    planeMesh->Build();
+
+    return planeMesh;
+}
+
+// --------- UTILS ----------
+
 void Mesh::Debug()
 {
     std::cout << "Vertices: " << _numVertices << std::endl;

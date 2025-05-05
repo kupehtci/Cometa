@@ -267,8 +267,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                 transform->scale.x = scale[0];
                                 transform->scale.y = scale[1];
                                 transform->scale.z = scale[2];
-
                             }
+
+                            ImGui::Text("Parent Transform: ");
+                            transform->GetParent() != nullptr ? ImGui::Text("Parent Transform UID: %u", transform->GetParent()->GetOwner()->GetUID()) : ImGui::Text("none");
 
                             ImGui::TreePop();
                         }
@@ -310,10 +312,14 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     ImGui::TreePop();
                                 }
+                                else
+                                {
+                                    ImGui::Text("No mesh");
+                                }
                             }
 
                             // Material Block
-                            if (meshRenderable->GetMaterial() && ImGui::TreeNode("Material"))
+                            if (ImGui::TreeNode("Material"))
                             {
                                 std::shared_ptr<Material> material = meshRenderable->GetMaterial();
                                 if (material)
@@ -386,6 +392,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                         ImGui::PopStyleColor(3);
                                         ImGui::PopStyleVar(1);
                                     }
+                                }
+                                else
+                                {
+                                    ImGui::Text("No material");
                                 }
 
                                 ImGui::TreePop();

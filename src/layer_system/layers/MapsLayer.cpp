@@ -77,7 +77,6 @@ void MapsLayer::Init()
     };
 
 
-
     _camera = Camera();
 
     WorldManagerRef->CreateWorld(0);
@@ -118,10 +117,12 @@ void MapsLayer::Init()
     mesh0->Build();
     ent0Renderable->SetMesh(mesh0);
 
-    // --------- Other entity entity ---------
+    // --------- Other entity same as ent0 ---------
 
     Entity* ent1 = world0->CreateEntity("Entity1");
     ent1->GetComponent<Transform>()->position = glm::vec3(2.0f, 0.0f, 5.0f);
+    ent1->GetComponent<Transform>()->SetParent(ent0->GetComponent<Transform>());
+
     auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
     ent1->CreateComponent<Collider>();
 
@@ -152,6 +153,16 @@ void MapsLayer::Init()
     ptlight0->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
     ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
+
+    // Create floor
+    Entity* floor = world0->CreateEntity("Floor");
+    floor->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, 5.0f);
+    floor->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+    floor->GetComponent<Transform>()->scale = glm::vec3(3.0f, 3.0f, 3.0f);
+
+    MeshRenderable* floorRenderable = floor->CreateComponent<MeshRenderable>();
+    floorRenderable->SetMesh(Mesh::CreatePlane());
+    floorRenderable->SetMaterial(material1);
 
 
     // Event bus subscription

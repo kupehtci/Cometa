@@ -42,16 +42,21 @@ public:
 	glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
 
+private:
 	Transform* _parent = nullptr;
 
+public:
 	Transform() = default;
+
 	explicit Transform(const glm::vec3& position)
 	{
 		this->position = position;
 		this->rotation = { 0.0f, 0.0f, 0.0f };
 		this->scale = { 1.0f, 1.0f, 1.0f };
 	}
+
 	Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) : position(position), rotation(rotation), scale(scale) {};
+
 	Transform(const Transform& other)
 	{
 		position = other.position;
@@ -72,6 +77,9 @@ public:
 			return GetTransform();
 		}
 	}
+
+	void SetParent(Transform* newParent){_parent = newParent;}
+	[[nodiscard]] Transform* GetParent() const { return _parent; }
 
 	friend std::ostream& operator<<(std::ostream& os, const Transform& transform)
 	{
