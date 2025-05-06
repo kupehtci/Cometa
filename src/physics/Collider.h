@@ -9,24 +9,29 @@
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <world/Components.h>
 
+#include "physics/CollisionDispatcher.h"
 
 // Base Collider class (abstract)
 class Collider {
 public:
-    enum class Type {
-        BOX,
-        SPHERE
+    enum class ColliderType {
+        BOX_COLLIDER = 0,
+        SPHERE_COLLIDER = 1,
+        COUNT = 2,
     };
 
     virtual ~Collider() = default;
-    virtual Type GetType() const = 0;
+    virtual ColliderType GetType() const = 0;
     virtual bool Intersects(const Collider* other) const = 0;
     virtual void DebugDraw() const = 0;
 
 protected:
     Collider() = default;
 };
+
+
 
 // Box Collider implementation
 class BoxCollider : public Collider {
@@ -40,7 +45,7 @@ public:
     BoxCollider(const glm::vec3& extents, const glm::vec3& center, const glm::quat& rotation)
         : _extents(extents), _center(center), _rotation(rotation) {}
 
-    Type GetType() const override { return Type::BOX; }
+    ColliderType GetType() const override { return ColliderType::BOX_COLLIDER; }
 
     bool Intersects(const Collider* other) const override {
         // Implement box-box and box-sphere intersection
@@ -72,7 +77,7 @@ public:
     SphereCollider(float radius, const glm::vec3& center)
         : _radius(radius), _center(center) {}
 
-    Type GetType() const override { return Type::SPHERE; }
+    ColliderType GetType() const override { return ColliderType::SPHERE_COLLIDER; }
 
     bool Intersects(const Collider* other) const override {
         // Implement sphere-sphere and sphere-box intersection

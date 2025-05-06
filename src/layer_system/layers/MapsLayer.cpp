@@ -5,6 +5,7 @@
 
 //
 #include <layer_system/EventBus.h>
+#include <physics/Collider.h>
 
 #include "render/Renderer.h"
 #include "render/Shader.h"
@@ -86,8 +87,11 @@ void MapsLayer::Init()
 
     Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
+
     MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
     RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
+    ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
+    ent0Collider->SetCollider<SphereCollider>();
 
     // ent0->CreateComponent<Collider>();
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
@@ -134,7 +138,6 @@ void MapsLayer::Init()
 
     // --------- Light entity ---------
     Entity* ptlight0 = world0->CreateEntity("Light Point 1");
-    // ptlight0->CreateComponent<MeshRenderable>();
     ptlight0->CreateComponent<PointLight>();
 
     MeshRenderable* ptlight0Renderable = ptlight0->CreateComponent<MeshRenderable>();

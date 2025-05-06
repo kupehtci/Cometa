@@ -14,7 +14,8 @@
 #include "render/Mesh.h"
 #include "render/Material.h"
 
-#include "physics/Collider.h"
+// #include "physics/Collider.h"
+class Collider;
 
 class Entity;
 class Renderer;
@@ -209,6 +210,8 @@ private:
 	glm::vec3 _force = { 0.0f, 0.0f, 0.0f };
 	float _mass = 1.0f;
 
+	bool _enabled = false;
+
 public:
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
@@ -232,16 +235,13 @@ public:
     ColliderComponent() = default;
 	ColliderComponent(const ColliderComponent& other) = default;
 
-    ~ColliderComponent() override
-    {
-		delete _collider;
-    }
+    ~ColliderComponent() override = default;
 
     template<typename T, typename... Args>
     T* SetCollider(Args&&... args) {
         static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
         _collider = new T(std::forward<Args>(args)...);
-    	return _collider;
+    	return dynamic_cast<T*>(_collider);
     }
 
     [[nodiscard]] Collider* GetCollider() const { return _collider; }
