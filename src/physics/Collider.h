@@ -9,7 +9,7 @@
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
-#include <world/Components.h>
+// #include <world/Components.h>
 
 #include "physics/CollisionDispatcher.h"
 
@@ -95,28 +95,6 @@ public:
     void SetRadius(float radius) { _radius = radius; }
     void SetCenter(const glm::vec3& center) { _center = center; }
 };
-
-//// ColliderComponent that holds a pointer to a specific collider type
-//class ColliderComponent : public Component {
-//private:
-//    std::unique_ptr<Collider> _collider;
-//    bool _isTrigger = false;
-//
-//public:
-//    ColliderComponent() = default;
-//    ~ColliderComponent() = default;
-//
-//    template<typename T, typename... Args>
-//    T* SetCollider(Args&&... args) {
-//        static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
-//        _collider = std::make_unique<T>(std::forward<Args>(args)...);
-//        return static_cast<T*>(_collider.get());
-//    }
-//
-//    Collider* GetCollider() const { return _collider.get(); }
-//    bool IsTrigger() const { return _isTrigger; }
-//    void SetTrigger(bool isTrigger) { _isTrigger = isTrigger; }
-//};
 
 
 #endif //COMETA_COLLIDER_H

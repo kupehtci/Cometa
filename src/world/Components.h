@@ -14,7 +14,7 @@
 #include "render/Mesh.h"
 #include "render/Material.h"
 
-// #include "physics/Collider.h"
+#include "physics/Collider.h"
 class Collider;
 
 class Entity;
@@ -210,7 +210,7 @@ private:
 	glm::vec3 _force = { 0.0f, 0.0f, 0.0f };
 	float _mass = 1.0f;
 
-	bool _enabled = false;
+	bool _enabled = true;
 
 public:
 	RigidBody() = default;
@@ -236,6 +236,27 @@ public:
 	ColliderComponent(const ColliderComponent& other) = default;
 
     ~ColliderComponent() override = default;
+
+	bool operator==(const ColliderComponent& other) const
+	{
+		if (_isTrigger != other._isTrigger)
+			return false;
+
+		if (_collider == nullptr && other._collider == nullptr)
+			return true;
+
+		if ((_collider == nullptr) != (other._collider == nullptr))
+			return false;
+
+		if (_collider->GetType() != other._collider->GetType())
+			return false;
+
+		if (_collider != other._collider){
+			return false;
+		}
+
+		return true;
+	}
 
     template<typename T, typename... Args>
     T* SetCollider(Args&&... args) {

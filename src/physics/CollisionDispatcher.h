@@ -21,6 +21,7 @@ struct CollisionPoint
     glm::vec3 b;
     glm::vec3 normal;
     float length;
+    bool collided;
 };
 
 using CollisionDispatchFunction = CollisionPoint(*)(const Collider*, const Transform*, const Collider*, const Transform*);
