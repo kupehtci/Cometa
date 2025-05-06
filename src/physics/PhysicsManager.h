@@ -13,6 +13,8 @@ class PhysicsManager : public SingletonManager<PhysicsManager> {
 private:
     glm::vec3 _gravity = glm::vec3(0.0f, -9.81f, 0.0f);
 
+    float _beta = 0.2f; // Baumgarte stabilization
+
 
 public:
     void Init() override;
