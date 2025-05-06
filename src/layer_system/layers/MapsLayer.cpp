@@ -85,12 +85,13 @@ void MapsLayer::Init()
     world0->SetCamera(&_camera);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
-    ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -5.0f);
+    ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
     MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
-    ent0->CreateComponent<Collider>();
+    RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
+
+    // ent0->CreateComponent<Collider>();
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
     std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
-
 
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
@@ -100,6 +101,8 @@ void MapsLayer::Init()
                                     "resources/bricks_diffuse_map.jpg",
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
+
+
     material0->LoadShader("Main Shader",
         "src/render/shaders/light_map_shader.vert",
         "src/render/shaders/light_map_shader.frag");
@@ -121,10 +124,10 @@ void MapsLayer::Init()
 
     Entity* ent1 = world0->CreateEntity("Entity1");
     ent1->GetComponent<Transform>()->position = glm::vec3(2.0f, 0.0f, 5.0f);
-    ent1->GetComponent<Transform>()->SetParent(ent0->GetComponent<Transform>());
+    // ent1->GetComponent<Transform>()->SetParent(ent0->GetComponent<Transform>());
 
     auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
-    ent1->CreateComponent<Collider>();
+    // ent1->CreateComponent<Collider>();
 
     ent1Renderable->SetMaterial(material0);
     ent1Renderable->SetMesh(mesh0);

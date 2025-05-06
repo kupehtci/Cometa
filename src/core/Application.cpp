@@ -13,13 +13,17 @@
 Application::Application(){
     this->_isRunning = true;
     _worldManager = nullptr;
+    _physicsManager = nullptr;
     _renderer = nullptr; 
     _time = nullptr;
     _onion = Onion();
 }
 
 Application::~Application(){
-
+    delete _worldManager;
+    delete _physicsManager;
+    delete _renderer;
+    delete _time;
 }
 
 void Application::Init(){
@@ -35,6 +39,9 @@ void Application::Init(){
 
     Input::Create(); 
     _input = Input::GetInstancePtr();
+
+    PhysicsManager::Create();
+    _physicsManager = PhysicsManager::GetInstancePtr();
 
     // Push the layers
     // // Push cometa layer previous implementation
@@ -58,6 +65,7 @@ void Application::Init(){
     _renderer->Init();
     _time->Init();
     _input->Init();
+    _physicsManager->Init();
 
     _onion.Init();
 }
@@ -68,6 +76,7 @@ void Application::Running() {
         // Update the managers
         _time->Update();
         _worldManager->Update();
+        _physicsManager->Update();
         _renderer->Update();
         _input->Update();
         _onion.Update();
@@ -85,7 +94,8 @@ void Application::Running() {
 }
 
 void Application::Close() {
-    _input->Update();
+    _physicsManager->Close();
+    _input->Close();
     _renderer->Close();
     _worldManager->Close();
     _time->Close();

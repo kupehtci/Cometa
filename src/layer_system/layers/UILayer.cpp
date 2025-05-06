@@ -506,7 +506,7 @@ void UILayer::BuildSceneHierarchyPanel()
                     }
 
                     // Display Collider component if it exists
-                    Collider* collider = entity.GetComponent<Collider>();
+                    ColliderComponent* collider = entity.GetComponent<ColliderComponent>();
                     if (collider)
                     {
                         if (ImGui::TreeNode("Collider"))
@@ -522,17 +522,19 @@ void UILayer::BuildSceneHierarchyPanel()
                     RigidBody* rigidBody = entity.GetComponent<RigidBody>();
                     if (rigidBody)
                     {
-                        if (ImGui::TreeNode("RigidBody"))
-                        {
-                            ImGui::Text("Linear Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->linearVelocity.x, rigidBody->linearVelocity.y, rigidBody->linearVelocity.z);
-                            ImGui::Text("Angular Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->angularVelocity.x, rigidBody->angularVelocity.y, rigidBody->angularVelocity.z);
-                            ImGui::Text("Mass: %.2f", rigidBody->mass);
-                            ImGui::TreePop();
+                        ImGui::Text("Has rigidbody");
 
-                            ImGui::Separator();
-                        }
+                        // if (ImGui::TreeNode("RigidBody"))
+                        // {
+                        //     ImGui::Text("Linear Velocity: (%.2f, %.2f, %.2f)",
+                        //         rigidBody->_linearVelocity.x, rigidBody->linearVelocity.y, rigidBody->linearVelocity.z);
+                        //     ImGui::Text("Angular Velocity: (%.2f, %.2f, %.2f)",
+                        //         rigidBody->angularVelocity.x, rigidBody->angularVelocity.y, rigidBody->angularVelocity.z);
+                        //     ImGui::Text("Mass: %.2f", rigidBody->mass);
+                        //     ImGui::TreePop();
+                        //
+                        //     ImGui::Separator();
+                        // }
                     }
 
                     ImGui::TreePop();

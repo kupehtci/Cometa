@@ -14,6 +14,8 @@
 #include "render/Mesh.h"
 #include "render/Material.h"
 
+#include "physics/Collider.h"
+
 class Entity;
 class Renderer;
 
@@ -127,6 +129,10 @@ public:
 };
 
 
+// ----------------------------------------------
+// |            LIGHTNING COMPONENTS            |
+// ----------------------------------------------
+
 class PointLight : public Component{
 	friend class Renderer;
 private:
@@ -188,21 +194,82 @@ public:
 	void SetSpecular(const glm::vec3& specular) { _specular = specular; }
 };
 
-class Collider : public Component {
-public: 
-	Collider() = default;
-	Collider(const Collider&) = default;
-};
+
+// ----------------------------------------------
+// |              PHYSICS COMPONENTS            |
+// ----------------------------------------------
 
 class RigidBody : public Component
 {
-public:
-	glm::vec3 linearVelocity = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 angularVelocity = { 0.0f, 0.0f, 0.0f };
-	float mass = 1.0f;
+	friend class PhysicsManager;
 
+private:
+	glm::vec3 _linearVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 _angularVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 _force = { 0.0f, 0.0f, 0.0f };
+	float _mass = 1.0f;
+
+public:
 	RigidBody() = default;
+	RigidBody(const RigidBody&) = default;
+
+	// TODO: Update this methods
+
+	[[nodiscard]] float GetMass() const { return _mass; }
+
+	void SetMass(float mass) { _mass = mass; }
+	void SetLinV(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
+	void SetAngV(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
+	void SetForce(const glm::vec3& force) { _force = force; }
+
 };
+
+class ColliderComponent : public Component {
+protected:
+	    Collider*  _collider = nullptr;
+	    bool _isTrigger = false;
+public:
+    ColliderComponent() = default;
+	ColliderComponent(const ColliderComponent& other) = default;
+
+    ~ColliderComponent() override
+    {
+		delete _collider;
+    }
+
+    template<typename T, typename... Args>
+    T* SetCollider(Args&&... args) {
+        static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
+        _collider = new T(std::forward<Args>(args)...);
+    	return _collider;
+    }
+
+    [[nodiscard]] Collider* GetCollider() const { return _collider; }
+    [[nodiscard]] bool IsTrigger() const { return _isTrigger; }
+    void SetTrigger(bool isTrigger) { _isTrigger = isTrigger; }
+};
+
+// class Collider
+// {
+//
+// };
+//
+// class BoxCollider : public Collider
+// {
+// private:
+// 	glm::vec3 _extents = { 1 / 2, 1 / 2, 1 / 2 };
+// 	glm::vec3 _center = { 1, 1, 1 };
+// 	glm::quat _rotation = { 0, 0, 0, 0 };
+//
+// public:
+// 	BoxCollider() = default;
+// 	BoxCollider(const BoxCollider&) = default;
+//
+// 	BoxCollider(glm::vec3 extents, glm::vec3 center, glm::vec3 rotation)
+// };
+
+
+
 
 class Tag : public Component {
 private: 
