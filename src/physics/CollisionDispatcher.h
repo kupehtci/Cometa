@@ -19,6 +19,7 @@ struct CollisionPoint
 {
     glm::vec3 a;
     glm::vec3 b;
+    glm::vec3 point;
     glm::vec3 normal;
     float length;
     bool collided;
@@ -45,4 +46,4 @@ public:
 };
 
 
-#endif //COLLISIONDISPATCHER_H
+#endif //COMETA_COLLISION_DISPATCHER_H

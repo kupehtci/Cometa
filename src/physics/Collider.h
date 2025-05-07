@@ -23,8 +23,7 @@ public:
     };
 
     virtual ~Collider() = default;
-    virtual ColliderType GetType() const = 0;
-    virtual bool Intersects(const Collider* other) const = 0;
+    [[nodiscard]] virtual ColliderType GetType() const = 0;
     virtual void DebugDraw() const = 0;
 
 protected:
@@ -42,24 +41,27 @@ private:
 
 public:
     BoxCollider() = default;
+
+    explicit BoxCollider(const glm::vec3& extents)
+        : _extents(extents), _center({0.0f, 0.0f, 0.0f}) {}
+
+    BoxCollider(const glm::vec3& extents, const glm::vec3& center)
+    : _extents(extents), _center(center) {}
+
     BoxCollider(const glm::vec3& extents, const glm::vec3& center, const glm::quat& rotation)
         : _extents(extents), _center(center), _rotation(rotation) {}
 
-    ColliderType GetType() const override { return ColliderType::BOX_COLLIDER; }
-
-    bool Intersects(const Collider* other) const override {
-        // Implement box-box and box-sphere intersection
-        return false; // Placeholder
-    }
+    [[nodiscard]] ColliderType GetType() const override { return ColliderType::BOX_COLLIDER; }
 
     void DebugDraw() const override {
         // Implement debug visualization
     }
 
     // Getters and setters
-    const glm::vec3& GetExtents() const { return _extents; }
-    const glm::vec3& GetCenter() const { return _center; }
-    const glm::quat& GetRotation() const { return _rotation; }
+    [[nodiscard]] const glm::vec3& GetExtents() const { return _extents; }
+    [[nodiscard]] glm::vec3 GetSize() const { return _extents * 2.0f; }
+    [[nodiscard]] const glm::vec3& GetCenter() const { return _center; }
+    [[nodiscard]] const glm::quat& GetRotation() const { return _rotation; }
 
     void SetExtents(const glm::vec3& extents) { _extents = extents; }
     void SetCenter(const glm::vec3& center) { _center = center; }
@@ -74,15 +76,12 @@ private:
 
 public:
     SphereCollider() = default;
+    explicit SphereCollider(float radius)
+        : _radius(radius), _center({0.0f, 0.0f, 0.0f}) {}
     SphereCollider(float radius, const glm::vec3& center)
         : _radius(radius), _center(center) {}
 
-    ColliderType GetType() const override { return ColliderType::SPHERE_COLLIDER; }
-
-    bool Intersects(const Collider* other) const override {
-        // Implement sphere-sphere and sphere-box intersection
-        return false; // Placeholder
-    }
+    [[nodiscard]] ColliderType GetType() const override { return ColliderType::SPHERE_COLLIDER; }
 
     void DebugDraw() const override {
         // Implement debug visualization

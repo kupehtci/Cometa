@@ -91,9 +91,8 @@ void MapsLayer::Init()
     MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
     RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
     ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
-    ent0Collider->SetCollider<SphereCollider>(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
 
-    // ent0->CreateComponent<Collider>();
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
     std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
 
@@ -129,7 +128,7 @@ void MapsLayer::Init()
     Entity* ent1 = world0->CreateEntity("Entity1");
     ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
     ColliderComponent* ent1Collider = ent1->CreateComponent<ColliderComponent>();
-    ent1Collider->SetCollider<SphereCollider>(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
 
     auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
     // ent1->CreateComponent<Collider>();

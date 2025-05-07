@@ -16,13 +16,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-// Collision contact points calculation
 
-
-
-// end of collision contact points calculation
-
-
+#include "physics/Collision.h"
 
 
 void PhysicsManager::Init(){
@@ -65,13 +60,6 @@ void PhysicsManager::Update(){
 
 
     // BROAD PHASE with improved collision handling
-    struct Collision {
-        ColliderComponent* colliderCompA;
-        ColliderComponent* colliderCompB;
-        CollisionPoint point;
-        Collision(ColliderComponent* colliderA, ColliderComponent* colliderB, CollisionPoint point)
-            : colliderCompA(colliderA), colliderCompB(colliderB), point(point) {}
-    };
     std::vector<Collision> collisions;
     ComponentStorage<ColliderComponent>& colliders = currentWorld->GetComponentRegistry().GetStorage<ColliderComponent>();
 
@@ -103,9 +91,11 @@ void PhysicsManager::Update(){
 
     const float slop = 0.01f;   // Penetration slop
 
+    std::cout << "======================= ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
     for (auto& col : collisions) {
         RigidBody* rbA = col.colliderCompA->GetOwner()->GetComponent<RigidBody>();
         RigidBody* rbB = col.colliderCompB->GetOwner()->GetComponent<RigidBody>();
+        std::cout << "[PHYSICS MANAGER] Check collision between " << col.colliderCompA->GetOwner()->GetUID() <<" and " << col.colliderCompB->GetOwner()->GetUID() <<" [PHYSICS MANAGER]" << std::endl;
 
         Transform* transformA = col.colliderCompA->GetOwner()->GetComponent<Transform>();
         Transform* transformB = col.colliderCompB->GetOwner()->GetComponent<Transform>();
@@ -123,14 +113,13 @@ void PhysicsManager::Update(){
         float velAlongNormal = glm::dot(relativeVel, col.point.normal);
 
         // Don't resolve if objects are separating    if (velAlongNormal > 0.0f) continue;
-
         float restitution = 0.5f; // Coefficient of restitution
 
         // Baumgarte stabilization term calculation
         float penetration = std::max(col.point.length - slop, 0.0f);
         float baumgarteTerm = (_beta / dt) * penetration;
 
-        // Calculate impulse scalar
+        // Impulse scalar
         float j = -(1.0f + restitution) * velAlongNormal;
         j += baumgarteTerm; // Add Baumgarte term
         j /= totalMass;
@@ -142,7 +131,6 @@ void PhysicsManager::Update(){
             float massRatioA = rbA->_mass / totalMass;
             rbA->_linearVelocity -= impulse * massRatioA;
 
-            // Position correction with Baumgarte
             transformA->position -= col.point.normal * penetration * _beta * massRatioA;
         }
 
@@ -150,7 +138,6 @@ void PhysicsManager::Update(){
             float massRatioB = rbB->_mass / totalMass;
             rbB->_linearVelocity += impulse * massRatioB;
 
-            // Position correction with Baumgarte
             transformB->position += col.point.normal * penetration * _beta * massRatioB;
         }
 
@@ -170,7 +157,6 @@ void PhysicsManager::Update(){
             float maxFriction = j * frictionCoeff;
             jt = glm::clamp(jt, -maxFriction, maxFriction);
 
-            // Apply friction impulse
             glm::vec3 frictionImpulse = jt * tangent;
 
             if (rbA && rbA->_mass > 0.0f) {
@@ -182,6 +168,7 @@ void PhysicsManager::Update(){
             }
         }
     }
+    std::cout << "======================= END OF THE ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
 }
 
 void PhysicsManager::Close(){
