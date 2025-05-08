@@ -26,6 +26,9 @@ public:
     [[nodiscard]] virtual ColliderType GetType() const = 0;
     virtual void DebugDraw() const = 0;
 
+    virtual glm::mat3 CalculateInertiaTensor(float mass) = 0;
+    virtual glm::mat3 CalculateInverseInertiaTensor(float mass) = 0;
+
 protected:
     Collider() = default;
 };
@@ -38,6 +41,7 @@ private:
     glm::vec3 _extents = { 0.5f, 0.5f, 0.5f };
     glm::vec3 _center = { 0.0f, 0.0f, 0.0f };
     glm::quat _rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
 
 public:
     BoxCollider() = default;
@@ -55,6 +59,48 @@ public:
 
     void DebugDraw() const override {
         // Implement debug visualization
+    }
+
+    glm::mat3 CalculateInertiaTensor(float mass) override
+    {
+        // Calculate dimensions
+        glm::vec3 size = GetSize();
+
+        // Calculate local inertia tensor for a box
+        float x2 = size.x * size.x;
+        float y2 = size.y * size.y;
+        float z2 = size.z * size.z;
+        glm::mat3 inertiaTensor {};
+        // Initialize with identity matrix
+        inertiaTensor = glm::mat3(1.0f);
+
+        // Set diagonal elements (mass will be multiplied later)
+        inertiaTensor[0][0] = (y2 + z2) / 12.0f;  // Ixx
+        inertiaTensor[1][1] = (x2 + z2) / 12.0f;  // Iyy
+        inertiaTensor[2][2] = (x2 + y2) / 12.0f;  // Izz
+
+        return inertiaTensor;
+    }
+
+    glm::mat3 CalculateInverseInertiaTensor(float mass) override
+    {
+        // Calculate dimensions
+        glm::vec3 size = GetSize();
+
+        // Calculate local inertia tensor for a box
+        float x2 = size.x * size.x;
+        float y2 = size.y * size.y;
+        float z2 = size.z * size.z;
+        glm::mat3 inertiaTensor {};
+        // Initialize with identity matrix
+        inertiaTensor = glm::mat3(1.0f);
+
+        // Set diagonal elements (mass will be multiplied later)
+        inertiaTensor[0][0] = (y2 + z2) / 12.0f;  // Ixx
+        inertiaTensor[1][1] = (x2 + z2) / 12.0f;  // Iyy
+        inertiaTensor[2][2] = (x2 + y2) / 12.0f;  // Izz
+
+        return glm::inverse(inertiaTensor);
     }
 
     // Getters and setters
@@ -86,6 +132,39 @@ public:
     void DebugDraw() const override {
         // Implement debug visualization
     }
+
+
+    glm::mat3 CalculateInertiaTensor(float mass) override
+    {
+        // Calculate inertia tensor for a solid sphere
+        float i = (2.0f * _radius * _radius) / 5.0f;
+
+        glm::mat3 inertiaTensor {};
+        // Set diagonal elements (mass will be multiplied later)
+        inertiaTensor = glm::mat3(
+            i, 0.0f, 0.0f,
+            0.0f, i, 0.0f,
+            0.0f, 0.0f, i
+        );
+        return inertiaTensor;
+    }
+
+    glm::mat3 CalculateInverseInertiaTensor(float mass) override
+    {
+        // Calculate inertia tensor for a solid sphere
+        float i = (2.0f * _radius * _radius) / 5.0f;
+
+        glm::mat3 inverseInertiaTensor {};
+        // Set diagonal elements (mass will be multiplied later)
+        // Calculate inverse inertia tensor
+        inverseInertiaTensor = glm::mat3(
+            1.0f/i, 0.0f, 0.0f,
+            0.0f, 1.0f/i, 0.0f,
+            0.0f, 0.0f, 1.0f/i
+        );
+        return inverseInertiaTensor;
+    }
+
 
     // Getters and setters
     float GetRadius() const { return _radius; }

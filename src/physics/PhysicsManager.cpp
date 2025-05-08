@@ -21,7 +21,7 @@
 
 
 void PhysicsManager::Init(){
-    // std::cout << "PhysicsManager::Init()" << std::endl;
+    
 }
 
 void PhysicsManager::Update(){
@@ -49,13 +49,23 @@ void PhysicsManager::Update(){
         }
 
         Transform* rbTransform = rb.GetOwner()->GetComponent<Transform>();
+        rb.Init();
 
-        // Step phase
+        // Linear Step
         rb._force += rb._mass * _gravity;
         rb._linearVelocity += rb._force / rb._mass * dt;
         rbTransform->position += rb._linearVelocity * dt;
 
         rb._force = glm::vec3(0.0f);
+
+        // Angular Step
+        rb._angularVelocity += rb._inverseInertiaTensor * rb._torque * dt;
+        glm::quat rotation = glm::quat(glm::vec3(rb._angularVelocity * dt));
+        rbTransform->rotation = glm::degrees(glm::eulerAngles(rotation * glm::quat(glm::radians(rbTransform->rotation))));
+
+
+        // rb._angularVelocity = glm::vec3(0.0f);
+        rb._torque = glm::vec3(0.0f);
     }
 
 
@@ -105,15 +115,28 @@ void PhysicsManager::Update(){
         float totalMass = (rbA ? rbA->_mass : 0.0f) + (rbB ? rbB->_mass : 0.0f);
         if (totalMass <= 0.01f) continue;
 
+
         // Calculate relative velocity
-        glm::vec3 relativeVel = (rbB ? rbB->_linearVelocity : glm::vec3(0.0f)) -
-                               (rbA ? rbA->_linearVelocity : glm::vec3(0.0f));
+        // glm::vec3 relativeVel = (rbB ? rbB->_linearVelocity : glm::vec3(0.0f)) -
+           //                    (rbA ? rbA->_linearVelocity : glm::vec3(0.0f));
+
+        // Calculate point of application relative to center of mass
+        glm::vec3 rA = col.point.point - transformA->position;
+        glm::vec3 rB = col.point.point - transformB->position;
+
+        // Calculate angular velocities at point of contact
+        glm::vec3 angularVelA = rbA ? glm::cross(rbA->_angularVelocity, rA) : glm::vec3(0.0f);
+        glm::vec3 angularVelB = rbB ? glm::cross(rbB->_angularVelocity, rB) : glm::vec3(0.0f);
+
+        // Total relative velocity including both linear and angular
+        glm::vec3 relativeVel = (rbB ? rbB->_linearVelocity + angularVelB : glm::vec3(0.0f)) -
+                               (rbA ? rbA->_linearVelocity + angularVelA : glm::vec3(0.0f));
 
         // Calculate relative velocity along normal
         float velAlongNormal = glm::dot(relativeVel, col.point.normal);
 
         // Don't resolve if objects are separating    if (velAlongNormal > 0.0f) continue;
-        float restitution = 0.5f; // Coefficient of restitution
+        float restitution = 0.1f; // Coefficient of restitution
 
         // Baumgarte stabilization term calculation
         float penetration = std::max(col.point.length - slop, 0.0f);
@@ -126,6 +149,26 @@ void PhysicsManager::Update(){
 
         // Apply impulse
         glm::vec3 impulse = j * col.point.normal;
+
+
+        // ANGULAR IMPULSE
+
+
+
+        // Calculate angular impulse
+        if (rbA && rbA->_mass > 0.0f) {
+            glm::vec3 angularImpulse = glm::cross(rA, impulse);
+            rbA->_angularVelocity -= rbA->_inverseInertiaTensor * angularImpulse * (rbA->_mass / totalMass);
+            // rbA->_torque += angularImpulse;
+        }
+
+        if (rbB && rbB->_mass > 0.0f) {
+            glm::vec3 angularImpulse = glm::cross(rB, impulse);
+            rbB->_angularVelocity += rbB->_inverseInertiaTensor * angularImpulse * (rbB->_mass / totalMass);
+            // rbB->_torque += angularImpulse;
+        }
+
+        // END OF ANGULAR IMPULSE
 
         if (rbA && rbA->_mass > 0.0f) {
             float massRatioA = rbA->_mass / totalMass;
@@ -167,6 +210,10 @@ void PhysicsManager::Update(){
                 rbB->_linearVelocity += frictionImpulse * (rbB->_mass / totalMass);
             }
         }
+
+
+
+
     }
     std::cout << "======================= END OF THE ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
 }

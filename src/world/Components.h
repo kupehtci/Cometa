@@ -30,6 +30,8 @@ private:
 public:
 	virtual ~Component() = default;
 
+	virtual void Init() = 0;
+
 	// ------------ GETTERS AND SETTERS ------------
 	[[nodiscard]] Entity* GetOwner() const { return _owner; }
 	void SetOwner(Entity* newOwner) { _owner = newOwner; }
@@ -66,6 +68,8 @@ public:
 		rotation = other.rotation;
 		scale = other.scale;
 	};
+
+	void Init() override {}
 
 	[[nodiscard]] glm::mat4 GetTransform() const {
 		const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(this->rotation)));
@@ -109,6 +113,8 @@ public:
 	MeshRenderable() = default;
 	MeshRenderable(const MeshRenderable&) = default;
 
+	void Init() override {}
+
 	// Properties management methods
 
 	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
@@ -124,6 +130,8 @@ class SpriteRenderable : public Component {
 public: 
 	Texture texture; 
 	glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	void Init() override {}
 
 	SpriteRenderable() = default;
 	SpriteRenderable(const SpriteRenderable&) = default;
@@ -151,6 +159,8 @@ public:
 
 	PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic):
 		_ambient(ambient), _diffuse(diffuse), _specular(specular), _constant(constant), _linear(linear), _quadratic(quadratic) {};
+
+	void Init() override {}
 
 	// ------ GETTERS ---------
 	[[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
@@ -182,6 +192,8 @@ public:
 	DirectionalLight() = default;
 	DirectionalLight(const DirectionalLight&) = default;
 
+	void Init() override {}
+
 	// --------- GETTERS ---------
 	[[nodiscard]] glm::vec3 GetDirection() const { return _direction; }
 	[[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
@@ -200,42 +212,16 @@ public:
 // |              PHYSICS COMPONENTS            |
 // ----------------------------------------------
 
-class RigidBody : public Component
-{
-	friend class PhysicsManager;
-
-private:
-	glm::vec3 _linearVelocity = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 _angularVelocity = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 _force = { 0.0f, 0.0f, 0.0f };
-	float _mass = 1.0f;
-
-	bool _enabled = true;
-
-public:
-	RigidBody() = default;
-	RigidBody(const RigidBody&) = default;
-
-	// TODO: Update this methods
-
-	[[nodiscard]] float GetMass() const { return _mass; }
-
-	void SetMass(float mass) { _mass = mass; }
-	void SetLinV(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
-	void SetAngV(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
-	void SetForce(const glm::vec3& force) { _force = force; }
-
-};
 
 class ColliderComponent : public Component {
 protected:
-	    Collider*  _collider = nullptr;
-	    bool _isTrigger = false;
+	Collider*  _collider = nullptr;
+	bool _isTrigger = false;
 public:
-    ColliderComponent() = default;
+	ColliderComponent() = default;
 	ColliderComponent(const ColliderComponent& other) = default;
 
-    ~ColliderComponent() override = default;
+	~ColliderComponent() override = default;
 
 	bool operator==(const ColliderComponent& other) const
 	{
@@ -258,37 +244,68 @@ public:
 		return true;
 	}
 
-    template<typename T, typename... Args>
-    T* SetCollider(Args&&... args) {
-        static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
-        _collider = new T(std::forward<Args>(args)...);
-    	return dynamic_cast<T*>(_collider);
-    }
+	void Init() override {}
 
-    [[nodiscard]] Collider* GetCollider() const { return _collider; }
-    [[nodiscard]] bool IsTrigger() const { return _isTrigger; }
-    void SetTrigger(bool isTrigger) { _isTrigger = isTrigger; }
+	template<typename T, typename... Args>
+	T* SetCollider(Args&&... args) {
+		static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
+		_collider = new T(std::forward<Args>(args)...);
+		return dynamic_cast<T*>(_collider);
+	}
+
+	[[nodiscard]] Collider* GetCollider() const { return _collider; }
+	[[nodiscard]] bool IsTrigger() const { return _isTrigger; }
+	void SetTrigger(bool isTrigger) { _isTrigger = isTrigger; }
 };
 
-// class Collider
-// {
-//
-// };
-//
-// class BoxCollider : public Collider
-// {
-// private:
-// 	glm::vec3 _extents = { 1 / 2, 1 / 2, 1 / 2 };
-// 	glm::vec3 _center = { 1, 1, 1 };
-// 	glm::quat _rotation = { 0, 0, 0, 0 };
-//
-// public:
-// 	BoxCollider() = default;
-// 	BoxCollider(const BoxCollider&) = default;
-//
-// 	BoxCollider(glm::vec3 extents, glm::vec3 center, glm::vec3 rotation)
-// };
 
+
+class RigidBody : public Component
+{
+	friend class PhysicsManager;
+
+private:
+	// Linear
+	glm::vec3 _linearVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 _force = { 0.0f, 0.0f, 0.0f };
+	float _mass = 1.0f;
+
+	// Angular
+	glm::vec3 _torque = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 _angularVelocity = { 0.0f, 0.0f, 0.0f };
+	glm::mat3 _inertiaTensor = glm::mat3();
+	glm::mat3 _inverseInertiaTensor = glm::mat3();
+
+	bool _enabled = true;
+
+public:
+	RigidBody(){
+		// Linear
+		_linearVelocity = { 0.0f, 0.0f, 0.0f };
+		_force = { 0.0f, 0.0f, 0.0f };
+		_mass = 1.0f;
+
+		_enabled = true;
+
+		// Angular
+		_torque = { 0.0f, 0.0f, 0.0f };
+		_angularVelocity = { 0.0f, 0.0f, 0.0f };
+		_inertiaTensor = glm::mat3();
+		_inverseInertiaTensor = glm::mat3();
+		// RigidBody::Init();
+	}
+	RigidBody(const RigidBody&) = default;
+
+	void Init() override;
+
+	[[nodiscard]] float GetMass() const { return _mass; }
+
+	void SetMass(float mass) { _mass = mass; Init(); }
+	void SetLinV(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
+	void SetAngV(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
+	void SetForce(const glm::vec3& force) { _force = force; }
+
+};
 
 
 
@@ -299,6 +316,8 @@ public:
 	Tag() = default;
 	Tag(const Tag&) = default;
 	explicit Tag(std::string  tag) : _tag(std::move(tag)) {}
+
+	void Init() override {}
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }
