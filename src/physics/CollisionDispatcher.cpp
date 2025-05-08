@@ -23,6 +23,39 @@ glm::mat3 EulerAnglesXYZ(const glm::vec3& angles) {
 CollisionPoint CollisionDispatcher::IntersectBoxSphere(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform)
 {
     std::cout << "Collision detected Box sphere" << std::endl;
+    // CollisionPoint result{};
+    //
+    // // Cast colliders to their specific types
+    // const auto* box = dynamic_cast<const BoxCollider*>(collider);
+    // const auto* sphere = dynamic_cast<const SphereCollider*>(otherCollider);
+    //
+    // // Get sphere center in world space
+    // glm::vec3 sphereCenter = otherTransform->position;
+    // float sphereRadius = sphere->GetRadius();
+    //
+    // // Get box in world space
+    // glm::vec3 boxCenter = transform->position;
+    // glm::vec3 boxHalfSize = box->GetExtents();
+    //
+    // // Clamp sphere center to box bounds
+    // glm::vec3 closestPoint;
+    // closestPoint.x = glm::clamp(sphereCenter.x, boxCenter.x - boxHalfSize.x, boxCenter.x + boxHalfSize.x);
+    // closestPoint.y = glm::clamp(sphereCenter.y, boxCenter.y - boxHalfSize.y, boxCenter.y + boxHalfSize.y);
+    // closestPoint.z = glm::clamp(sphereCenter.z, boxCenter.z - boxHalfSize.z, boxCenter.z + boxHalfSize.z);
+    //
+    // // Calculate distance between closest point and sphere center
+    // float distance = glm::length(sphereCenter - closestPoint);
+    //
+    // // Check if collision occurred
+    // if (distance <= sphereRadius) {
+    //     result.collided = true;
+    //     result.point = closestPoint;
+    //     result.normal = glm::normalize(sphereCenter - closestPoint);
+    //     result.length = sphereRadius - distance;
+    // }
+    //
+    // return result;
+
     CollisionPoint result{};
 
     // Cast colliders to their specific types
@@ -33,25 +66,43 @@ CollisionPoint CollisionDispatcher::IntersectBoxSphere(const Collider* collider,
     glm::vec3 sphereCenter = otherTransform->position;
     float sphereRadius = sphere->GetRadius();
 
-    // Get box in world space
+    // Get box transform
     glm::vec3 boxCenter = transform->position;
     glm::vec3 boxHalfSize = box->GetExtents();
 
-    // Clamp sphere center to box bounds
+    // Get box rotation matrix
+    glm::mat3 boxRotation = glm::mat3(EulerAnglesXYZ(
+        {glm::radians(transform->rotation.x),
+         glm::radians(transform->rotation.y),
+         glm::radians(transform->rotation.z)}
+    ));
+
+    // Transform sphere center to box local space
+    glm::vec3 localSphereCenter = glm::transpose(boxRotation) * (sphereCenter - boxCenter);
+
+    // Find closest point on box to sphere center in local space
     glm::vec3 closestPoint;
-    closestPoint.x = glm::clamp(sphereCenter.x, boxCenter.x - boxHalfSize.x, boxCenter.x + boxHalfSize.x);
-    closestPoint.y = glm::clamp(sphereCenter.y, boxCenter.y - boxHalfSize.y, boxCenter.y + boxHalfSize.y);
-    closestPoint.z = glm::clamp(sphereCenter.z, boxCenter.z - boxHalfSize.z, boxCenter.z + boxHalfSize.z);
+    closestPoint.x = glm::clamp(localSphereCenter.x, -boxHalfSize.x, boxHalfSize.x);
+    closestPoint.y = glm::clamp(localSphereCenter.y, -boxHalfSize.y, boxHalfSize.y);
+    closestPoint.z = glm::clamp(localSphereCenter.z, -boxHalfSize.z, boxHalfSize.z);
 
-    // Calculate distance between closest point and sphere center
-    float distance = glm::length(sphereCenter - closestPoint);
+    // Transform closest point back to world space
+    glm::vec3 worldClosestPoint = boxRotation * closestPoint + boxCenter;
 
-    // Check if collision occurred
+    // Calculate distance and normal
+    glm::vec3 delta = sphereCenter - worldClosestPoint;
+    float distance = glm::length(delta);
+
+    // Check for collision
     if (distance <= sphereRadius) {
         result.collided = true;
-        result.point = closestPoint;
-        result.normal = glm::normalize(sphereCenter - closestPoint);
+        result.point = worldClosestPoint;
+        result.normal = glm::normalize(delta);
         result.length = sphereRadius - distance;
+
+        // Calculate contact points
+        result.a = worldClosestPoint;
+        result.b = sphereCenter - result.normal * sphereRadius;
     }
 
     return result;

@@ -21,7 +21,7 @@
 
 
 void PhysicsManager::Init(){
-    
+
 }
 
 void PhysicsManager::Update(){
@@ -62,7 +62,6 @@ void PhysicsManager::Update(){
         rb._angularVelocity += rb._inverseInertiaTensor * rb._torque * dt;
         glm::quat rotation = glm::quat(glm::vec3(rb._angularVelocity * dt));
         rbTransform->rotation = glm::degrees(glm::eulerAngles(rotation * glm::quat(glm::radians(rbTransform->rotation))));
-
 
         // rb._angularVelocity = glm::vec3(0.0f);
         rb._torque = glm::vec3(0.0f);

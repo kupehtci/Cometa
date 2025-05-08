@@ -128,10 +128,10 @@ void MapsLayer::Init()
     Entity* ent1 = world0->CreateEntity("Entity1");
     ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
     ColliderComponent* ent1Collider = ent1->CreateComponent<ColliderComponent>();
-    ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    //ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    ent1Collider->SetCollider<SphereCollider>(1.0f);
 
     auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
-    // ent1->CreateComponent<Collider>();
 
     ent1Renderable->SetMaterial(material0);
     ent1Renderable->SetMesh(mesh0);
