@@ -292,18 +292,37 @@ public:
 		_angularVelocity = { 0.0f, 0.0f, 0.0f };
 		_inertiaTensor = glm::mat3();
 		_inverseInertiaTensor = glm::mat3();
-		// RigidBody::Init();
 	}
+
 	RigidBody(const RigidBody&) = default;
 
 	void Init() override;
+	void Reset();
 
 	[[nodiscard]] float GetMass() const { return _mass; }
+	[[nodiscard]] glm::vec3 GetLinearVelocity() const { return _linearVelocity; }
+	[[nodiscard]] glm::vec3 GetAngularVelocity() const { return _angularVelocity; }
+	[[nodiscard]] glm::vec3 GetForce() const { return _force; }
+	[[nodiscard]] glm::vec3 GetTorque() const { return _torque; }
+	[[nodiscard]] glm::mat3 GetInertiaTensor() const { return _inertiaTensor; }
+	[[nodiscard]] glm::mat3 GetInverseInertiaTensor() const { return _inverseInertiaTensor; }
+
+	[[nodiscard]] bool IsEnabled() const { return _enabled; }
+	[[nodiscard]] bool& GetEnabledRef() { return _enabled; }
+	void SetEnabled(bool isEnabled) { _enabled = isEnabled; }
 
 	void SetMass(float mass) { _mass = mass; Init(); }
-	void SetLinV(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
-	void SetAngV(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
+	void SetLinearVelocity(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
+	void SetAngularVelocity(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
 	void SetForce(const glm::vec3& force) { _force = force; }
+	void SetTorque(const glm::vec3& torque) { _torque = torque; }
+
+	void SetInertiaTensor(const glm::mat3& inertiaTensor){
+		_inertiaTensor = inertiaTensor;
+		_inverseInertiaTensor = glm::inverse(_inertiaTensor);
+	}
+
+
 
 };
 

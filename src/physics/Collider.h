@@ -92,10 +92,11 @@ public:
         float y2 = size.y * size.y;
         float z2 = size.z * size.z;
         glm::mat3 inertiaTensor {};
+
         // Initialize with identity matrix
         inertiaTensor = glm::mat3(1.0f);
 
-        // Set diagonal elements (mass will be multiplied later)
+        // Set diagonal elements
         inertiaTensor[0][0] = (y2 + z2) / 12.0f;  // Ixx
         inertiaTensor[1][1] = (x2 + z2) / 12.0f;  // Iyy
         inertiaTensor[2][2] = (x2 + y2) / 12.0f;  // Izz

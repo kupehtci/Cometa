@@ -451,6 +451,16 @@ void UILayer::BuildSceneHierarchyPanel()
                                 pointLight->SetQuadratic(quadratic);
                             }
 
+                            // Plot graphical representation of the attenuation
+                            float att[] = {constant + linear * 1 + quadratic * 1,
+                                            constant + linear * 3 + quadratic * 9,
+                                            constant + linear * 5 + quadratic * 25,
+                                            constant + linear * 10 + quadratic * 100,
+                                            constant + linear * 20 + quadratic * 400,
+                                            constant + linear * 40 + quadratic * 1600,
+                                            constant + linear * 60 + quadratic * 3600};
+                            ImGui::PlotLines("Attenuation graph", att, IM_ARRAYSIZE(att));
+
                             ImGui::TreePop();
 
                             ImGui::Separator();
@@ -522,19 +532,24 @@ void UILayer::BuildSceneHierarchyPanel()
                     RigidBody* rigidBody = entity.GetComponent<RigidBody>();
                     if (rigidBody)
                     {
-                        ImGui::Text("Has rigidbody");
+                        if (ImGui::TreeNode("RigidBody"))
+                        {
 
-                        // if (ImGui::TreeNode("RigidBody"))
-                        // {
-                        //     ImGui::Text("Linear Velocity: (%.2f, %.2f, %.2f)",
-                        //         rigidBody->_linearVelocity.x, rigidBody->linearVelocity.y, rigidBody->linearVelocity.z);
-                        //     ImGui::Text("Angular Velocity: (%.2f, %.2f, %.2f)",
-                        //         rigidBody->angularVelocity.x, rigidBody->angularVelocity.y, rigidBody->angularVelocity.z);
-                        //     ImGui::Text("Mass: %.2f", rigidBody->mass);
-                        //     ImGui::TreePop();
-                        //
-                        //     ImGui::Separator();
-                        // }
+                            if (ImGui::Checkbox("Enabled", &rigidBody->GetEnabledRef()))
+
+                            if (ImGui::SmallButton("Reset")) {
+                                rigidBody->Reset();
+                            }
+
+                            float linVel[3] = {rigidBody->GetLinearVelocity().x, rigidBody->GetLinearVelocity().y, rigidBody->GetLinearVelocity().z};
+                            if (ImGui::DragFloat3("Linear Velocity", linVel, 0.01f)){
+                                rigidBody->SetLinearVelocity({linVel[0], linVel[1], linVel[2]});
+                            }
+
+                            ImGui::TreePop();
+                        }
+
+
                     }
 
                     ImGui::TreePop();
