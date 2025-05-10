@@ -18,9 +18,9 @@
 
 
 // IMGUI
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+// #include "imgui.h"
+//// #include "backends/imgui_impl_glfw.h"
+//// #include "backends/imgui_impl_opengl3.h"
 
 Renderer::Renderer() {
     this->_window = nullptr;
@@ -90,7 +90,7 @@ void Renderer::Init(){
     // Validate maximum number of vertex attributes to use in the shaders
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    COMETA_MSG(("Maximum number of vertex attributes supported by hardware: ", std::to_string(nrAttributes)).c_str());
+    COMETA_MSG("Maximum number of vertex attributes supported by hardware: " , std::to_string(nrAttributes));
 
     COMETA_MSG("Maximum number of textures in buffer: ", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
@@ -105,7 +105,7 @@ void Renderer::Update(){
     _window->Update();
 
 
-    // // render the world elements
+    // ------- SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
     WorldManager* worldManager = WorldManagerRef;
     std::shared_ptr<World> currentWorld = worldManager->GetCurrentWorld();
 
@@ -130,34 +130,29 @@ void Renderer::Update(){
     const int numLights = static_cast<int>(pointLightsComponents.Size());
     std::vector<std::pair<PointLight*, Transform*>> lights = std::vector<std::pair<PointLight*, Transform*>>();
 
-    // std::cout << "=============== POINTLIGHTS START ============" << std::endl;
+
     for (PointLight& pt : pointLightsComponents)
     {
         lights.emplace_back(std::make_pair(&pt, pt.GetOwner()->GetComponent<Transform>()));
-        Transform* transform = pt.GetOwner()->GetComponent<Transform>();
-        // std::cout << "Point light: " << pt.GetAmbient().x << " with transform: " << transform->position.x << " , " << transform->position.y << " , " << transform->position.z << std::endl;
     }
-    // std::cout << "=============== POINTLIGHTS END ============" << std::endl;
-
 
     // iterate only through renderable components
     ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
 
-    // std::cout << "================= PROCESSING RENDERABLES IN RENDERER =================" << std::endl;
     for (auto& renderable : _renderables)
     {
-        // std::cout << "Processing renderable from entity: " << renderable.GetOwner()->GetUID() << std::endl;
-
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
 
         renderable.GetMaterial()->Bind();
         renderable.GetMesh()->Bind();
+
         std::shared_ptr<Shader> shader = renderable.GetMaterial()->GetShader();
         shader->Bind();
 
         shader->SetInt("number_lights", numLights);
         int cnt = 0;
 
+        // Bind the directional light
         if (directionalLight)
         {
             shader->SetFloat3("directionalLight.direction", directionalLight->GetDirection());
@@ -170,32 +165,26 @@ void Renderer::Update(){
         for (auto [fst, snd] : lights)
         {
             const PointLight* lightPoint = fst;
-            std::string cnt_string = std::to_string(cnt);
-            shader->SetFloat3("lights[" + cnt_string + "].position", snd->position);
-            shader->SetFloat3("lights[" + cnt_string + "].ambient", lightPoint->GetAmbient());
-            shader->SetFloat3("lights[" + cnt_string + "].diffuse", lightPoint->GetDiffuse());
-            shader->SetFloat3("lights[" + cnt_string + "].specular", lightPoint->GetSpecular());
-            shader->SetFloat("lights[" + cnt_string + "].constant", lightPoint->GetConstant());
-            shader->SetFloat("lights[" + cnt_string + "].linear", lightPoint->GetLinear());
-            shader->SetFloat("lights[" + cnt_string + "].quadratic", lightPoint->GetQuadratic());
+            std::string light_string = "lights[" + std::to_string(cnt) + "]";
+            shader->SetFloat3(light_string + ".position", snd->position);
+            shader->SetFloat3(light_string + ".ambient", lightPoint->GetAmbient());
+            shader->SetFloat3(light_string + ".diffuse", lightPoint->GetDiffuse());
+            shader->SetFloat3(light_string + ".specular", lightPoint->GetSpecular());
+            shader->SetFloat(light_string + ".constant", lightPoint->GetConstant());
+            shader->SetFloat(light_string + ".linear", lightPoint->GetLinear());
+            shader->SetFloat(light_string + ".quadratic", lightPoint->GetQuadratic());
             cnt++;
         }
 
         shader->SetMatrix4("uViewProjection", currentWorld->GetCamera()->GetViewProyection());
         shader->SetFloat3("uViewPos", currentWorld->GetCamera()->GetPosition());
-
-
-        shader->SetMatrix4("uModel", transform->GetTransform());
+        shader->SetMatrix4("uModel", transform->GetWorldTransform());
 
         shader->Bind();
         renderable.GetMesh()->Draw();
 
+        // ------- END OF SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
     }
-    // std::cout << "================= END UP PROCESSING RENDERABLES =================" << std::endl;
-
-
-    // Swap buffers to render into screen
-    // _window->SwapBuffers();
 }
 
 void Renderer::Render()

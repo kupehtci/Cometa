@@ -267,8 +267,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                 transform->scale.x = scale[0];
                                 transform->scale.y = scale[1];
                                 transform->scale.z = scale[2];
-
                             }
+
+                            ImGui::Text("Parent Transform: ");
+                            transform->GetParent() != nullptr ? ImGui::Text("Parent Transform UID: %u", transform->GetParent()->GetOwner()->GetUID()) : ImGui::Text("none");
 
                             ImGui::TreePop();
                         }
@@ -310,10 +312,14 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     ImGui::TreePop();
                                 }
+                                else
+                                {
+                                    ImGui::Text("No mesh");
+                                }
                             }
 
                             // Material Block
-                            if (meshRenderable->GetMaterial() && ImGui::TreeNode("Material"))
+                            if (ImGui::TreeNode("Material"))
                             {
                                 std::shared_ptr<Material> material = meshRenderable->GetMaterial();
                                 if (material)
@@ -387,6 +393,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                         ImGui::PopStyleVar(1);
                                     }
                                 }
+                                else
+                                {
+                                    ImGui::Text("No material");
+                                }
 
                                 ImGui::TreePop();
                             }
@@ -440,6 +450,16 @@ void UILayer::BuildSceneHierarchyPanel()
                             if (ImGui::DragFloat("Quadratic", &quadratic, 0.01f)){
                                 pointLight->SetQuadratic(quadratic);
                             }
+
+                            // Plot graphical representation of the attenuation
+                            float att[] = {constant + linear * 1 + quadratic * 1,
+                                            constant + linear * 3 + quadratic * 9,
+                                            constant + linear * 5 + quadratic * 25,
+                                            constant + linear * 10 + quadratic * 100,
+                                            constant + linear * 20 + quadratic * 400,
+                                            constant + linear * 40 + quadratic * 1600,
+                                            constant + linear * 60 + quadratic * 3600};
+                            ImGui::PlotLines("Attenuation graph", att, IM_ARRAYSIZE(att));
 
                             ImGui::TreePop();
 
@@ -496,7 +516,7 @@ void UILayer::BuildSceneHierarchyPanel()
                     }
 
                     // Display Collider component if it exists
-                    Collider* collider = entity.GetComponent<Collider>();
+                    ColliderComponent* collider = entity.GetComponent<ColliderComponent>();
                     if (collider)
                     {
                         if (ImGui::TreeNode("Collider"))
@@ -514,15 +534,22 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("RigidBody"))
                         {
-                            ImGui::Text("Linear Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->linearVelocity.x, rigidBody->linearVelocity.y, rigidBody->linearVelocity.z);
-                            ImGui::Text("Angular Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->angularVelocity.x, rigidBody->angularVelocity.y, rigidBody->angularVelocity.z);
-                            ImGui::Text("Mass: %.2f", rigidBody->mass);
-                            ImGui::TreePop();
 
-                            ImGui::Separator();
+                            if (ImGui::Checkbox("Enabled", &rigidBody->GetEnabledRef()))
+
+                            if (ImGui::SmallButton("Reset")) {
+                                rigidBody->Reset();
+                            }
+
+                            float linVel[3] = {rigidBody->GetLinearVelocity().x, rigidBody->GetLinearVelocity().y, rigidBody->GetLinearVelocity().z};
+                            if (ImGui::DragFloat3("Linear Velocity", linVel, 0.01f)){
+                                rigidBody->SetLinearVelocity({linVel[0], linVel[1], linVel[2]});
+                            }
+
+                            ImGui::TreePop();
                         }
+
+
                     }
 
                     ImGui::TreePop();

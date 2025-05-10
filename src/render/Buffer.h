@@ -39,7 +39,6 @@ public:
 class VertexBuffer : public Buffer{
 
 private:
-	// LayoutBuffer _layoutBuffer;
 
 public:
 	VertexBuffer();
