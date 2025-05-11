@@ -33,7 +33,7 @@ void HandleResizeCallback(GLFWwindow *window, int width, int height);
 // Window constructor
 Window::Window()
 {
-    this->_resolution = nullptr;
+    this->_resolution = glm::vec2(COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT);
     this->_window = nullptr;
     this->_title = "none";
 }
@@ -47,16 +47,12 @@ Window::~Window(){
         // delete _window;
     }
 
-    delete _resolution;
 }
-
-
-
 
 void Window::Create(int width, int height, const char *title) {
 
     // Store resolution parameters
-    _resolution = new Quad(width, height);
+    _resolution = {width, height};
     this->_title = title;
 
 
@@ -182,9 +178,6 @@ void Window::Close() {
         glfwDestroyWindow(this->_window);
     }
 
-    delete this->_resolution;
-    this->_resolution = nullptr;
-
     COMETA_ASSERT(("Window " + (std::string)this->_title +  " closed correctly").c_str());
 }
 
@@ -192,15 +185,22 @@ void Window::Close() {
  * Handle the resize of the window
  */
 void Window::HandleResize(GLFWwindow* window, int width, int height) {
-    Quad previousResolution = *_resolution;
+
+
+    // Use for debugging
+    glm::vec2 previousResolution = _resolution;
 
     // glfwGetWindowSize(_window, &_resolution->x, &_resolution->y);
-    glfwGetFramebufferSize(_window, &_resolution->x, &_resolution->y);
+    glm::ivec2 currentFramebufferSize = {};
+    glfwGetFramebufferSize(_window, &currentFramebufferSize.x, &currentFramebufferSize.y);
     
     // COMETA_ASSERT(("Handling resize from " + std::to_string(previousResolution.x)  + ", " + std::to_string(previousResolution.y) + " to " + std::to_string(_resolution->x) + ", " + std::to_string(_resolution->y)).c_str());
 
     // modify viewport resolution
-    glViewport( 0.f, 0.f, _resolution->x, _resolution->y);
+    glViewport( 0.f, 0.f, currentFramebufferSize.x, currentFramebufferSize.y);
+
+    _resolution = glm::vec2(currentFramebufferSize.x, currentFramebufferSize.y);
+
 }
 
 

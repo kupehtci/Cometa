@@ -23,6 +23,8 @@ private:
 
     std::string currentPath = std::filesystem::current_path().string();
 
+    bool isOnSimulation = false;
+
 public:
     UILayer();
     ~UILayer() override;

@@ -22,7 +22,10 @@ config:
 classDiagram
     direction LR
 
-    note for BufferObject "glGenBuffers(...) \n glBindBuffer(...) \n glBufferData(...) \n glBindBuffer(...)"
+    note for BufferObject " glGenBuffers(...)
+                            glBindBuffer(...)
+                            glBufferData(...)
+                            glBindBuffer(...)"
 
     class BufferObject{
         + size : GLsizeiptr
@@ -125,7 +128,7 @@ classDiagram
         + iv : GLuintiptr
     }
 
-    ShaderProgram *-- Shader : "glAttachShader
+    ShaderProgram *-- Shader : glAttachShader(...)
 
 
 

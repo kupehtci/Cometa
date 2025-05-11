@@ -26,6 +26,9 @@ void PhysicsManager::Init(){
 
 void PhysicsManager::Update(){
 
+    if (!_onSimulation) return;
+
+
      float dt = Time::GetDeltaTime();
 
     WorldManager* worldManager = WorldManagerRef;

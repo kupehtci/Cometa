@@ -32,7 +32,7 @@ classDiagram
         + SetFaceCulling(FACE_CULLING_MODE)
     }
     class Window {
-        - GLFWwindow* _window
+        - _window : GLFWwindow*
         - Quad* _resolution
         - char* _title
         + Init()
@@ -42,55 +42,55 @@ classDiagram
         + GetGlfwWindow()
     }
     class Camera {
-        - vec3 _position
-        - vec3 _direction
-        - vec3 _up
-        - vec3 _right
-        - float _fov
-        - float _pitch
-        - float _yaw
-        - float _near
-        - float _far
-        - float _movementSpeed
-        - float _sensitivity
+        - _position     : vec3
+        - _direction    : vec3
+        - _up           : vec3
+        - _right        : vec3
+        - _fov          : float
+        - _pitch        : float
+        - _yaw          : float
+        - _near         : float
+        - _far          : float
+        - _movementSpeed : float
+        - _sensitivity : float
         + OnUpdate()
-        + GetPosition()
-        + GetDirection()
-        + GetUp()
-        + GetRight()
-        + GetNear()
-        + GetFar()
-        + GetFov
-        + GetViewMatrix()
-        + GetProjectionMatrix()
-        + GetViewProyection()
+        + GetPosition() : vec3
+        + GetDirection() : vec3
+        + GetUp() : vec3
+        + GetRight() : vec3
+        + GetNear() : float
+        + GetFar() : float
+        + GetFov() : float
+        + GetViewMatrix() : mat4
+        + GetProjectionMatrix() : mat4
+        + GetViewProyection() : mat4
     }
     class Material {
-        - vec3 _color
-        - vec3 _ambient
-        - vec3 _diffuse
-        - vec3 _specular
-        - float _shininess
-        - Shader* _shader
-        - Texture* _diffuseMap
-        - Texture* _specularMap
-        - Texture* _emissionMap
+        - _color : vec3
+        - _ambient : vec3
+        - _diffuse : vec3
+        - _specular : vec3
+        - _shininess : float
+        - _shader : Shader*
+        - _diffuseMap : Texture*
+        - _specularMap : Texture*
+        - _emissionMap : Texture*
         + Bind()
         + LoadShader()
         + SetTextures()
     }
     class Mesh {
-        - std::shared_ptr~VertexArray~ _vao
-        - vector~float~ _vertices
-        - vector~uint32~ _indices
-        - uint32_t _numVertices
-        - uint32_t _numIndices
-        + void AddVertices(float* , uint32_t )
-        + void AddIndices(uint32_t*, uint32_t )
-        + void Build()
-        + void Bind()
-        + void Draw()
-        + void Unbind()
+        - _vao : std::shared_ptr~VertexArray~
+        - _vertices : vector~float~
+        - _indices : vector~uint32~
+        - _numVertices : uint32_t
+        - _numIndices : uint32_t
+        + AddVertices(float* , uint32_t ) : void
+        + AddIndices(uint32_t*, uint32_t ) : void
+        + Build() : void
+        + Bind() : void
+        + Draw() : void
+        + Unbind() : void
     }
     class Shader {
         - uint32_t _shaderUID

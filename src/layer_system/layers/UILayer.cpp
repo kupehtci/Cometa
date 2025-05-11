@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
 
 UILayer::UILayer()
@@ -157,12 +158,24 @@ void UILayer::Update()
             ImGui::EndMenuBar();
         }
 
-        if (ImGui::Button("Create Empty Entity"))
+        // if (ImGui::Button("Create Empty Entity"))
+        // {
+        //     auto worldManager = WorldManager::GetInstancePtr();
+        //
+        // }
+
+        ImGui::SeparatorText("Time");
+        ImGui::Text("Current DeltaTime %f", Time::GetDeltaTime());
+        ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
+
+
+        ImGui::SeparatorText("Physics simulation");
+
+        isOnSimulation = PhysicsManager::GetInstancePtr()->IsOnSimulation();
+        if (ImGui::Checkbox("OnSimulation", &isOnSimulation))
         {
-            auto worldManager = WorldManager::GetInstancePtr();
-
+            PhysicsManager::GetInstancePtr()->SetOnSimulation(isOnSimulation);
         }
-
 
         ImGui::End();
     }

@@ -8,7 +8,6 @@
 
 #include "core/CometaDefaults.h"
 #include "core/Singleton.h"
-#include "../math/Quad.h"
 #include "render/Window.h"
 
 #ifndef AURAGL_RENDERER_H
