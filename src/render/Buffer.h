@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef AURAGL_BUFFER_H
-#define AURAGL_BUFFER_H
+#ifndef COMETA_BUFFER_H
+#define COMETA_BUFFER_H
 
 #include <cstdint>
 
@@ -19,7 +19,7 @@
 class Buffer {
 protected:
 	uint32_t _uid = 0;
-	bool _empty = true;
+
 public:
 	virtual ~Buffer() = default;
 	/**
@@ -33,8 +33,9 @@ public:
 	[[nodiscard]] inline uint32_t GetUid() const { return _uid; }
 };
 
+
 /**
-	Vertex Buffer that contains vertices data
+*	Vertex Buffer that contains vertices data
 */
 class VertexBuffer : public Buffer{
 
@@ -43,7 +44,7 @@ private:
 public:
 	VertexBuffer();
 
-	VertexBuffer(uint32_t size); 
+	explicit VertexBuffer(uint32_t size);
 
 	/**
 	* Create a Vertex Buffer with the specified array of vertices and size
@@ -64,7 +65,7 @@ public:
 class IndexBuffer : public Buffer{
 
 private:
-	uint32_t _count; 
+	uint32_t _count = 0;
 
 public:
 	IndexBuffer(); 
@@ -75,7 +76,7 @@ public:
 	void Unbind() override;
 
 	// ---------- GETTERS ---------- //
-	inline uint32_t GetCount() { return _count;  }
+	[[nodiscard]] uint32_t GetCount() const { return _count;  }
 };
 
-#endif  //AURAGL_BUFFER_H
+#endif  //COMETA_BUFFER_H
