@@ -1,8 +1,11 @@
-//
 // Created by Daniel Laplana Gimeno on 18/4/25.
 //
 
 #include "MapsLayer.h"
+
+//
+#include <layer_system/EventBus.h>
+#include <physics/Collider.h>
 
 #include "render/Renderer.h"
 #include "render/Shader.h"
@@ -16,7 +19,7 @@
 
 MapsLayer::MapsLayer()
 {
-
+    _name = "MapsLayer";
 }
 
 MapsLayer::~MapsLayer()
@@ -75,25 +78,23 @@ void MapsLayer::Init()
     };
 
 
-
     _camera = Camera();
-
-    _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(0.5f, 0.5f, 0.5f),
-                                    2.0f,
-                                    "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg",
-                                    "resources/black.jpg");
 
     WorldManagerRef->CreateWorld(0);
     WorldManagerRef->SetCurrentWorld(0);
     std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
+    world0->SetCamera(&_camera);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
-    MeshRenderable* renderable =  ent0->CreateComponent<MeshRenderable>();
-    ent0->CreateComponent<Collider>();
+    ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 3.0f, -7.0f);
+
+    MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
+    RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
+    ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
+    ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
+    std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
 
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
@@ -103,7 +104,12 @@ void MapsLayer::Init()
                                     "resources/bricks_diffuse_map.jpg",
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
-    renderable->SetMaterial(material0);
+
+
+    material0->LoadShader("Main Shader",
+        "src/render/shaders/light_map_shader.vert",
+        "src/render/shaders/light_map_shader.frag");
+    ent0Renderable->SetMaterial(material0);
 
     std::shared_ptr<Mesh> mesh0 = std::make_shared<Mesh>();
     mesh0->AddVertices(vertices, sizeof(vertices) / sizeof(float));
@@ -115,183 +121,64 @@ void MapsLayer::Init()
         {3, DataType::Float2, "aTexCoord"}
         });
     mesh0->Build();
-    renderable->SetMesh(mesh0);
+    ent0Renderable->SetMesh(mesh0);
+
+    // --------- Other entity same as ent0 ---------
 
     Entity* ent1 = world0->CreateEntity("Entity1");
-    // ent1->CreateComponent<MeshRenderable>();
+    ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
+    ColliderComponent* ent1Collider = ent1->CreateComponent<ColliderComponent>();
+    //ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    ent1Collider->SetCollider<SphereCollider>(1.0f);
 
-    // Debug the world created
-    std::shared_ptr<World> currentWorld = WorldManagerRef->GetCurrentWorld();
-    currentWorld->DebugPrint();
+    auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
+
+    ent1Renderable->SetMaterial(material0);
+    ent1Renderable->SetMesh(mesh0);
+
+    // --------- Light entity ---------
+    Entity* ptlight0 = world0->CreateEntity("Light Point 1");
+    ptlight0->CreateComponent<PointLight>();
+
+    MeshRenderable* ptlight0Renderable = ptlight0->CreateComponent<MeshRenderable>();
+
+    std::shared_ptr<Material> material1 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    2.0f,
+                                    "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    material1->LoadShader("Main Shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    // mesh0->Bind();
+    ptlight0Renderable->SetMesh(Mesh::CreateSphere());
+    ptlight0Renderable->SetMaterial(material1);
+    ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
+    ptlight0->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
+    ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+
+    // Create floor
+    Entity* floor = world0->CreateEntity("Floor");
+    floor->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, 5.0f);
+    floor->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+    floor->GetComponent<Transform>()->scale = glm::vec3(3.0f, 3.0f, 3.0f);
+
+    MeshRenderable* floorRenderable = floor->CreateComponent<MeshRenderable>();
+    floorRenderable->SetMesh(Mesh::CreatePlane());
+    floorRenderable->SetMaterial(material1);
+
+
+    // Event bus subscription
+    EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
+    EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_RELEASE_EVENT, this);
 }
 
 void MapsLayer::Update()
 {
-    _mat.LoadShader("Main Shader",
-        "src/render/shaders/light_map_shader.vert",
-        "src/render/shaders/light_map_shader.frag");
 
-    _mat.Bind();
-    std::shared_ptr<Shader> mainShader = _mat.GetShader();
-
-    glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f , glm::cos(glfwGetTime()) * 3 );
-    //glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
-
-    mainShader->SetInt("number_lights", 2);
-    mainShader->SetFloat3("lights[0].position", lightPosition);
-    mainShader->SetFloat3("lights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    mainShader->SetFloat3("lights[0].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
-    mainShader->SetFloat3("lights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-    mainShader->SetFloat("lights[0].constant", 1.0f);
-    mainShader->SetFloat("lights[0].linear", 0.07f);
-    mainShader->SetFloat("lights[0].quadratic", 0.017f);
-
-    mainShader->SetFloat3("lights[1].position", -lightPosition);
-    mainShader->SetFloat3("lights[1].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    mainShader->SetFloat3("lights[1].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
-    mainShader->SetFloat3("lights[1].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-    mainShader->SetFloat("lights[1].constant", 1.0f);
-    mainShader->SetFloat("lights[1].linear", 0.07f);
-    mainShader->SetFloat("lights[1].quadratic", 0.017f);
-
-    // float distance = glm::length(lightPosition - _camera.GetPosition());
-    // float attenuation = 1.0 / (1.0f + 0.14f * distance + 0.07 * (distance * distance));
-    // std::cout << "distance: " << distance << std::endl;
-    // std::cout << "attenuation: " << attenuation << std::endl;
-
-
-
-    mainShader->SetFloat3("directionalLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-    mainShader->SetFloat3("directionalLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-    mainShader->SetFloat3("directionalLight.diffuse", glm::vec3(0.35f, 0.4f, 0.35f));
-    mainShader->SetFloat3("directionalLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-
-    // Update camera and its projection
-    _camera.OnUpdate();
-    mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    mainShader->SetFloat3("uViewPos", _camera.GetPosition());
-
-
-    glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-    mainShader->SetMatrix4("uModel", modelRotated);
-
-
-    float vertices[] = {
-        // Front face
-        // positions          // normals           // colors            // texture coords
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
-
-        // Back face
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-
-        // Top face
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
-
-        // Bottom face
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-
-        // Right face
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 0.0f,
-
-        // Left face
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f
-    };
-
-    unsigned int indices[] = {
-        0,  1,  2,    2,  3,  0,   // Front
-        4,  5,  6,    6,  7,  4,   // Back
-        8,  9,  10,   10, 11, 8,   // Top
-        12, 13, 14,   14, 15, 12,  // Bottom
-        16, 17, 18,   18, 19, 16,  // Right
-        20, 21, 22,   22, 23, 20   // Left
-    };
-
-    Mesh mesh0 = Mesh();
-    mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
-    mesh0.AddIndices(indices, sizeof(indices) / sizeof(uint32_t));
-    mesh0.SetLayoutBuffer(
-    {
-        {0, DataType::Float3, "aPos"},
-        {1, DataType::Float3, "aNormal"},
-        {2, DataType::Float3, "aColor"},
-        {3, DataType::Float2, "aTexCoord"}
-        });
-    mesh0.Build();
-
-    mesh0.Draw();
-
-
-    // ------------------ DRAW MORE CUBES ---------------------------
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
-        mesh0.Draw();
-    }
-
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
-        mesh0.Draw();
-    }
-    // ------------------ END OF DRAWING MORE CUBES ---------------------------
-
-
-    mainShader->Unbind();
-
-
-    // --------- Draw LIGHT POINT ---------
-
-    mesh0.Bind();
-    std::shared_ptr<Shader> lightShader = Shader::LoadShader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag"); // new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    lightShader->Bind();
-
-    lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    glm::mat4 lightPosMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
-    lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
-
-    lightShader->SetMatrix4("uModel", lightPosMatrix);
-
-    mesh0.Draw();
-
-    lightShader->Unbind();
-
-    // --------- END OF DRAWING LIGHT POINT ---------
-
-    // --------- DRAWING SECOND LIGHTS FOR TESTING MULTIPLES LIGHTS ------------
-
-    mesh0.Bind();
-    // std::shared_ptr<Shader> lightShader = Shader::LoadShader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag"); // new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    lightShader->Bind();
-
-    lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    lightPosMatrix = glm::translate(glm::mat4(1.0f), -lightPosition);
-    lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
-
-    lightShader->SetMatrix4("uModel", lightPosMatrix);
-
-    mesh0.Draw();
-
-    lightShader->Unbind();
 }
 
 
@@ -301,5 +188,25 @@ void MapsLayer::Close()
 }
 
 void MapsLayer::HandleEvent(Event& event){
+    std::cout << "MapsLayer::HandleEvent" << std::endl;
+    std::cout << "EventType: " << event.GetEventType() << std::endl;
+    if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
+    {
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+    }
 
+    switch (event.GetEventType())
+    {
+    case COMETA_MOUSE_BUTTON_PRESS_EVENT:
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    case COMETA_MOUSE_BUTTON_RELEASE_EVENT:
+        std::cout << "MAPS LAYER handled key release: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    default:
+        break;
+    }
 }

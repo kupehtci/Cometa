@@ -14,9 +14,6 @@ private:
 
 public: 
     Onion(){
-        // Singleton<EventBus>::Create();
-        // _eventBus = Singleton<EventBus>::GetInstancePtr();
-
         _layers = std::vector<Layer*>();
     }
 

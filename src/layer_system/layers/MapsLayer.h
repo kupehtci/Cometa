@@ -16,11 +16,11 @@ class MapsLayer : public Layer{
 
 private:
     Camera _camera;
-    Material _mat;
+    // Material _mat;
 
 public:
     MapsLayer();
-    ~MapsLayer();
+    ~MapsLayer() override;
 
 public:
     void Init() override;

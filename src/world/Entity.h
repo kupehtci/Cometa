@@ -31,6 +31,7 @@ public:
     {
         T* newComponent = _parentWorld->_componentRegistry.CreateComponent<T>(this->GetUID());
         newComponent->SetOwner(this);
+        // newComponent->Init();
         return newComponent;
     }
 

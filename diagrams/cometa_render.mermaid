@@ -1,0 +1,162 @@
+---
+config:
+  theme: mc
+---
+
+%%{
+  init: {
+    'theme': '%%base%%',
+    'themeVariables': {
+      'primaryColor': '#6606d6',
+      'primaryTextColor': '#fff',
+      'primaryBorderColor': '#7C0000',
+      'lineColor': '#a591bf',
+      'secondaryColor': '#a6a0ad',
+      'tertiaryColor': '#fff'
+    }
+  }
+}%%
+
+classDiagram
+    direction TB
+    class Renderer {
+        - Window* _window
+        - bool _depthCulling
+        - FACE_CULLING_MODE _faceCullingMode
+        + Init()
+        + Update()
+        + Close()
+        + Render()
+        + GetWindow()
+        + SetDepthCulling(bool)
+        + SetFaceCulling(FACE_CULLING_MODE)
+    }
+    class Window {
+        - _window : GLFWwindow*
+        - Quad* _resolution
+        - char* _title
+        + Init()
+        + Update()
+        + Close()
+        + GetCurrentResolution()
+        + GetGlfwWindow()
+    }
+    class Camera {
+        - _position     : vec3
+        - _direction    : vec3
+        - _up           : vec3
+        - _right        : vec3
+        - _fov          : float
+        - _pitch        : float
+        - _yaw          : float
+        - _near         : float
+        - _far          : float
+        - _movementSpeed : float
+        - _sensitivity : float
+        + OnUpdate()
+        + GetPosition() : vec3
+        + GetDirection() : vec3
+        + GetUp() : vec3
+        + GetRight() : vec3
+        + GetNear() : float
+        + GetFar() : float
+        + GetFov() : float
+        + GetViewMatrix() : mat4
+        + GetProjectionMatrix() : mat4
+        + GetViewProyection() : mat4
+    }
+    class Material {
+        - _color : vec3
+        - _ambient : vec3
+        - _diffuse : vec3
+        - _specular : vec3
+        - _shininess : float
+        - _shader : Shader*
+        - _diffuseMap : Texture*
+        - _specularMap : Texture*
+        - _emissionMap : Texture*
+        + Bind()
+        + LoadShader()
+        + SetTextures()
+    }
+    class Mesh {
+        - _vao : std::shared_ptr~VertexArray~
+        - _vertices : vector~float~
+        - _indices : vector~uint32~
+        - _numVertices : uint32_t
+        - _numIndices : uint32_t
+        + AddVertices(float* , uint32_t ) : void
+        + AddIndices(uint32_t*, uint32_t ) : void
+        + Build() : void
+        + Bind() : void
+        + Draw() : void
+        + Unbind() : void
+    }
+    class Shader {
+        - uint32_t _shaderUID
+        - std::unordered_map~GLenum,string~ _shaderSources
+        - std::unordered_map~GLenum, std::string~ _filePaths;
+        - string _debugName
+        - bool _isCompiled
+        + Bind()
+        + SetUniform()
+        + LoadShader()
+    }
+    class Texture {
+        -uint32_t _uid
+        -uint32_t _width
+        -uint32_t _height
+        -uint8_t _channels
+        -string _path
+        +Bind()
+        +Load()
+    }
+    class VertexArray {
+        - vector~std::shared_ptr~VertexBuffer~~ _vertexBuffers
+        - std::shared_ptr~IndexBuffer~ _indexBuffer
+        - LayoutBuffer _layoutBuffer
+
+        + Bind()
+        + Unbind()
+        + CreateVertexBuffer(float* vertices, uint32_t size)
+        + CreateIndexBuffer(uint32_t* indices, uint32_t size)
+        + AddVertexBuffer(VertexBuffer&)
+        + AddIndexBuffer(IndexBuffer&)
+        + GetLayoutBuffer()
+        + SetLayoutBuffer()
+    }
+    class Buffer {
+        #uint32_t _uid
+
+        +Bind()*
+        +Unbind()*
+        +GetUid()
+    }
+    class VertexBuffer {
+        +SetData()
+        +GetLayout()
+    }
+    class IndexBuffer {
+        -uint32_t _count
+        +GetCount()
+    }
+    class LayoutBuffer {
+        -vector~Layout~ _layouts
+        -uint32_t _size
+        +AddLayout()
+        +GetLayouts()
+    }
+
+    <<abstract>> Buffer
+
+    Renderer --> Window : contains
+    Window --> Camera : contains
+    Material --> Shader : contains
+    Material --> Texture : contains
+    Mesh --> VertexArray : contains
+    VertexArray --> VertexBuffer : contains
+    VertexArray --> IndexBuffer : contains
+    VertexArray --> LayoutBuffer : contains
+    Buffer <|-- VertexBuffer : inherits
+    Buffer <|-- IndexBuffer : inherits
+    Buffer <|-- VertexArray : inherits

@@ -1,0 +1,134 @@
+---
+config:
+  theme: base
+---
+
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+      'primaryColor': '#fff4dd',
+      'primaryTextColor': '#333',
+      'primaryBorderColor': '#7C0000',
+      'lineColor': '#a591bf',
+      'secondaryColor': '#a6a0ad',
+      'tertiaryColor': '#fff',
+      'noteBkgColor' : '#8194b5',
+      'noteTextColor' : '#333'
+    }
+  }
+}%%
+
+classDiagram
+    direction LR
+
+    note for BufferObject " glGenBuffers(...)
+                            glBindBuffer(...)
+                            glBufferData(...)
+                            glBindBuffer(...)"
+
+    class BufferObject{
+        + size : GLsizeiptr
+        + data[size] : uint8_t
+    }
+
+    note for IndexBufferObject "glBindBuffer(GL_ELEMENT_ARRAY_BUFFER)"
+
+    class IndexBufferObject{
+
+    }
+
+    class VertexBufferObject{
+
+    }
+
+    note for VertexArrayObject "glGenVertexArrays(...)"
+    class VertexArrayObject{
+
+    }
+
+    %% Both inherit from buffer
+    IndexBufferObject --|> BufferObject : inherits
+    VertexBufferObject --|> BufferObject : inherits
+    VertexArrayObject --|> BufferObject : inherits
+
+    %% Relation with VertexAttribute section and then shader
+    BufferObject -- BufferBindingPoint
+    BufferBindingPoint "0..n" -- "" VertexAttributeFormat : "glVertexAtribPointer()"
+    VertexAttributeFormat "0..n" -- "1" VertexAttributeLocation
+    VertexAttributeLocation "0..n" -- "1" VertexAtrributeArray
+
+    class BufferBindingPoint{
+        + offset : GLintptr
+        + stride : GLintptr
+    }
+
+    note for VertexAttributeFormat "glVertexAttribFormat()"
+    class VertexAttributeFormat{
+        + size : GLint
+        + type : GLenum
+        + normalized : GLboolean
+    }
+
+    class VertexAttributeLocation{
+        + position : GLuint
+    }
+
+    note for VertexAttributeArray "glVertexAttribPointer(position, type, size, stride, offset)
+                                    glEnableVertexAttribArray(GLuint)"
+    class VertexAtrributeArray{
+        + size : GLsizeiptr
+        + data[size] : GLintptr[]
+    }
+
+
+    VertexAtrributeArray "0..n" -- "1" VertexShader : layout (location = n)
+
+    note for Shader "glCreateShader(...)
+                    glShaderSource(...)
+                    glCompileShader(...)
+                    glDeleteShader(...)"
+
+    %% Shader section
+    class Shader{
+        + iv : GLuint
+    }
+
+    class VertexShader{
+
+    }
+
+    class FragmentShader{
+
+    }
+
+    class GeometryShader{
+
+    }
+
+    class ComputeShader{
+
+    }
+
+   Shader --* VertexShader
+   Shader --* FragmentShader
+   Shader --* GeometryShader
+   Shader --* ComputeShader
+
+    note for ShaderProgram "glCreateProgram(...)
+                            glLinkProgram(...)
+                            glValidateProgram(...)
+                            glDeleteProgram(...)"
+
+    note for ShaderProgram "glGetProgramiv(... GL_LINK_STATUS ...)
+                            glGetProgamiv(... GL_VALIDATE_STATUS ...)
+                            glGetProgramInfoLog(...)"
+
+    class ShaderProgram{
+        + iv : GLuintiptr
+    }
+
+    ShaderProgram *-- Shader : glAttachShader(...)
+
+
+

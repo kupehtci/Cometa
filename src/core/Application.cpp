@@ -5,6 +5,7 @@
 #include "core/Application.h"
 
 #include "layer_system/layers/MapsLayer.h"
+#include "layer_system/layers/UILayer.h"
 
 #include "layer_system/layers/CometaLayer.h"
 #include "layer_system/layers/MaterialLayer.h"
@@ -12,13 +13,17 @@
 Application::Application(){
     this->_isRunning = true;
     _worldManager = nullptr;
+    _physicsManager = nullptr;
     _renderer = nullptr; 
     _time = nullptr;
     _onion = Onion();
 }
 
 Application::~Application(){
-
+    delete _worldManager;
+    delete _physicsManager;
+    delete _renderer;
+    delete _time;
 }
 
 void Application::Init(){
@@ -35,6 +40,9 @@ void Application::Init(){
     Input::Create(); 
     _input = Input::GetInstancePtr();
 
+    PhysicsManager::Create();
+    _physicsManager = PhysicsManager::GetInstancePtr();
+
     // Push the layers
     // // Push cometa layer previous implementation
     //CometaLayer* cometaLayer = new CometaLayer();
@@ -45,6 +53,9 @@ void Application::Init(){
     // _onion.PushLayer(matLayer);
 
     // Light maps testing
+    UILayer* uiLayer = new UILayer();
+    _onion.PushLayer(uiLayer);
+
     MapsLayer* mapsLayer = new MapsLayer();
     _onion.PushLayer(mapsLayer);
 
@@ -54,6 +65,7 @@ void Application::Init(){
     _renderer->Init();
     _time->Init();
     _input->Init();
+    _physicsManager->Init();
 
     _onion.Init();
 }
@@ -64,10 +76,14 @@ void Application::Running() {
         // Update the managers
         _time->Update();
         _worldManager->Update();
+        _physicsManager->Update();
         _renderer->Update();
         _input->Update();
-
         _onion.Update();
+
+
+        // Once all has been loaded, render into screen
+        _renderer->Render();
 
         // Check if window must close
         if (_isRunning)
@@ -78,7 +94,8 @@ void Application::Running() {
 }
 
 void Application::Close() {
-    _input->Update();
+    _physicsManager->Close();
+    _input->Close();
     _renderer->Close();
     _worldManager->Close();
     _time->Close();

@@ -8,7 +8,6 @@
 
 #include "core/CometaDefaults.h"
 #include "core/Singleton.h"
-#include "../math/Quad.h"
 #include "render/Window.h"
 
 #ifndef AURAGL_RENDERER_H
@@ -37,6 +36,8 @@ public:
     void Init() override;
     void Update() override;
     void Close() override;
+
+    void Render();
 
     [[nodiscard]] inline Window* GetWindow() const { return _window; }
 

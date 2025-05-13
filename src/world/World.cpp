@@ -108,7 +108,7 @@ void World::DebugPrint(){
                           << sprite->color.a << ")" << std::endl;
             }
 
-            if (entity->HasComponent<Collider>()) {
+            if (entity->HasComponent<ColliderComponent>()) {
                 std::cout << "  - Collider: Yes" << std::endl;
             }
 

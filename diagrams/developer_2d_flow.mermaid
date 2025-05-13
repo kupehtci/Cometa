@@ -1,0 +1,23 @@
+flowchart TD
+    A[Start] --> B[Initialize OpenGL Context]
+    B --> C[Create Window]
+    C --> D[Load Image Data]
+    D --> E[Generate Texture]
+    E --> F[Set Texture Parameters]
+    F --> G[Upload Texture to GPU]
+    G --> H[Create Quad Geometry]
+    H --> I[Create Shader Program]
+    I --> J[Vertex Shader: Pass-through]
+    J --> K[Fragment Shader: Bind texture]
+    K --> L[Compile & Link Shaders]
+    L --> M[Set Up Vertex Attributes]
+    M --> N[Render Loop]
+    N --> O[Clear Screen]
+    O --> P[Bind Texture]
+    P --> Q[Bind Shader Program]
+    Q --> R[Draw Quad]
+    R --> S[Swap Buffers]
+    S --> T{Continue?}
+    T --> |Yes| N
+    T --> |No| U[Clean Up Resources]
+    U --> V[Exit]
