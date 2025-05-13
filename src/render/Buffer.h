@@ -55,8 +55,6 @@ public:
 
 	void Bind() override; 
 	void Unbind() override;
-	// LayoutBuffer& GetLayoutBuffer() { return _layoutBuffer; }
-	// void SetLayoutBuffer(const LayoutBuffer& layoutBuffer) { _layoutBuffer = layoutBuffer; }
 };
 
 /**

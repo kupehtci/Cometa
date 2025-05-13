@@ -1,0 +1,22 @@
+flowchart TD
+A[Start] --> B[Initialize OpenGL Context & Window]
+B --> C[Define Box Vertices]
+C --> D[Generate Vertex Buffer Object VBO]
+D --> E[Generate Vertex Array Object VAO]
+E --> F[Bind VAO & VBO]
+F --> G[Upload Vertex Data to GPU]
+G --> H[Set Vertex Attributes]
+H --> I[Create Shader Program]
+I --> J[Vertex Shader: Transform vertices]
+J --> K[Fragment Shader: Set box color]
+K --> L[Compile & Link Shaders]
+L --> M[Render Loop]
+M --> N[Clear Screen]
+N --> O[Bind Shader Program]
+O --> P[Bind VAO]
+P --> Q[Draw Box glDrawArrays]
+Q --> R[Swap Buffers]
+R --> S{Continue?}
+S --> |Yes| M
+S --> |No| T[Clean Up Resources]
+T --> U[Exit]

@@ -1,0 +1,25 @@
+block-beta
+    block
+    VAO["Vertex Array Object (VAO)"]
+    VAO --> VBO1["Vertex Buffer Object (VBO)
+    - Stores raw vertex data
+    - Positions, normals, UVs, etc."]
+
+    VAO --> EBO["Element Buffer Object (EBO)
+    - Stores vertex indices
+    - Enables indexed drawing (glDrawElements)"]
+
+    VAO --> Layout["Vertex Attribute Layout
+    - Defines how to interpret VBO data
+    - glVertexAttribPointer settings:
+    • Index
+    • Size (vec3, vec2, etc.)
+    • Type (GL_FLOAT, etc.)
+    • Stride
+    • Offset"]
+    end
+
+%%    note for VAO "VAO remembers:
+%%    1. VBO/EBO bindings
+%%    2. Vertex attribute configurations
+%%    3. Enables quick state switching"
