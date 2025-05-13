@@ -100,15 +100,18 @@ void MapsLayer::Init()
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(0.5f, 0.5f, 0.5f),
-                                    2.0f,
-                                    "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg",
+                                    64.0f,
+                                    /*"resources/bricks_diffuse_map.jpg"*/ "resources/white.jpg",
+                                    "resources/white.jpg",
                                     "resources/black.jpg");
 
 
+    // material0->LoadShader("Main Shader",
+    //     "src/render/shaders/light_map_shader.vert",
+    //     "src/render/shaders/light_map_shader.frag");
     material0->LoadShader("Main Shader",
-        "src/render/shaders/light_map_shader.vert",
-        "src/render/shaders/light_map_shader.frag");
+        "src/render/shaders/blinn_phong_shader.vert",
+        "src/render/shaders/blinn_phong_shader.frag");
     ent0Renderable->SetMaterial(material0);
 
     std::shared_ptr<Mesh> mesh0 = std::make_shared<Mesh>();
