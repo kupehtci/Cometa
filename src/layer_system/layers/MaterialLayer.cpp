@@ -65,6 +65,7 @@ void MaterialLayer::Update(){
     //        0, 1, 3,   // first triangle
     //        1, 2, 3,    // second triangle
     //};
+
     float vertices[] = {
         // Front face
         // positions          // normals           // colors            // texture coords

@@ -53,7 +53,6 @@ std::shared_ptr<Shader> Shader::LoadShader(const std::string& name, const std::s
     return shader;
 }
 
-
 void Shader::Debug()
 {
     unsigned int i = 0;

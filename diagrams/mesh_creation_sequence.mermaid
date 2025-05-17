@@ -1,0 +1,13 @@
+sequenceDiagram
+    ApplicationCode ->> Mesh : Mesh mesh Mesh()
+    Mesh ->> VertexArray : Create
+
+    ApplicationCode ->> Mesh : AddVertices(vertices, count)
+    Mesh ->> VertexArray : AddVertexBuffer()
+    VertexArray ->> VertexBuffer : Create
+
+    ApplicationCode ->> Mesh : AddIndices(vertices, count)
+    Mesh ->> VertexArray : AddIndexBuffer()
+    VertexArray ->> IndexBuffer : Create
+
+    ApplicationCode --> Mesh : Mesh mesh = Mesh()

@@ -30,24 +30,14 @@ private:
 
 public:
 
-    /**
-     * CONSTRUCTOR
-     * Create a shader program composed of a Vertex and Fragment shader references by its source.
-     * @param name (std::string) Debug name assigned to the shader
-     * @param vertexShaderSource (const std::string&) Vertex Shader source's path
-     * @param fragmentShaderSource (const std::string&) Fragment Shader source's path
-     */
     Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource );
-
-    /**
-     * Default destructor of the shader
-     */
     ~Shader();
 
     // ------------ CACHED METHODS ------------
+    // Chached methods are the most recomendable way to create and load a shader program.
+    // Invoked as an static method --> Shader shader = Shader::LoadShader(...)
 
     static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-
     static void Debug();
 
     // ------------ UNIFORMS METHODS ------------

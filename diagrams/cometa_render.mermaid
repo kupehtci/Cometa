@@ -19,10 +19,17 @@ config:
 
 classDiagram
     direction TB
+
+    class FACE_CULLING_MODE{
+         <<enumeration>>
+        FACE_CULLING_NONE
+        FACE_CULLING_CLOCKWISE
+        FACE_CULLING_COUNTER_CLOCKWISE
+    }
     class Renderer {
         - Window* _window
-        - bool _depthCulling
-        - FACE_CULLING_MODE _faceCullingMode
+        - _depthCulling : bool
+        - _faceCullingMode : FACE_CULLING_MODE
         + Init()
         + Update()
         + Close()
@@ -33,8 +40,8 @@ classDiagram
     }
     class Window {
         - _window : GLFWwindow*
-        - Quad* _resolution
-        - char* _title
+        - _resolution : vec2
+        - _title : char
         + Init()
         + Update()
         + Close()
@@ -93,23 +100,38 @@ classDiagram
         + Unbind() : void
     }
     class Shader {
-        - uint32_t _shaderUID
-        - std::unordered_map~GLenum,string~ _shaderSources
-        - std::unordered_map~GLenum, std::string~ _filePaths;
-        - string _debugName
-        - bool _isCompiled
-        + Bind()
-        + SetUniform()
-        + LoadShader()
+        - _shaderUID : uint32_t
+        - _shaderSources : std::unordered_map~GLenum, std::string~
+        - _filePaths : std::unordered_map~GLenum, std::string~
+        - _debugName : string
+        - _isCompiled : bool
+        + LoadShader( name,vertexShaderPath, fragmentShaderPath) static std::shared_ptr<Shader>
+        + Debug() static void
+
+        + SetBool(variableName, value) void
+        + SetFloat(variableName, value) void
+        + SetFloat2(variableName, value) void
+        + SetFloat3(variableName, value) void
+        + SetFloat4(variableName, value) void
+        + SetInt(variableName, value)  void
+        + SetIntArray(variableName, values,count) void
+        + SetMatrix4(variableName, value) void
+        + LoadFromFile(filePath) std::string
+        + CompileShader(shaderType) unsigned int
+        + void CompileShaderProgram()
+        + void Bind()
+        + void Unbind()
+        + void Delete()
     }
     class Texture {
-        -uint32_t _uid
-        -uint32_t _width
-        -uint32_t _height
-        -uint8_t _channels
-        -string _path
-        +Bind()
-        +Load()
+        - _uid : uint32_t
+        - _width : uint32_t
+        - _height : uint32_t
+        - _channels : uint8_t
+        - _path : string
+        + Bind()
+        + Load()
+        + Delete()
     }
     class VertexArray {
         - vector~std::shared_ptr~VertexBuffer~~ _vertexBuffers
@@ -126,37 +148,102 @@ classDiagram
         + SetLayoutBuffer()
     }
     class Buffer {
-        #uint32_t _uid
+        <<abstract>>
+        # _uid : uint32_t
 
-        +Bind()*
-        +Unbind()*
-        +GetUid()
+        + Bind()*
+        + Unbind()*
+        + GetUid()
     }
     class VertexBuffer {
-        +SetData()
-        +GetLayout()
+        + Bind()
+        + Unbind()
     }
     class IndexBuffer {
-        -uint32_t _count
-        +GetCount()
+        - _count : uint32_t
+        + GetCount()
+        + Bind()
+        + Unbind()
     }
     class LayoutBuffer {
-        -vector~Layout~ _layouts
-        -uint32_t _size
-        +AddLayout()
-        +GetLayouts()
+        - _layouts : vector~Layout~
+        - _size : uint32_t
+        + LayoutBuffer(std::initializer_list~Layout~)
+        + AddLayout()
+        + GetLayouts()
+    }
+
+    class Layout{
+        - _name : std::string
+        - _position : uint32_t
+        - _type : DataType
+        - _size : uint32_t
+        - _offset : uint32_t
+
+        + Layout(position, type, name)
+    }
+
+    class DataType{
+        <<enumeration>>
+        None
+        Float
+        Float2
+        Float3
+        Float4
+        Mat3
+        Mat4
+        Int
+        Int2
+        Int3
+        Int4
+        Bool
     }
 
     <<abstract>> Buffer
 
-    Renderer --> Window : contains
-    Window --> Camera : contains
-    Material --> Shader : contains
-    Material --> Texture : contains
-    Mesh --> VertexArray : contains
-    VertexArray --> VertexBuffer : contains
-    VertexArray --> IndexBuffer : contains
-    VertexArray --> LayoutBuffer : contains
+    Renderer --* Window : contains
+    Renderer --* FACE_CULLING_MODE : contains
+    Material --* Shader : contains
+    Material --* Texture : contains
+    Mesh --* VertexArray : contains
+    VertexArray --* VertexBuffer : contains
+    VertexArray --* IndexBuffer : contains
+    VertexArray --* LayoutBuffer : contains
     Buffer <|-- VertexBuffer : inherits
     Buffer <|-- IndexBuffer : inherits
     Buffer <|-- VertexArray : inherits
+    LayoutBuffer *-- Layout
+
+    LayoutBuffer ..> DataType
+
+
+    %% Extern classes
+    namespace glm {
+        class mat4{
+
+        }
+
+        class vec3{
+%%            + x : float
+%%            + y : float
+%%            + z : float
+        }
+
+        class vec2{
+%%            + x : float
+%%            + y : float
+        }
+
+        class GLenum{
+            <<enumeration>>
+        }
+
+    }
+
+    Window --* vec2
+    Camera ..> mat4
+    Camera ..> vec3
+    Material ..> vec3
+    Shader ..o GLenum
+
+

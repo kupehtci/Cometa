@@ -200,7 +200,6 @@ void Window::HandleResize(GLFWwindow* window, int width, int height) {
     glViewport( 0.f, 0.f, currentFramebufferSize.x, currentFramebufferSize.y);
 
     _resolution = glm::vec2(currentFramebufferSize.x, currentFramebufferSize.y);
-
 }
 
 

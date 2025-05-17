@@ -1,0 +1,34 @@
+graph LR
+    A[Lighting Calculation] --> B[Point Light Only]
+
+    B --> C[Material Properties]
+    B --> D[Light Properties]
+
+    C --> E[Surface Normal]
+    D --> F[Light Direction]
+    D --> G[View Position]
+
+    AMB[Ambient Term]
+    DIFF[Diffuse Term]
+    SPEC[Specular Term]
+
+    AMB --> LI_CONTRIBUTION
+    DIFF --> LI_CONTRIBUTION
+    SPEC --> LI_CONTRIBUTION
+
+    B --> K[Light Condition]
+
+
+
+    LI_CONTRIBUTION[Light Contribution]
+    ATT[Attenuation]
+    LI_PARAM[Light Parameters]
+    DIS[Distance]
+
+    DIS --> ATT
+    LI_PARAM --> ATT
+
+    N[constant]  --> LI_PARAM
+    O[linear] --> LI_PARAM
+    P[quadratic]  --> LI_PARAM
+    %% K --> LI_PARAM[Light Parameters]

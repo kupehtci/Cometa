@@ -1,46 +1,19 @@
 flowchart TD;
 %% Trigger event
-    TRIGGER([The user asks the system to log them in])-->S1;
-    style TRIGGER fill:#ccf
+    S0("Develop a shader or use a built-in one") --> S1
+    S1("Load shader") --> S2_1
+    S2_1("Define Vertex data and indices") --> S2_2
+    S2_2("Create VAO") --> S2_3
+    S2_3("Create VBO and set vertex data") --> S2_4
+    S2_4("Create EBO and set indices") --> S2_5
+    S2_5("Create LayoutBuffer and set layout of the vertex Data") --> DEC_TEX
 
-%% Main success scenario
-    S1[The system renders the login screen<br /> and asks the user to provide their credentials]-->S2;
-    S2[/"The user provides its credentials (email and password)<br /> and asks the system to log them in"/]-->S3;
-    S3[The system asks the backend API to verify users credentials]-->S4;
-    S4{The backend API confirms that<br /> the provided credentials are valid?};
-    S4--Yes-->S5;
-    S5{The backend API confirms that<br /> the user has an active subscription?};
-    S5--Yes-->SUCCESS
+    DEC_TEX{"Has texture"} -- "YES" --> TEX_1
+    DEC_TEX -- "NO" --> S3
 
-%% Extension 2a: The user authenticates via 3rd party system (Google, Facebook)
-    S1-->EXT2a1;
-    EXT2a1["The user asks the system to authenticate it<br /> via 3rd party authentication system <br />(Google or Facebook)"]-->EXT2a2;
-    EXT2a2[The system redirects the user to the<br /> appropriate 3rd party authentication system]-->EXT2a3;
-    EXT2a3{The user successfully authenticates <br />using 3rd party authentication system?};
-    EXT2a3--Yes-->EXT2a4;
-    EXT2a3--No-->EXT4a2;
-    EXT2a4[the 3rd party authentication system<br /> provides the system with the user's<br /> identification information]-->EXT2a5;
-    EXT2a5[The system asks the backend system to confirm<br /> that the user has a valid subscription]-->EXT2a6;
-    EXT2a6{The backend API confirms that<br /> the user has an active subscription?};
-    EXT2a6--Yes-->EXT2a7;
-    EXT2a6--No-->EXT5a2;
-    EXT2a7[The backend system provides the system<br /> with the appropriate authentication token]-->SUCCESS;
+    %% Texture path
+    TEX_1("Load texture") --> TEX_2
+    TEX_2("Set texture uniform in shader") --> S3
 
-%% Extension 4a: The user does not have a valid account
-    S4--No-->EXT4a1;
-    EXT4a1[The backend system determines<br /> that the user does not have a valid account<br /> and informs the System of that fact]-->EXT4a2;
-    EXT4a2[The system informs the user that<br /> their credentials are not valid];
-    EXT4a2-->S1;
-
-%% Extension 5a: The user does not have a valid account
-    S5--No-->EXT5a1;
-    EXT5a1[The backend system determines<br /> that the user does have an account but <br />does not have a valid subscription<br /> and informs the System of that fact]-->EXT5a2;
-    EXT5a2[The system informs the user that <br />it does not have a valid subscription]-->EXT5a3;
-    EXT5a3[The system instructs the user to </br />go to the web to buy a subscription];
-    EXT5a3-->FAILURE;
-
-    SUCCESS([System logs the user in]);
-    style SUCCESS fill:#cfc
-
-    FAILURE(Login flow terminates);
-    style FAILURE fill:#fcc
+    S3("Define Model and View proyection matrices for 3D rendering") --> S4
+    S4("Draw call")
