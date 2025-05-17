@@ -15,6 +15,8 @@
 #include "world/ComponentStorage.h"
 #include "world/Components.h"
 #include "world/Entity.h"
+#include "render/FrameBuffer.h"
+#include "render/Shader.h"
 
 
 // IMGUI
@@ -30,7 +32,10 @@ Renderer::Renderer() {
 }
 
 Renderer::~Renderer() {
-    
+    if (_shadowFrameBuffer) {
+        delete _shadowFrameBuffer;
+        _shadowFrameBuffer = nullptr;
+    }
 }
 
 void Renderer::Init(){
@@ -39,7 +44,7 @@ void Renderer::Init(){
         Assertion::Error("Cannot initialize GLFW, review GLFW installation");
         return;
     }
-
+    
     // Intialize Hints depending on the platform
 #ifdef PLATFORM_MACOS
     COMETA_ASSERT("Initializing OpenGL Forward compatibility for MacOS");
@@ -97,12 +102,14 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
+    // Initialize shadow mapping shader
+    _shadowMapShader = Shader::LoadShader("Shadow Map shader", "src/render/shaders/shadow_map.vert", "src/render/shaders/shadow_map.frag");
+
 }
 
 void Renderer::Update(){
     // Update current window
     _window->Update();
-
 
     // ------- SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
     WorldManager* worldManager = WorldManagerRef;
@@ -129,15 +136,71 @@ void Renderer::Update(){
     const int numLights = static_cast<int>(pointLightsComponents.Size());
     std::vector<std::pair<PointLight*, Transform*>> lights = std::vector<std::pair<PointLight*, Transform*>>();
 
-
     for (PointLight& pt : pointLightsComponents)
     {
         lights.emplace_back(std::make_pair(&pt, pt.GetOwner()->GetComponent<Transform>()));
     }
 
-    // iterate only through renderable components
+    // Get all renderable components
     ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
 
+
+    // -------- SHADOW MAPPING PASS --------
+    // Only render shadows if we have a directional light
+    if (directionalLight)
+    {
+        // Create shadow framebuffer if it doesn't exist
+        if (!_shadowFrameBuffer)
+        {
+            _shadowFrameBuffer = new FrameBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        }
+
+        // Bind the shadow framebuffer
+        _shadowFrameBuffer->Bind();
+        
+        // Clear the depth buffer
+        glClear(GL_DEPTH_BUFFER_BIT);
+        
+        // Configure face culling for shadow mapping (to reduce shadow acne)
+        glCullFace(GL_FRONT); // Cull front faces during shadow pass
+        
+        // Get the light space matrix from the directional light
+        glm::mat4 lightSpaceMatrix = directionalLight->GetLightSpaceMatrix();
+        
+        // Use the shadow mapping shader
+        _shadowMapShader->Bind();
+        
+        // Render scene from light's perspective
+        for (auto& renderable : _renderables)
+        {
+            Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
+            
+            // Set the model matrix and light space matrix
+            _shadowMapShader->SetMatrix4("model", transform->GetWorldTransform());
+            _shadowMapShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+            
+            // Draw the mesh
+            renderable.GetMesh()->Bind();
+            renderable.GetMesh()->Draw();
+        }
+        
+        // Unbind the shadow framebuffer
+        _shadowFrameBuffer->Unbind();
+        
+        // Reset face culling to default
+        glCullFace(GL_BACK);
+    }
+
+    // -------- MAIN RENDERING PASS --------
+    // Reset viewport to window size
+    int frameBufferWidth, frameBufferHeight = 0; 
+    glfwGetFramebufferSize(_window->GetGlfwWindow(), &frameBufferWidth, &frameBufferHeight);
+    glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+    
+    // Clear the color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Render each object with lighting
     for (auto& renderable : _renderables)
     {
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
@@ -158,6 +221,17 @@ void Renderer::Update(){
             shader->SetFloat3("directionalLight.ambient", directionalLight->GetAmbient());
             shader->SetFloat3("directionalLight.diffuse", directionalLight->GetDiffuse());
             shader->SetFloat3("directionalLight.specular", directionalLight->GetSpecular());
+            
+            // Set the light space matrix for shadow mapping
+            shader->SetMatrix4("lightSpaceMatrix", directionalLight->GetLightSpaceMatrix());
+            
+            // Bind the shadow map texture
+            if (_shadowFrameBuffer)
+            {
+                // Bind the shadow map to texture unit 5 (arbitrary choice)
+                _shadowFrameBuffer->BindDepthTexture(GL_TEXTURE5);
+                shader->SetInt("shadowMap", 5);
+            }
         }
 
         // Bind each one of the lights to the shader
@@ -181,9 +255,8 @@ void Renderer::Update(){
 
         shader->Bind();
         renderable.GetMesh()->Draw();
-
-        // ------- END OF SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
     }
+    // ------- END OF SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
 }
 
 void Renderer::Render()

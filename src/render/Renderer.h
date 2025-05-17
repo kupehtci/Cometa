@@ -13,6 +13,8 @@
 #ifndef AURAGL_RENDERER_H
 #define AURAGL_RENDERER_H
 
+#include "render/FrameBuffer.h"
+
 enum FACE_CULLING_MODE {
     FACE_CULLING_NONE = 0, 
     FACE_CULLING_CLOCKWISE = 1, 
@@ -27,6 +29,12 @@ private:
 
     bool _depthCulling = true;
     FACE_CULLING_MODE _faceCullingMode = FACE_CULLING_MODE::FACE_CULLING_CLOCKWISE; 
+    
+    // Shadow mapping properties
+    static const unsigned int SHADOW_MAP_WIDTH = 1024;
+    static const unsigned int SHADOW_MAP_HEIGHT = 1024;
+    FrameBuffer* _shadowFrameBuffer = nullptr;
+    std::shared_ptr<Shader> _shadowMapShader = nullptr;
 
 public:
     Renderer();

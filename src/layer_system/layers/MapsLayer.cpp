@@ -171,7 +171,18 @@ void MapsLayer::Init()
 
     MeshRenderable* floorRenderable = floor->CreateComponent<MeshRenderable>();
     floorRenderable->SetMesh(Mesh::CreatePlane());
-    floorRenderable->SetMaterial(material1);
+
+    std::shared_ptr<Material> floorMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    64.0f,
+                                    /*"resources/bricks_diffuse_map.jpg"*/ "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    floorMaterial->LoadShader("Main Shader","src/render/shaders/blinn_phong_shader.vert", "src/render/shaders/blinn_phong_shader.frag");
+    floorRenderable->SetMaterial(floorMaterial);
 
 
     // Event bus subscription
