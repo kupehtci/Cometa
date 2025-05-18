@@ -131,7 +131,7 @@ void MapsLayer::Init()
     Entity* ent1 = world0->CreateEntity("Entity1");
     ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
     ColliderComponent* ent1Collider = ent1->CreateComponent<ColliderComponent>();
-    //ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    
     ent1Collider->SetCollider<SphereCollider>(1.0f);
 
     auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
@@ -155,19 +155,61 @@ void MapsLayer::Init()
                                     "resources/black.jpg");
 
     material1->LoadShader("Main Shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    // mesh0->Bind();
+
     ptlight0Renderable->SetMesh(Mesh::CreateSphere());
     ptlight0Renderable->SetMaterial(material1);
     ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
-    ptlight0->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
     ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
+    // OTHER LIGHT ENTITY
 
-    // Create floor
+    // Entity* ptlight1 = world0->CreateEntity("Light Point 2");
+    // ptlight1->CreateComponent<PointLight>();
+    //
+    // MeshRenderable* ptlight1Renderable = ptlight0->CreateComponent<MeshRenderable>();
+    //
+    // std::shared_ptr<Material> material2 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
+    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
+    //                                 glm::vec3(0.5f, 0.5f, 0.5f),
+    //                                 2.0f,
+    //                                 "resources/white.jpg",
+    //                                 "resources/white.jpg",
+    //                                 "resources/black.jpg");
+    //
+    // material2->LoadShader("Main Shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+    //
+    // ptlight1Renderable->SetMesh(Mesh::CreateSphere());
+    // ptlight1Renderable->SetMaterial(material2);
+    // ptlight1->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
+    // ptlight1->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+    Entity* ptLight2 = world0->CreateEntity("Light Point 2");
+    ptLight2->CreateComponent<PointLight>();
+    MeshRenderable* ptLight2Renderable = ptLight2->CreateComponent<MeshRenderable>();
+
+    std::shared_ptr<Material> material2 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    2.0f,
+                                    "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    material2->LoadShader("Point light 2 shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+
+    ptLight2Renderable->SetMesh(Mesh::CreateSphere());
+    ptLight2Renderable->SetMaterial(material2);
+    ptLight2->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
+    ptLight2->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+
+    // ------------ Floor entity ------------
     Entity* floor = world0->CreateEntity("Floor");
-    floor->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, 5.0f);
+    floor->GetComponent<Transform>()->position = glm::vec3(0.0f, -2.0f, -7.0f);
     floor->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 90.0f, 0.0f);
-    floor->GetComponent<Transform>()->scale = glm::vec3(3.0f, 3.0f, 3.0f);
+    floor->GetComponent<Transform>()->scale = glm::vec3(20.0f, 0.0f, 20.0f);
 
     MeshRenderable* floorRenderable = floor->CreateComponent<MeshRenderable>();
     floorRenderable->SetMesh(Mesh::CreatePlane());

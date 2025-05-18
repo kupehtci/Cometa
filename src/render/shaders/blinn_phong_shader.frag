@@ -18,8 +18,10 @@ struct Material {
     float shininess;
 };
 
-// Shadow map sampler
-uniform sampler2D shadowMap;
+// Shadow map samplers
+uniform sampler2D shadowMap;         // For directional light
+uniform samplerCube pointShadowMap;  // For point light
+uniform float far_plane;             // Far plane for point light shadow mapping
 
 struct Light {
     vec3 position;
@@ -78,9 +80,14 @@ vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 fragNormal, vec3 
 vec3 CalculatePointLights(Light pointLight, vec3 fragNormal, vec3 fragPos,  vec3 viewDirection);
 
 
-// Calculate shadow value (0.0 = in shadow, 1.0 = not in shadow)
+// Calculate shadow value (0.0 = in shadow, 1.0 = not in shadow) for directional light
 // param vec4 fragPosLightSpace:        Fragment position in light space
 float CalculateShadow(vec4 fragPosLightSpace);
+
+// Calculate shadow value (0.0 = in shadow, 1.0 = not in shadow) for point light
+// param vec3 fragPos:                  Fragment position in world space
+// param vec3 lightPos:                 Light position in world space
+float CalculatePointLightShadow(vec3 fragPos, vec3 lightPos);
 
 void main()
 {
@@ -169,13 +176,16 @@ vec3 CalculatePointLights(Light pointLight, vec3 fragNormal, vec3 fragPos,  vec3
         specular = pointLight.specular * (spec * material.specular);
     }
 
+    // Calculate shadow for point light
+    float shadow = CalculatePointLightShadow(fragPos, pointLight.position);
+
     // atenuation of light
     float distance = length(pointLight.position - fragPos);
     float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 
     ambient *= attenuation;
-    specular *= attenuation;
-    diffuse *= attenuation;
+    specular *= attenuation * shadow; // Apply shadow to specular
+    diffuse *= attenuation * shadow;  // Apply shadow to diffuse
 
     return (ambient + diffuse + specular);
 }
@@ -216,6 +226,48 @@ float CalculateShadow(vec4 fragPosLightSpace)
     if(projCoords.z > 1.0)
         shadow = 0.0;
         
+    // Return inverted shadow value (1.0 = not in shadow, 0.0 = in shadow)
+    return 1.0 - shadow;
+}
+
+float CalculatePointLightShadow(vec3 fragPos, vec3 lightPos)
+{
+    // Get vector between fragment position and light position
+    vec3 fragToLight = fragPos - lightPos;
+    
+    // Use the fragment to light vector to sample from the depth map    
+    float closestDepth = texture(pointShadowMap, fragToLight).r;
+    
+    // It is currently in linear range between [0,1]. Re-transform back to original depth value
+    closestDepth *= far_plane;
+    
+    // Get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    
+    // Test for shadows with bias
+    float bias = 0.05; // Adjust this value based on your scene
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    
+    // PCF (percentage-closer filtering) for softer shadows
+    // This is a simplified version of PCF for cubemaps
+    shadow = 0.0;
+    float samples = 4.0;
+    float offset = 0.1;
+    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+    {
+        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+        {
+            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+            {
+                float closestDepth = texture(pointShadowMap, fragToLight + vec3(x, y, z)).r;
+                closestDepth *= far_plane;   // Undo mapping [0;1]
+                if(currentDepth - bias > closestDepth)
+                    shadow += 1.0;
+            }
+        }
+    }
+    shadow /= (samples * samples * samples);
+    
     // Return inverted shadow value (1.0 = not in shadow, 0.0 = in shadow)
     return 1.0 - shadow;
 }

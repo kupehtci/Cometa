@@ -30,7 +30,8 @@ private:
 
 public:
 
-    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource );
+    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
+    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource, const std::string& geometryShaderSource);
     ~Shader();
 
     // ------------ CACHED METHODS ------------
@@ -38,6 +39,7 @@ public:
     // Invoked as an static method --> Shader shader = Shader::LoadShader(...)
 
     static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath, const std::string& geometryShaderPath);
     static void Debug();
 
     // ------------ UNIFORMS METHODS ------------

@@ -36,6 +36,11 @@ Renderer::~Renderer() {
         delete _shadowFrameBuffer;
         _shadowFrameBuffer = nullptr;
     }
+    
+    if (_pointShadowFrameBuffer) {
+        delete _pointShadowFrameBuffer;
+        _pointShadowFrameBuffer = nullptr;
+    }
 }
 
 void Renderer::Init(){
@@ -102,8 +107,10 @@ void Renderer::Init(){
         glEnable(GL_DEPTH_TEST); 
     }
 
-    // Initialize shadow mapping shader
+    // --------------- SHADOW INIT ---------------
+
     _shadowMapShader = Shader::LoadShader("Shadow Map shader", "src/render/shaders/shadow_map.vert", "src/render/shaders/shadow_map.frag");
+    _pointShadowMapShader = Shader::LoadShader("Point Shadow Map shader", "src/render/shaders/point_shadow_map.vert", "src/render/shaders/point_shadow_map.frag", "src/render/shaders/point_shadow_map.geom");
 
 }
 
@@ -145,32 +152,25 @@ void Renderer::Update(){
     ComponentStorage<MeshRenderable>& _renderables = currentWorld->GetComponentRegistry().GetStorage<MeshRenderable>();
 
 
-    // -------- SHADOW MAPPING PASS --------
-    // Only render shadows if we have a directional light
+    // -------- DIRECTIONAL LIGHT SHADOW MAPPING PASS --------
     if (directionalLight)
     {
-        // Create shadow framebuffer if it doesn't exist
         if (!_shadowFrameBuffer)
         {
             _shadowFrameBuffer = new FrameBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
         }
-
-        // Bind the shadow framebuffer
         _shadowFrameBuffer->Bind();
-        
-        // Clear the depth buffer
+
         glClear(GL_DEPTH_BUFFER_BIT);
-        
-        // Configure face culling for shadow mapping (to reduce shadow acne)
-        glCullFace(GL_FRONT); // Cull front faces during shadow pass
+        glCullFace(GL_FRONT);
         
         // Get the light space matrix from the directional light
         glm::mat4 lightSpaceMatrix = directionalLight->GetLightSpaceMatrix();
         
-        // Use the shadow mapping shader
+
         _shadowMapShader->Bind();
         
-        // Render scene from light's perspective
+
         for (auto& renderable : _renderables)
         {
             Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
@@ -190,6 +190,106 @@ void Renderer::Update(){
         // Reset face culling to default
         glCullFace(GL_BACK);
     }
+
+
+    // -------- POINT LIGHT SHADOW MAPPING PASS --------
+    // Render shadows for each point light
+    if (!lights.empty())
+    {
+
+        if (!_pointShadowFrameBuffer)
+        {
+            _pointShadowFrameBuffer = new CubeMapFrameBuffer(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
+        }
+
+        glCullFace(GL_FRONT); // Cull front faces during shadow pass
+
+        _pointShadowMapShader->Bind();
+        _pointShadowMapShader->SetFloat("far_plane", POINT_LIGHT_FAR_PLANE);
+
+        std::cout << "------------Light processing------------" << std::endl;
+        // For each point light, render the scene from its perspective
+        for (size_t i = 0; i < lights.size(); ++i)
+        {
+
+            PointLight* pointLight = lights[i].first;
+            Transform* lightTransform = lights[i].second;
+            
+            // Bind the framebuffer
+            _pointShadowFrameBuffer->Bind();
+            
+            // Clear the depth buffer
+            glClear(GL_DEPTH_BUFFER_BIT);
+            
+            // Set light position uniform
+            _pointShadowMapShader->SetFloat3("lightPos", lightTransform->position);
+            
+            // Create shadow transformation matrices for each face of the cubemap
+            glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, POINT_LIGHT_FAR_PLANE);
+            std::vector<glm::mat4> shadowTransforms;
+            
+            // Right face (+X)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(1.0f, 0.0f, 0.0f), 
+                            glm::vec3(0.0f, -1.0f, 0.0f)));
+            // Left face (-X)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(-1.0f, 0.0f, 0.0f), 
+                            glm::vec3(0.0f, -1.0f, 0.0f)));
+            // Top face (+Y)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(0.0f, 1.0f, 0.0f), 
+                            glm::vec3(0.0f, 0.0f, 1.0f)));
+            // Bottom face (-Y)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(0.0f, -1.0f, 0.0f), 
+                            glm::vec3(0.0f, 0.0f, -1.0f)));
+            // Front face (+Z)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(0.0f, 0.0f, 1.0f), 
+                            glm::vec3(0.0f, -1.0f, 0.0f)));
+            // Back face (-Z)
+            shadowTransforms.push_back(shadowProj * 
+                glm::lookAt(lightTransform->position, 
+                            lightTransform->position + glm::vec3(0.0f, 0.0f, -1.0f), 
+                            glm::vec3(0.0f, -1.0f, 0.0f)));
+            
+            // Set the shadow matrices in the shader
+            for (unsigned int j = 0; j < 6; ++j)
+            {
+                _pointShadowMapShader->SetMatrix4("shadowMatrices[" + std::to_string(j) + "]", shadowTransforms[j]);
+            }
+            
+            // Render scene from light's perspective
+            for (auto& renderable : _renderables)
+            {
+                Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
+                
+                // Set the model matrix
+                _pointShadowMapShader->SetMatrix4("model", transform->GetWorldTransform());
+                
+                // Draw the mesh
+                renderable.GetMesh()->Bind();
+                renderable.GetMesh()->Draw();
+            }
+            
+            // Only process the first point light for now
+            // In a more advanced implementation, we would create a cubemap for each light
+            // break;
+        }
+        
+        // Unbind the framebuffer
+        _pointShadowFrameBuffer->Unbind();
+        
+        // Reset face culling to default
+        glCullFace(GL_BACK);
+    }
+
 
     // -------- MAIN RENDERING PASS --------
     // Reset viewport to window size
@@ -231,6 +331,15 @@ void Renderer::Update(){
                 // Bind the shadow map to texture unit 5 (arbitrary choice)
                 _shadowFrameBuffer->BindDepthTexture(GL_TEXTURE5);
                 shader->SetInt("shadowMap", 5);
+            }
+            
+            // Bind the point shadow map texture if it exists
+            if (_pointShadowFrameBuffer)
+            {
+                // Bind the point shadow map to texture unit 6 (arbitrary choice)
+                _pointShadowFrameBuffer->BindDepthCubeMap(GL_TEXTURE6);
+                shader->SetInt("pointShadowMap", 6);
+                shader->SetFloat("far_plane", POINT_LIGHT_FAR_PLANE);
             }
         }
 
