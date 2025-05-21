@@ -207,7 +207,7 @@ void Renderer::Update(){
         _pointShadowMapShader->Bind();
         _pointShadowMapShader->SetFloat("far_plane", POINT_LIGHT_FAR_PLANE);
 
-        std::cout << "------------Light processing------------" << std::endl;
+        
         // For each point light, render the scene from its perspective
         for (size_t i = 0; i < lights.size(); ++i)
         {
@@ -278,9 +278,8 @@ void Renderer::Update(){
                 renderable.GetMesh()->Draw();
             }
             
-            // Only process the first point light for now
-            // In a more advanced implementation, we would create a cubemap for each light
-            // break;
+            // Only process the first point light for now as its nto added together into same cubemap
+            break;
         }
         
         // Unbind the framebuffer

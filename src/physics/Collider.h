@@ -12,7 +12,7 @@
 // #include <world/Components.h>
 
 #include "physics/CollisionDispatcher.h"
-#include "render/DebugRenderer.h"
+
 
 // Base Collider class (abstract)
 class Collider {
@@ -60,7 +60,7 @@ public:
 
     void DebugDraw() const override {
         // Use DebugRenderer to visualize this box collider
-        DebugRenderer::GetInstance()->DrawWireframeCollider(this, glm::vec3(0.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+     
     }
 
     glm::mat3 CalculateInertiaTensor(float mass) override
@@ -134,7 +134,7 @@ public:
 
     void DebugDraw() const override {
         // Use DebugRenderer to visualize this sphere collider
-        DebugRenderer::GetInstance()->DrawWireframeCollider(this, glm::vec3(0.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+        
     }
 
 
