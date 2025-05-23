@@ -101,6 +101,13 @@ public:
 						  << transform.scale.z << ")" << std::endl;
 		return os;
 	}
+
+	// --------- UTILITIES ---------
+	[[nodiscard]] inline static glm::mat4 CalculateTransform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+	{
+		const glm::mat4 rotationMatrix = glm::toMat4(glm::quat(glm::radians(rotation)));
+		return glm::translate(glm::mat4(1.0f), position) * rotationMatrix * glm::scale(glm::mat4(1.0f), scale);
+	}
 };
 
 class MeshRenderable : public Component {

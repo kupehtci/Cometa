@@ -31,23 +31,13 @@ void Mesh::AddIndices(uint32_t* indices, uint32_t numIndices)
 
 void Mesh::Build()
 {
-    // std::cout << "################# MESH BUILD METHOD #################" << std::endl;
-
     // VertexArray vao = VertexArray();
     _vao->CreateVertexBuffer(_vertices.data(), _numVertices * sizeof(float));
     _vao->CreateIndexBuffer(_indices.data(), _numIndices * sizeof(uint32_t));
 
-    // _vao->SetLayoutBuffer({
-    //         {0, DataType::Float3, "aPos"},
-    //         {1, DataType::Float3, "aNormal"},
-    //         {2, DataType::Float3, "aColor"},
-    //         {3, DataType::Float2, "aTexCoord"}
-    // });
     _vao->GetLayoutBuffer().Bind();
 
     _vao->Bind();
-
-    // std::cout << "################# END OF MESH BUILD METHOD #################" << std::endl;
 }
 
 void Mesh::Draw()

@@ -72,7 +72,7 @@ void Window::Create(int width, int height, const char *title) {
 
     glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        Application* app = Application::GetInstancePtr();
+        // Application* app = Application::GetInstancePtr();
 
         switch (action)
         {

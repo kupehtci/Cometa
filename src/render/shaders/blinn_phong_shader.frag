@@ -55,14 +55,17 @@ in vec4 FragPosLightSpace;
 // Camera viewing position
 uniform vec3 uViewPos;
 
-
+// Main material of the object
 uniform Material material;
 
 // Light variables
 #define MAX_LIGHTS_CONSTANT 16
-uniform int number_lights;                                 // Number of lights to process
+// Number of lights to process
+uniform int number_lights;    
+// Light array of the scene lights                             
 uniform Light lights[MAX_LIGHTS_CONSTANT];
 
+// Unique directional light of the scene
 uniform DirectionalLight directionalLight;
 
 // Calculates the directional light sum of ambien, diffuse and specular

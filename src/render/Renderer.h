@@ -57,6 +57,8 @@ public:
     void Render();
 
     [[nodiscard]] inline Window* GetWindow() const { return _window; }
+    // [[nodiscard]] inline bool ShouldClose() const { return glfwWindowShouldClose(_window->GetGlfwWindow()); }
+    inline static bool ShouldClose () { return glfwWindowShouldClose(Renderer::GetInstancePtr()->GetWindow()->GetGlfwWindow()); }
 
     // TODO: Remain to implement
     inline void SetDepthCulling(bool value) { _depthCulling = value;  }
@@ -64,5 +66,6 @@ public:
     }
 };
 
+#define CometaRenderer Renderer::GetInstancePtr()
 
 #endif //AURAGL_RENDERER_H

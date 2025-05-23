@@ -80,6 +80,7 @@ void Camera::OnUpdate() {
     if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
     {
         if(Input::IsKeyPressed(GLFW_KEY_W)) {
+            std::cout << "moving forward: position: "<< _position.x << ", "<< _position.y << ", " << _position.z << std::endl;
             _position += _direction * _movementSpeed * Time::GetDeltaTime();
         }
         if(Input::IsKeyPressed(GLFW_KEY_S)) {

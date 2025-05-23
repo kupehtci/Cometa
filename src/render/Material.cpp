@@ -41,6 +41,12 @@ void Material::UnsetShader()
  */
 void Material::Bind(){
 
+    if (_shader == nullptr)
+    {
+        COMETA_WARNING("[Material] Material doesn't have a shader");
+        return;
+    }
+
     _shader->Bind();
     int initialTextureIndex = 0;
 
