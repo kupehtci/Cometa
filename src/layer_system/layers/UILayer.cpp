@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
 
@@ -121,6 +122,9 @@ void UILayer::Init()
     style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
     style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
     //style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+
+    // Set viewport
+    // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 }
 
 void UILayer::Update()
@@ -529,14 +533,47 @@ void UILayer::BuildSceneHierarchyPanel()
                     }
 
                     // Display Collider component if it exists
-                    ColliderComponent* collider = entity.GetComponent<ColliderComponent>();
-                    if (collider)
+                    ColliderComponent* colliderComp = entity.GetComponent<ColliderComponent>();
+                    if (colliderComp)
                     {
                         if (ImGui::TreeNode("Collider"))
                         {
                             ImGui::Text("Collider Component");
-                            ImGui::TreePop();
 
+                            Collider* collider = colliderComp->GetCollider();
+                            if (collider != nullptr)
+                            {
+                                if (dynamic_cast<BoxCollider*>(collider) != nullptr)
+                                {
+                                    ImGui::Text("---Box Collider---");
+                                    BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
+
+                                    float boxColliderExtents[3] = {boxCollider->GetExtents().x, boxCollider->GetExtents().y, boxCollider->GetExtents().z};
+                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 1.0f))
+                                    {
+                                        boxCollider->SetExtents(glm::vec3(boxColliderExtents[0], boxColliderExtents[1], boxColliderExtents[2]));
+                                    }
+
+
+
+                                    float boxColliderRotation[4] = { boxCollider->GetRotation().w, boxCollider->GetRotation().x, boxCollider->GetRotation().y, boxCollider->GetRotation().z};
+                                    if (ImGui::DragFloat4( "Rotation (w, x, y, z)", boxColliderRotation, 0.01f, 0.0f, 1.0f))
+                                    {
+                                        boxCollider->SetRotation(glm::quat(boxColliderRotation[0], boxColliderRotation[1], boxColliderRotation[2], boxColliderRotation[3]));
+                                    }
+                                }
+                                else if (dynamic_cast<SphereCollider*>(collider) != nullptr)
+                                {
+                                    ImGui::Text("---Sphere Collider---");
+
+                                }
+                            }
+                            else
+                            {
+                                ImGui::Text("Not defined Collider in Collider Component");
+                            }
+
+                            ImGui::TreePop();
                             ImGui::Separator();
                         }
                     }

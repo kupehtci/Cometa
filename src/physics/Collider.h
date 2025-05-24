@@ -13,6 +13,7 @@
 
 #include "physics/CollisionDispatcher.h"
 
+
 // Base Collider class (abstract)
 class Collider {
 public:
@@ -58,7 +59,8 @@ public:
     [[nodiscard]] ColliderType GetType() const override { return ColliderType::BOX_COLLIDER; }
 
     void DebugDraw() const override {
-        // Implement debug visualization
+        // Use DebugRenderer to visualize this box collider
+     
     }
 
     glm::mat3 CalculateInertiaTensor(float mass) override
@@ -131,7 +133,8 @@ public:
     [[nodiscard]] ColliderType GetType() const override { return ColliderType::SPHERE_COLLIDER; }
 
     void DebugDraw() const override {
-        // Implement debug visualization
+        // Use DebugRenderer to visualize this sphere collider
+        
     }
 
 

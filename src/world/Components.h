@@ -186,6 +186,33 @@ private:
 	glm::vec3 _ambient = glm::vec3(0.05f, 0.05f, 0.05f);
 	glm::vec3 _diffuse = glm::vec3(0.35f, 0.4f, 0.35f);
 	glm::vec3 _specular = glm::vec3(0.5f, 0.5f, 0.5f);
+	
+	
+	// Shadow mapping properties
+	float _shadowNearPlane = 1.0f;
+	float _shadowFarPlane = 25.0f;
+	float _shadowOrthoSize = 10.0f;
+
+	// Cached light space matrix
+	glm::mat4 _lightSpaceMatrix = glm::mat4(1.0f);
+	bool _lightSpaceMatrixDirty = true;
+
+	// Recalculate the light space matrix
+	void UpdateLightSpaceMatrix() {
+		// Create light projection matrix (orthographic for directional light)
+		glm::mat4 lightProjection = glm::ortho(
+			-_shadowOrthoSize, _shadowOrthoSize,
+			-_shadowOrthoSize, _shadowOrthoSize,
+			_shadowNearPlane, _shadowFarPlane);
+
+		// Create light view matrix
+		glm::vec3 lightPos = -_direction * 10.0f; // Position light far away in the opposite direction
+		glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		// Calculate light space matrix
+		_lightSpaceMatrix = lightProjection * lightView;
+		_lightSpaceMatrixDirty = false;
+	}
 
 public:
 	DirectionalLight() = default;
@@ -198,12 +225,44 @@ public:
 	[[nodiscard]] glm::vec3 GetAmbient() const { return _ambient; }
 	[[nodiscard]] glm::vec3 GetDiffuse() const { return _diffuse; }
 	[[nodiscard]] glm::vec3 GetSpecular() const { return _specular; }
+	
+	// Shadow mapping getters
+	[[nodiscard]] float GetShadowNearPlane() const { return _shadowNearPlane; }
+	[[nodiscard]] float GetShadowFarPlane() const { return _shadowFarPlane; }
+	[[nodiscard]] float GetShadowOrthoSize() const { return _shadowOrthoSize; }
+	
+	[[nodiscard]] glm::mat4 GetLightSpaceMatrix() {
+		if (_lightSpaceMatrixDirty) {
+			UpdateLightSpaceMatrix();
+		}
+		return _lightSpaceMatrix;
+	}
 
 	// --------- SETTERS ---------
-	void SetDirection(const glm::vec3& direction) { _direction = direction; }
+	void SetDirection(const glm::vec3& direction) { 
+		_direction = direction; 
+		_lightSpaceMatrixDirty = true;
+	}
+	
 	void SetAmbient(const glm::vec3& ambient) { _ambient = ambient; }
 	void SetDiffuse(const glm::vec3& diffuse) { _diffuse = diffuse; }
 	void SetSpecular(const glm::vec3& specular) { _specular = specular; }
+	
+	// Shadow mapping setters
+	void SetShadowNearPlane(float nearPlane) { 
+		_shadowNearPlane = nearPlane; 
+		_lightSpaceMatrixDirty = true;
+	}
+	
+	void SetShadowFarPlane(float farPlane) { 
+		_shadowFarPlane = farPlane; 
+		_lightSpaceMatrixDirty = true;
+	}
+	
+	void SetShadowOrthoSize(float size) { 
+		_shadowOrthoSize = size; 
+		_lightSpaceMatrixDirty = true;
+	}
 };
 
 
