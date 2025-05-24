@@ -306,7 +306,7 @@ public:
 
 	template<typename T, typename... Args>
 	T* SetCollider(Args&&... args) {
-		static_assert(std::is_base_of<Collider, T>::value, "T must derive from Collider");
+		static_assert(std::is_base_of<Collider, T>::value, "SetCollider T type must derive from Collider");
 		_collider = new T(std::forward<Args>(args)...);
 		return dynamic_cast<T*>(_collider);
 	}

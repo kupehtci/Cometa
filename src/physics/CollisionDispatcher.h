@@ -35,12 +35,17 @@ class CollisionDispatcher
 {
 
 private:
-    static CollisionDispatchFunction collisionDispatcher[2][2];
+    static CollisionDispatchFunction collisionDispatcher[3][3];
 
 public:
     static CollisionPoint IntersectBoxSphere(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
     static CollisionPoint IntersectSphereSphere(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
     static CollisionPoint IntersectBoxBox(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
+    
+    // Plane collision functions
+    static CollisionPoint IntersectPlaneBox(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
+    static CollisionPoint IntersectPlaneSphere(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
+    static CollisionPoint IntersectPlanePlane(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
 
     static CollisionPoint Dispatch(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform);
 };

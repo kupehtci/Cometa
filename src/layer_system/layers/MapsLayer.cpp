@@ -229,6 +229,9 @@ void MapsLayer::Init()
     floorMaterial->LoadShader("Main Shader","src/render/shaders/blinn_phong_shader.vert", "src/render/shaders/blinn_phong_shader.frag");
     floorRenderable->SetMaterial(floorMaterial);
 
+    ColliderComponent* floorCollider = floor->CreateComponent<ColliderComponent>();
+    floorCollider->SetCollider<PlaneCollider>(glm::vec3(0.0f, 1.0f, 0.0f), 20.0f);
+
 
     // Event bus subscription
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);

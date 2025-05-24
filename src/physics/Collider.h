@@ -9,6 +9,7 @@
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include <gtc/matrix_transform.hpp>
+#include <limits>
 // #include <world/Components.h>
 
 #include "physics/CollisionDispatcher.h"
@@ -20,7 +21,8 @@ public:
     enum class ColliderType {
         BOX_COLLIDER = 0,
         SPHERE_COLLIDER = 1,
-        COUNT = 2,
+        PLANE_COLLIDER = 2,
+        COUNT = 3,
     };
 
     virtual ~Collider() = default;
@@ -176,6 +178,62 @@ public:
 
     void SetRadius(float radius) { _radius = radius; }
     void SetCenter(const glm::vec3& center) { _center = center; }
+};
+
+// Plane Collider implementation
+class PlaneCollider : public Collider {
+private:
+    glm::vec3 _normal = { 0.0f, 1.0f, 0.0f }; // Default normal points up (y-axis)
+    float _distance = 0.0f; // Distance from origin along normal
+
+public:
+    PlaneCollider() = default;
+    
+    // Create a plane with normal and distance from origin
+    PlaneCollider(const glm::vec3& normal, float distance)
+        : _normal(glm::normalize(normal)), _distance(distance) {}
+    
+    // Create a plane from normal and a point on the plane
+    PlaneCollider(const glm::vec3& normal, const glm::vec3& pointOnPlane)
+        : _normal(glm::normalize(normal)) {
+        _distance = glm::dot(_normal, pointOnPlane);
+    }
+
+    [[nodiscard]] ColliderType GetType() const override { return ColliderType::PLANE_COLLIDER; }
+
+    void DebugDraw() const override {
+        // Use DebugRenderer to visualize this plane collider
+        // Could draw a grid or a large quad representing the plane
+    }
+
+    // For a plane, the inertia tensor is infinite (immovable object)
+    // This implementation assumes the plane is static and won't move
+    glm::mat3 CalculateInertiaTensor(float mass) override {
+        // Return a very large inertia tensor (effectively infinite)
+        return glm::mat3(std::numeric_limits<float>::max());
+    }
+
+    glm::mat3 CalculateInverseInertiaTensor(float mass) override {
+        // Return a zero matrix (inverse of infinite is zero)
+        return glm::mat3(0.0f);
+    }
+
+    // Getters and setters
+    [[nodiscard]] const glm::vec3& GetNormal() const { return _normal; }
+    [[nodiscard]] float GetDistance() const { return _distance; }
+
+    void SetNormal(const glm::vec3& normal) { _normal = glm::normalize(normal); }
+    void SetDistance(float distance) { _distance = distance; }
+    
+    // Set plane from a point on the plane
+    void SetFromPointOnPlane(const glm::vec3& pointOnPlane) {
+        _distance = glm::dot(_normal, pointOnPlane);
+    }
+    
+    // Get signed distance from a point to the plane
+    [[nodiscard]] float GetSignedDistanceToPoint(const glm::vec3& point) const {
+        return glm::dot(_normal, point) - _distance;
+    }
 };
 
 

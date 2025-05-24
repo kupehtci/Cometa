@@ -281,8 +281,22 @@ CollisionPoint CollisionDispatcher::IntersectBoxBox(const Collider* collider, co
 
 CollisionPoint CollisionDispatcher::Dispatch(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform)
 {
+    // Check if any of the pointers are null
+    if (!collider || !transform || !otherCollider || !otherTransform) {
+        std::cout << "Error: Null pointer passed to Dispatch function" << std::endl;
+        return {};
+    }
+    
+    // Check if the collider types are valid
     auto typeColliderA = static_cast<int>(collider->GetType());
     auto typeColliderB = static_cast<int>(otherCollider->GetType());
+    
+    // Validate collider types are within bounds
+    if (typeColliderA < 0 || typeColliderA >= static_cast<int>(Collider::ColliderType::COUNT) ||
+        typeColliderB < 0 || typeColliderB >= static_cast<int>(Collider::ColliderType::COUNT)) {
+        std::cout << "Error: Invalid collider type in Dispatch" << std::endl;
+        return {};
+    }
 
     if (typeColliderA > typeColliderB)
     {
@@ -300,11 +314,218 @@ CollisionPoint CollisionDispatcher::Dispatch(const Collider* collider, const Tra
     return {};
 }
 
+// Plane-Box collision detection
+CollisionPoint CollisionDispatcher::IntersectPlaneBox(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform)
+{
+    std::cout << "Collision detected Plane-Box" << std::endl;
+    CollisionPoint result{};
+    
+    // Cast colliders to their specific types
+    const auto* plane = dynamic_cast<const PlaneCollider*>(collider);
+    const auto* box = dynamic_cast<const BoxCollider*>(otherCollider);
+    
+    // Check if casts were successful
+    // if (!plane || !box || !transform || !otherTransform) {
+    //     std::cout << "Error: Invalid collider types in IntersectPlaneBox" << std::endl;
+    //     return result;
+    // }
+    if(!plane ){
+        std::cout << "Error: Invalid plane in IntersectPlaneBox" << std::endl;
+        return result;
+    }
+    else if(!box){
+        std::cout << "Error: Invalid box in IntersectPlaneBox" << std::endl;
+        return result;
+    }
+    else if(!transform){
+        std::cout << "Error: Invalid transform in IntersectPlaneBox" << std::endl;
+        return result;
+    }
+    else if(!otherTransform){
+        std::cout << "Error: Invalid otherTransform in IntersectPlaneBox" << std::endl;
+        return result;
+    }
+    
+    // Get plane properties in world space
+    glm::vec3 planeNormal = plane->GetNormal();
+    float planeDistance = plane->GetDistance();
+    
+    // Get box transform
+    glm::vec3 boxCenter = otherTransform->position;
+    glm::vec3 boxHalfSize = box->GetExtents();
+    
+    // Get box rotation matrix
+    glm::mat3 boxRotation = glm::mat3(EulerAnglesXYZ(
+        {glm::radians(otherTransform->rotation.x),
+         glm::radians(otherTransform->rotation.y),
+         glm::radians(otherTransform->rotation.z)}
+    ));
+    
+    // Calculate box vertices in world space
+    glm::vec3 vertices[8];
+    vertices[0] = boxCenter + boxRotation * glm::vec3(-boxHalfSize.x, -boxHalfSize.y, -boxHalfSize.z);
+    vertices[1] = boxCenter + boxRotation * glm::vec3(boxHalfSize.x, -boxHalfSize.y, -boxHalfSize.z);
+    vertices[2] = boxCenter + boxRotation * glm::vec3(-boxHalfSize.x, boxHalfSize.y, -boxHalfSize.z);
+    vertices[3] = boxCenter + boxRotation * glm::vec3(boxHalfSize.x, boxHalfSize.y, -boxHalfSize.z);
+    vertices[4] = boxCenter + boxRotation * glm::vec3(-boxHalfSize.x, -boxHalfSize.y, boxHalfSize.z);
+    vertices[5] = boxCenter + boxRotation * glm::vec3(boxHalfSize.x, -boxHalfSize.y, boxHalfSize.z);
+    vertices[6] = boxCenter + boxRotation * glm::vec3(-boxHalfSize.x, boxHalfSize.y, boxHalfSize.z);
+    vertices[7] = boxCenter + boxRotation * glm::vec3(boxHalfSize.x, boxHalfSize.y, boxHalfSize.z);
+    
+    // Find the most negative and most positive distance from the plane
+    float minDistance = std::numeric_limits<float>::max();
+    float maxDistance = -std::numeric_limits<float>::max();
+    int minIndex = -1;
+    int maxIndex = -1;
+    
+    for (int i = 0; i < 8; i++) {
+        float distance = glm::dot(planeNormal, vertices[i]) - planeDistance;
+        if (distance < minDistance) {
+            minDistance = distance;
+            minIndex = i;
+        }
+        if (distance > maxDistance) {
+            maxDistance = distance;
+            maxIndex = i;
+        }
+    }
+    
+    // Check if box intersects plane
+    if (minDistance * maxDistance <= 0) { // If signs are different, there's an intersection
+        result.collided = true;
+        result.normal = planeNormal;
+        
+        // Calculate penetration depth
+        result.length = std::abs(minDistance);
+        
+        // Set contact point at the vertex with minimum distance
+        result.point = vertices[minIndex];
+        result.a = result.point + planeNormal * result.length; // Point on plane
+        result.b = result.point; // Point on box
+    }
+    
+    return result;
+}
+
+// Plane-Sphere collision detection
+CollisionPoint CollisionDispatcher::IntersectPlaneSphere(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform)
+{
+    std::cout << "Collision detected Plane-Sphere" << std::endl;
+    CollisionPoint result{};
+    
+    // Cast colliders to their specific types
+    const auto* plane = dynamic_cast<const PlaneCollider*>(collider);
+    const auto* sphere = dynamic_cast<const SphereCollider*>(otherCollider);
+    
+    // Check if casts were successful
+    if (!plane || !sphere || !transform || !otherTransform) {
+        std::cout << "Error: Invalid collider types in IntersectPlaneSphere" << std::endl;
+        return result;
+    }
+    
+    // Get plane properties
+    glm::vec3 planeNormal = plane->GetNormal();
+    float planeDistance = plane->GetDistance();
+    
+    // Get sphere properties
+    glm::vec3 sphereCenter = otherTransform->position;
+    float sphereRadius = sphere->GetRadius();
+    
+    // Calculate signed distance from sphere center to plane
+    float signedDistance = glm::dot(planeNormal, sphereCenter) - planeDistance;
+    
+    // Check for collision
+    if (std::abs(signedDistance) <= sphereRadius) {
+        result.collided = true;
+        result.normal = planeNormal * (signedDistance < 0 ? -1.0f : 1.0f);
+        result.length = sphereRadius - std::abs(signedDistance);
+        
+        // Calculate contact point
+        result.point = sphereCenter - planeNormal * signedDistance;
+        result.a = result.point; // Point on plane
+        result.b = sphereCenter - planeNormal * signedDistance * (signedDistance < 0 ? -1.0f : 1.0f); // Point on sphere
+    }
+    
+    return result;
+}
+
+// Plane-Plane collision detection
+CollisionPoint CollisionDispatcher::IntersectPlanePlane(const Collider* collider, const Transform* transform, const Collider* otherCollider, const Transform* otherTransform)
+{
+    std::cout << "Collision detected Plane-Plane" << std::endl;
+    CollisionPoint result{};
+    
+    // Cast colliders to their specific types
+    const auto* plane1 = dynamic_cast<const PlaneCollider*>(collider);
+    const auto* plane2 = dynamic_cast<const PlaneCollider*>(otherCollider);
+    
+    // Check if casts were successful
+    if (!plane1 || !plane2 || !transform || !otherTransform) {
+        std::cout << "Error: Invalid collider types in IntersectPlanePlane" << std::endl;
+        return result;
+    }
+    
+    // Get plane properties
+    glm::vec3 normal1 = plane1->GetNormal();
+    float distance1 = plane1->GetDistance();
+    glm::vec3 normal2 = plane2->GetNormal();
+    float distance2 = plane2->GetDistance();
+    
+    // Calculate the direction of the line of intersection
+    glm::vec3 lineDir = glm::cross(normal1, normal2);
+    float lineLength = glm::length(lineDir);
+    
+    // Check if planes are parallel (cross product is zero)
+    if (lineLength < 0.0001f) {
+        // Planes are parallel, check if they are coincident
+        if (std::abs(distance1 - distance2) < 0.0001f) {
+            // Planes are coincident, consider them as colliding
+            result.collided = true;
+            result.normal = normal1;
+            result.length = 0.0f;
+            result.point = glm::vec3(0.0f); // Arbitrary point on the plane
+            result.a = result.point;
+            result.b = result.point;
+        }
+        return result;
+    }
+    
+    // Normalize the line direction
+    lineDir = lineDir / lineLength;
+    
+    // Calculate a point on the line of intersection
+    // Using the formula from: http://geomalgorithms.com/a05-_intersect-1.html
+    float d1 = -distance1; // Adjust for our plane equation format
+    float d2 = -distance2;
+    
+    float det = glm::dot(normal1, normal1) * glm::dot(normal2, normal2) - glm::dot(normal1, normal2) * glm::dot(normal1, normal2);
+    if (std::abs(det) < 0.0001f) {
+        // Shouldn't happen if we already checked for parallel planes
+        return result;
+    }
+    
+    float c1 = (d1 * glm::dot(normal2, normal2) - d2 * glm::dot(normal1, normal2)) / det;
+    float c2 = (d2 * glm::dot(normal1, normal1) - d1 * glm::dot(normal1, normal2)) / det;
+    
+    glm::vec3 pointOnLine = c1 * normal1 + c2 * normal2;
+    
+    // Planes intersect along a line
+    result.collided = true;
+    result.normal = glm::normalize(normal1 + normal2); // Average of normals
+    result.length = 0.0f; // No penetration depth for intersecting planes
+    result.point = pointOnLine;
+    result.a = pointOnLine;
+    result.b = pointOnLine;
+    
+    return result;
+}
+
 // Dispatch matrix definition
-// This dispatch matrix is used fot retrieving the correct function for resolving the Collision
+// This dispatch matrix is used for retrieving the correct function for resolving the Collision
 CollisionDispatchFunction CollisionDispatcher::collisionDispatcher[static_cast<int>(Collider::ColliderType::COUNT)][static_cast<int>(Collider::ColliderType::COUNT)] = {
-    {CollisionDispatcher::IntersectBoxBox, CollisionDispatcher::IntersectBoxSphere},
-    {CollisionDispatcher::IntersectBoxSphere, CollisionDispatcher::IntersectSphereSphere}
+    {CollisionDispatcher::IntersectBoxBox, CollisionDispatcher::IntersectBoxSphere, CollisionDispatcher::IntersectPlaneBox},
+    {CollisionDispatcher::IntersectBoxSphere, CollisionDispatcher::IntersectSphereSphere, CollisionDispatcher::IntersectPlaneSphere},
+    {CollisionDispatcher::IntersectPlaneBox, CollisionDispatcher::IntersectPlaneSphere, CollisionDispatcher::IntersectPlanePlane}
 };
 
 

@@ -19,13 +19,6 @@ config:
 
 classDiagram
     direction TB
-
-    class FACE_CULLING_MODE{
-         <<enumeration>>
-        FACE_CULLING_NONE
-        FACE_CULLING_CLOCKWISE
-        FACE_CULLING_COUNTER_CLOCKWISE
-    }
     class Renderer {
         - Window* _window
         - _depthCulling : bool
