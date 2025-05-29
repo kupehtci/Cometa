@@ -1,12 +1,13 @@
 //
 // Created by Daniel Laplana Gimeno on 6/5/25.
 //
-#include "PhysicsManager.h"
+#include "physics/PhysicsManager.h"
 
 #include "world/WorldManager.h"
 #include "world/ComponentStorage.h"
 #include "world/Components.h"
 #include "world/Entity.h"
+#include "world/ScriptSystem.h"
 
 #include "physics/Collider.h"
 
@@ -94,6 +95,9 @@ void PhysicsManager::Update(){
             {
                 Collision collision = {colA, colB, point};
                 collisions.emplace_back(colA, colB, point);
+                
+                // Notify ScriptSystem about the collision
+                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), true);
             }
         }
     }
@@ -103,11 +107,11 @@ void PhysicsManager::Update(){
 
     const float slop = 0.01f;   // Penetration slop
 
-    std::cout << "======================= ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
     for (auto& col : collisions) {
         RigidBody* rbA = col.colliderCompA->GetOwner()->GetComponent<RigidBody>();
         RigidBody* rbB = col.colliderCompB->GetOwner()->GetComponent<RigidBody>();
-        std::cout << "[PHYSICS MANAGER] Check collision between " << col.colliderCompA->GetOwner()->GetUID() <<" and " << col.colliderCompB->GetOwner()->GetUID() <<" [PHYSICS MANAGER]" << std::endl;
+
+        COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderCompA->GetOwner()->GetUID(), " and ", col.colliderCompB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
 
         Transform* transformA = col.colliderCompA->GetOwner()->GetComponent<Transform>();
         Transform* transformB = col.colliderCompB->GetOwner()->GetComponent<Transform>();
@@ -212,12 +216,7 @@ void PhysicsManager::Update(){
                 rbB->_linearVelocity += frictionImpulse * (rbB->_mass / totalMass);
             }
         }
-
-
-
-
     }
-    std::cout << "======================= END OF THE ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
 }
 
 void PhysicsManager::Close(){

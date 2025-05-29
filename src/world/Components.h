@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <functional>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm.hpp>
@@ -398,6 +399,94 @@ public:
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }
+};
+
+
+// ----------------------------------------------
+// |              SCRIPT COMPONENT             |
+// ----------------------------------------------
+
+/**
+ * Script component that allows for writing game scripts that can interact with entities
+ * This component provides lifecycle methods for game scripting
+ */
+class Script : public Component {
+private:
+    // Callback events that can be set on script
+    std::function<void()> _startCallback = nullptr;
+    std::function<void(float)> _updateCallback = nullptr;
+    std::function<void(Entity*)> _onCollisionEnterCallback = nullptr;
+    std::function<void(Entity*)> _onCollisionExitCallback = nullptr;
+    std::function<void()> _onDestroyCallback = nullptr;
+    
+    bool _initialized = false;
+
+public:
+    Script() = default;
+    Script(const Script&) = default;
+    ~Script() override {
+        if (_onDestroyCallback) {
+            _onDestroyCallback();
+        }
+    }
+
+    void Init() override {
+        if (!_initialized && _startCallback) {
+            _startCallback();
+            _initialized = true;
+        }
+    }
+    
+    /**
+     * Called by the engine every frame
+     * @param deltaTime Time since last frame in seconds
+     */
+    void Update(float deltaTime) {
+        if (_updateCallback) {
+            _updateCallback(deltaTime);
+        }
+    }
+    
+    /**
+     * Called when this entity's collider enters collision with another entity
+     * @param other The other entity involved in the collision
+     */
+    void OnCollisionEnter(Entity* other) {
+        if (_onCollisionEnterCallback) {
+            _onCollisionEnterCallback(other);
+        }
+    }
+    
+    /**
+     * Called when this entity's collider exits collision with another entity
+     * @param other The other entity involved in the collision
+     */
+    void OnCollisionExit(Entity* other) {
+        if (_onCollisionExitCallback) {
+            _onCollisionExitCallback(other);
+        }
+    }
+    
+    // Setters for callback functions
+    void SetStartCallback(const std::function<void()>& callback) {
+        _startCallback = callback;
+    }
+    
+    void SetUpdateCallback(const std::function<void(float)>& callback) {
+        _updateCallback = callback;
+    }
+    
+    void SetOnCollisionEnterCallback(const std::function<void(Entity*)>& callback) {
+        _onCollisionEnterCallback = callback;
+    }
+    
+    void SetOnCollisionExitCallback(const std::function<void(Entity*)>& callback) {
+        _onCollisionExitCallback = callback;
+    }
+    
+    void SetOnDestroyCallback(const std::function<void()>& callback) {
+        _onDestroyCallback = callback;
+    }
 };
 
 #endif
