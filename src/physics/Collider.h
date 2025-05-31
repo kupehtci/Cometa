@@ -86,22 +86,15 @@ public:
 
     glm::mat3 CalculateInverseInertiaTensor(float mass) override
     {
-        // Calculate dimensions
         glm::vec3 size = GetSize();
 
-        // Calculate local inertia tensor for a box
         float x2 = size.x * size.x;
         float y2 = size.y * size.y;
         float z2 = size.z * size.z;
-        glm::mat3 inertiaTensor {};
-
-        // Initialize with identity matrix
-        inertiaTensor = glm::mat3(1.0f);
-
-        // Set diagonal elements
-        inertiaTensor[0][0] = (y2 + z2) / 12.0f;  // Ixx
-        inertiaTensor[1][1] = (x2 + z2) / 12.0f;  // Iyy
-        inertiaTensor[2][2] = (x2 + y2) / 12.0f;  // Izz
+        glm::mat3 inertiaTensor = glm::mat3(1.0f);
+        inertiaTensor[0][0] = (y2 + z2) / 12.0f;
+        inertiaTensor[1][1] = (x2 + z2) / 12.0f;
+        inertiaTensor[2][2] = (x2 + y2) / 12.0f;
 
         return glm::inverse(inertiaTensor);
     }
@@ -143,9 +136,7 @@ public:
         // Calculate inertia tensor for a solid sphere
         float i = (2.0f * _radius * _radius) / 5.0f;
 
-        glm::mat3 inertiaTensor {};
-        // Set diagonal elements (mass will be multiplied later)
-        inertiaTensor = glm::mat3(
+        glm::mat3 inertiaTensor = glm::mat3(
             i, 0.0f, 0.0f,
             0.0f, i, 0.0f,
             0.0f, 0.0f, i
@@ -155,12 +146,9 @@ public:
 
     glm::mat3 CalculateInverseInertiaTensor(float mass) override
     {
-        // Calculate inertia tensor for a solid sphere
         float i = (2.0f * _radius * _radius) / 5.0f;
 
         glm::mat3 inverseInertiaTensor {};
-        // Set diagonal elements (mass will be multiplied later)
-        // Calculate inverse inertia tensor
         inverseInertiaTensor = glm::mat3(
             1.0f/i, 0.0f, 0.0f,
             0.0f, 1.0f/i, 0.0f,

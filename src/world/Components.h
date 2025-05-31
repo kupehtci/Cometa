@@ -380,9 +380,6 @@ public:
 		_inertiaTensor = inertiaTensor;
 		_inverseInertiaTensor = glm::inverse(_inertiaTensor);
 	}
-
-
-
 };
 
 
@@ -486,6 +483,26 @@ public:
     
     void SetOnDestroyCallback(const std::function<void()>& callback) {
         _onDestroyCallback = callback;
+    }
+    
+    bool HasStartCallback() const {
+        return _startCallback != nullptr;
+    }
+    
+    bool HasUpdateCallback() const {
+        return _updateCallback != nullptr;
+    }
+    
+    bool HasOnCollisionEnterCallback() const {
+        return _onCollisionEnterCallback != nullptr;
+    }
+    
+    bool HasOnCollisionExitCallback() const {
+        return _onCollisionExitCallback != nullptr;
+    }
+    
+    bool HasOnDestroyCallback() const {
+        return _onDestroyCallback != nullptr;
     }
 };
 

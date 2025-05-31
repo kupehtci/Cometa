@@ -9,37 +9,40 @@
 #include "world/Entity.h"
 
 /**
- * System responsible for managing and updating Script components
+ * Manager responsible for handling script update and execution
  */
 class ScriptManager : public SingletonManager<ScriptManager>{
 private:
-    // Track active collisions to detect enter/exit events
+    // Store active collisions for making enter and exit collision callbacks
     std::unordered_map<uint64_t, bool> _activeCollisions;
     
 
 public:
-    // Private constructor for singleton pattern
     ScriptManager() = default;
-    // Delete copy constructor and assignment operator
     ScriptManager(const ScriptManager&) = delete;
     ScriptManager& operator=(const ScriptManager&) = delete;
 
-    // Generate a unique key for a collision pair
+    /**
+     * Generates an unique collision key to represent a collision
+     * @param entityA Entity A of the collision
+     * @param entityB Entity B of the collision
+     * @return unique identifier of the collision
+     */
     uint64_t GenerateCollisionKey(Entity* entityA, Entity* entityB) {
         uint32_t idA = entityA->GetUID();
         uint32_t idB = entityB->GetUID();
-        // Ensure consistent ordering regardless of which entity is A or B
+
         if (idA > idB) std::swap(idA, idB);
         return (static_cast<uint64_t>(idA) << 32) | static_cast<uint64_t>(idB);
     }
+
 
     void Init() override {}
     void Update() override{
         UpdateScripts(WorldManager::GetInstancePtr()->GetCurrentWorld().get(), Time::GetDeltaTime());
     }
     void Close() override {}
-    
-    // Initialize all Script components in the world
+
     void InitScripts(World* world) {
         if (!world) return;
         
