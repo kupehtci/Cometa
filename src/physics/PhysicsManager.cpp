@@ -14,9 +14,6 @@
 
 #define GLAD_GL_IMPLEMENTATION
 #define GLFW_INCLUDE_NONE
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 
 #include "physics/Collision.h"
 
@@ -111,7 +108,7 @@ void PhysicsManager::Update(){
         RigidBody* rbA = col.colliderCompA->GetOwner()->GetComponent<RigidBody>();
         RigidBody* rbB = col.colliderCompB->GetOwner()->GetComponent<RigidBody>();
 
-        COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderCompA->GetOwner()->GetUID(), " and ", col.colliderCompB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
+        // COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderCompA->GetOwner()->GetUID(), " and ", col.colliderCompB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
 
         Transform* transformA = col.colliderCompA->GetOwner()->GetComponent<Transform>();
         Transform* transformB = col.colliderCompB->GetOwner()->GetComponent<Transform>();
@@ -220,5 +217,5 @@ void PhysicsManager::Update(){
 }
 
 void PhysicsManager::Close(){
-    // std::cout << "PhysicsManager::Close()" << std::endl;
+
 }
