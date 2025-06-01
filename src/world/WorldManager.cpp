@@ -76,8 +76,7 @@ void WorldManager::SetCurrentWorld(size_t index)
         return;
     }
     _currentWorld = _worlds[index];
-    
-    // Initialize scripts in the newly set current world
+
     if (_currentWorld) {
         ScriptManagerRef->InitScripts(_currentWorld.get());
     }

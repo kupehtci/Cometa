@@ -606,19 +606,19 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("Script"))
                         {
-                            ImGui::SeparatorText("Script Callbacks");
-
-                            bool hasStartCallback = script->HasStartCallback();
-                            bool hasUpdateCallback = script->HasUpdateCallback();
-                            bool hasCollisionEnterCallback = script->HasOnCollisionEnterCallback();
-                            bool hasCollisionExitCallback = script->HasOnCollisionExitCallback();
-                            bool hasDestroyCallback = script->HasOnDestroyCallback();
-                            
-                            ImGui::Text(hasStartCallback ? "Start callback settled" : "Start callback not settled");
-                            ImGui::Text(hasUpdateCallback ? "Update callback settled" : "Update callback not settled");
-                            ImGui::Text(hasCollisionEnterCallback ? "Collision enter callback settled" : "Collision enter callback not settled");
-                            ImGui::Text(hasCollisionExitCallback ? "Collision exit callback settled" : "Collision exit callback not settled");
-                            ImGui::Text(hasDestroyCallback ? "Destroy callback settled" : "Destroy exit callback not settled");
+                            // ImGui::SeparatorText("Script Callbacks");
+                            //
+                            // bool hasStartCallback = script->HasStartCallback();
+                            // bool hasUpdateCallback = script->HasUpdateCallback();
+                            // bool hasCollisionEnterCallback = script->HasOnCollisionEnterCallback();
+                            // bool hasCollisionExitCallback = script->HasOnCollisionExitCallback();
+                            // bool hasDestroyCallback = script->HasOnDestroyCallback();
+                            //
+                            // ImGui::Text(hasStartCallback ? "Start callback settled" : "Start callback not settled");
+                            // ImGui::Text(hasUpdateCallback ? "Update callback settled" : "Update callback not settled");
+                            // ImGui::Text(hasCollisionEnterCallback ? "Collision enter callback settled" : "Collision enter callback not settled");
+                            // ImGui::Text(hasCollisionExitCallback ? "Collision exit callback settled" : "Collision exit callback not settled");
+                            // ImGui::Text(hasDestroyCallback ? "Destroy callback settled" : "Destroy exit callback not settled");
                             ImGui::TreePop();
                         }
                     }

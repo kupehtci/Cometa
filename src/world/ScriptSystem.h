@@ -8,6 +8,9 @@
 #include "world/World.h"
 #include "world/Entity.h"
 
+
+class Collision;
+
 /**
  * Manager responsible for handling script update and execution
  */
@@ -37,33 +40,63 @@ public:
     }
 
 
-    void Init() override {}
+    void Init() override
+    {
+        InitScripts(WorldManagerRef->GetCurrentWorld().get());
+    }
+
     void Update() override{
         UpdateScripts(WorldManager::GetInstancePtr()->GetCurrentWorld().get(), Time::GetDeltaTime());
     }
-    void Close() override {}
 
+    void Close() override{
+        CloseScripts(WorldManager::GetInstancePtr()->GetCurrentWorld().get());
+    }
+
+    /**
+     * Call the OnInit of all the script components in the specified world
+     * @param world Current world or world to call for update
+     */
     void InitScripts(World* world) {
         if (!world) return;
         
         auto& scriptStorage = world->GetComponentRegistry().GetStorage<Script>();
         for (auto& script : scriptStorage) {
-            script.Init();
+            script.OnInit();
         }
     }
-    
-    // Update all Script components in the world
-    void UpdateScripts(World* world, float deltaTime) {
+
+    /**
+     * Call the OnUpdate of all the script components in the specified world
+     * @param world Current world or world to call for update
+     * @param deltaTime reference to delta time value
+     */
+    void UpdateScripts(World* world, float deltaTime) const{
         if (!world) return;
         
         auto& scriptStorage = world->GetComponentRegistry().GetStorage<Script>();
         for (auto& script : scriptStorage) {
-            script.Update(deltaTime);
+            script.OnUpdate(deltaTime);
         }
     }
-    
-    // Process collision events between entities
-    void ProcessCollision(Entity* entityA, Entity* entityB, bool isColliding) {
+
+    void CloseScripts(World* world) const {
+        if (!world) return;
+
+        auto& scriptStorage = world->GetComponentRegistry().GetStorage<Script>();
+        for (auto& script : scriptStorage) {
+            script.OnClose();
+        }
+    }
+
+    /**
+     * Process the collision events between two entities
+     * @param entityA First entity of the collision
+     * @param entityB Second entity of the collision
+     * @param collision Collision class representing the collisionn point between both entities
+     * @param isColliding true if both objects are colliding and false if not
+     */
+    void ProcessCollision(Entity* entityA, Entity* entityB, Collision* collision, bool isColliding) {
         if (!entityA || !entityB) return;
         
         uint64_t collisionKey = GenerateCollisionKey(entityA, entityB);
@@ -75,8 +108,8 @@ public:
             Script* scriptA = entityA->GetComponent<Script>();
             Script* scriptB = entityB->GetComponent<Script>();
             
-            if (scriptA) scriptA->OnCollisionEnter(entityB);
-            if (scriptB) scriptB->OnCollisionEnter(entityA);
+            if (scriptA) scriptA->OnCollisionEnter(entityB, collision);
+            if (scriptB) scriptB->OnCollisionEnter(entityA, collision);
             
             _activeCollisions[collisionKey] = true;
         }
@@ -85,8 +118,8 @@ public:
             Script* scriptA = entityA->GetComponent<Script>();
             Script* scriptB = entityB->GetComponent<Script>();
             
-            if (scriptA) scriptA->OnCollisionExit(entityB);
-            if (scriptB) scriptB->OnCollisionExit(entityA);
+            if (scriptA) scriptA->OnCollisionExit(entityB, collision);
+            if (scriptB) scriptB->OnCollisionExit(entityA, collision);
             
             _activeCollisions[collisionKey] = false;
         }

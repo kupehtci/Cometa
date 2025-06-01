@@ -85,16 +85,20 @@ void PhysicsManager::Update(){
             Transform* transformB = colB->GetOwner()->GetComponent<Transform>();
 
             CollisionPoint point = CollisionDispatcher::Dispatch(colA->GetCollider(), transformA, colB->GetCollider(), transformB);
-            // std::cout << "Collision check between: " << colA->GetOwner()->GetUID() << " and " << colB->GetOwner()->GetUID() << std::endl;
-            // std::cout << "point of collision: " << point.collided << std::endl;
 
+            // If collided, store the collision to be processed in the next step
             if (point.collided)
             {
                 Collision collision = {colA, colB, point};
                 collisions.emplace_back(colA, colB, point);
                 
                 // Notify ScriptSystem about the collision
-                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), true);
+                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), &collision, true);
+            }
+            else
+            {
+                Collision collision = {colA, colB, point};
+                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), &collision, false);
             }
         }
     }
