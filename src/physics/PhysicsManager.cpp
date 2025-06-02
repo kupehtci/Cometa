@@ -17,7 +17,6 @@
 
 #include "physics/Collision.h"
 
-
 void PhysicsManager::Init(){
 
 }
@@ -109,13 +108,13 @@ void PhysicsManager::Update(){
     const float slop = 0.01f;   // Penetration slop
 
     for (auto& col : collisions) {
-        RigidBody* rbA = col.colliderCompA->GetOwner()->GetComponent<RigidBody>();
-        RigidBody* rbB = col.colliderCompB->GetOwner()->GetComponent<RigidBody>();
+        RigidBody* rbA = col.colliderA->GetOwner()->GetComponent<RigidBody>();
+        RigidBody* rbB = col.colliderB->GetOwner()->GetComponent<RigidBody>();
 
-        // COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderCompA->GetOwner()->GetUID(), " and ", col.colliderCompB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
+        // COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderA->GetOwner()->GetUID(), " and ", col.colliderB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
 
-        Transform* transformA = col.colliderCompA->GetOwner()->GetComponent<Transform>();
-        Transform* transformB = col.colliderCompB->GetOwner()->GetComponent<Transform>();
+        Transform* transformA = col.colliderA->GetOwner()->GetComponent<Transform>();
+        Transform* transformB = col.colliderB->GetOwner()->GetComponent<Transform>();
 
         // Skip if both objects are static
         // Objects are static if Mass is 0

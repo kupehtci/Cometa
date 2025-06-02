@@ -514,10 +514,6 @@ private:
 	std::unique_ptr<BaseScript> _script = nullptr;
 public:
 	Script() = default;
-	Script(const Script&) = delete; // Cannot be copied due to unique_ptr
-	Script& operator=(const Script&) = delete; // Cannot be copied due to unique_ptr
-	Script(Script&&) = default; // Can be moved
-	Script& operator=(Script&&) = default; // Can be moved
 
 
 	void Init() override {}
