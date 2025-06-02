@@ -1,24 +1,21 @@
 //
 // Created by Daniel Laplana Gimeno on 6/5/25.
 //
-#include "PhysicsManager.h"
+#include "physics/PhysicsManager.h"
 
 #include "world/WorldManager.h"
 #include "world/ComponentStorage.h"
 #include "world/Components.h"
 #include "world/Entity.h"
+#include "world/ScriptSystem.h"
 
 #include "physics/Collider.h"
 
 
 #define GLAD_GL_IMPLEMENTATION
 #define GLFW_INCLUDE_NONE
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 
 #include "physics/Collision.h"
-
 
 void PhysicsManager::Init(){
 
@@ -87,13 +84,20 @@ void PhysicsManager::Update(){
             Transform* transformB = colB->GetOwner()->GetComponent<Transform>();
 
             CollisionPoint point = CollisionDispatcher::Dispatch(colA->GetCollider(), transformA, colB->GetCollider(), transformB);
-            // std::cout << "Collision check between: " << colA->GetOwner()->GetUID() << " and " << colB->GetOwner()->GetUID() << std::endl;
-            // std::cout << "point of collision: " << point.collided << std::endl;
 
+            // If collided, store the collision to be processed in the next step
             if (point.collided)
             {
                 Collision collision = {colA, colB, point};
                 collisions.emplace_back(colA, colB, point);
+                
+                // Notify ScriptSystem about the collision
+                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), &collision, true);
+            }
+            else
+            {
+                Collision collision = {colA, colB, point};
+                ScriptManagerRef->ProcessCollision(colA->GetOwner(), colB->GetOwner(), &collision, false);
             }
         }
     }
@@ -103,14 +107,14 @@ void PhysicsManager::Update(){
 
     const float slop = 0.01f;   // Penetration slop
 
-    std::cout << "======================= ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
     for (auto& col : collisions) {
-        RigidBody* rbA = col.colliderCompA->GetOwner()->GetComponent<RigidBody>();
-        RigidBody* rbB = col.colliderCompB->GetOwner()->GetComponent<RigidBody>();
-        std::cout << "[PHYSICS MANAGER] Check collision between " << col.colliderCompA->GetOwner()->GetUID() <<" and " << col.colliderCompB->GetOwner()->GetUID() <<" [PHYSICS MANAGER]" << std::endl;
+        RigidBody* rbA = col.colliderA->GetOwner()->GetComponent<RigidBody>();
+        RigidBody* rbB = col.colliderB->GetOwner()->GetComponent<RigidBody>();
 
-        Transform* transformA = col.colliderCompA->GetOwner()->GetComponent<Transform>();
-        Transform* transformB = col.colliderCompB->GetOwner()->GetComponent<Transform>();
+        // COMETA_MSG("[PHYSICS MANAGER] Check collision between ", col.colliderA->GetOwner()->GetUID(), " and ", col.colliderB->GetOwner()->GetUID(), " [PHYSICS MANAGER]");
+
+        Transform* transformA = col.colliderA->GetOwner()->GetComponent<Transform>();
+        Transform* transformB = col.colliderB->GetOwner()->GetComponent<Transform>();
 
         // Skip if both objects are static
         // Objects are static if Mass is 0
@@ -212,14 +216,9 @@ void PhysicsManager::Update(){
                 rbB->_linearVelocity += frictionImpulse * (rbB->_mass / totalMass);
             }
         }
-
-
-
-
     }
-    std::cout << "======================= END OF THE ONE STEP OF COLLISION DETECTION ==================="<< std::endl;
 }
 
 void PhysicsManager::Close(){
-    // std::cout << "PhysicsManager::Close()" << std::endl;
+
 }

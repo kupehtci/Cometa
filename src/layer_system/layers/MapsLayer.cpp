@@ -15,6 +15,9 @@
 #include "world/WorldManager.h" // #include "world/World.h"
 #include "world/Components.h"
 
+#include "input/Input.h"
+
+#include "world/TestScript.h"
 
 
 MapsLayer::MapsLayer()
@@ -104,10 +107,6 @@ void MapsLayer::Init()
                                     "resources/white.jpg",
                                     "resources/black.jpg");
 
-
-    // material0->LoadShader("Main Shader",
-    //     "src/render/shaders/light_map_shader.vert",
-    //     "src/render/shaders/light_map_shader.frag");
     material0->LoadShader("Main Shader",
         "src/render/shaders/blinn_phong_shader.vert",
         "src/render/shaders/blinn_phong_shader.frag");
@@ -124,6 +123,37 @@ void MapsLayer::Init()
         });
     mesh0->Build();
     ent0Renderable->SetMesh(mesh0);
+
+    Script* script = ent0->CreateComponent<Script>();
+    script->Attach<TestScript>("Hello");
+
+
+
+    // // Set up the Start callback
+    // script->SetStartCallback([]() {
+    //     std::cout << "Script started!" << std::endl;
+    // });
+    //
+    // // Set up the Update callback
+    // script->SetUpdateCallback([](float deltaTime) {
+    //     // Move the entity forward
+    //     // Transform* transform = ent0->GetComponent<Transform>();
+    //     if (Input::IsKeyPressed(GLFW_KEY_O)) {
+    //         std::cout << "Entity position update" << std::endl;
+    //     }
+    // });
+    //
+    // script->SetOnCollisionEnterCallback([](Entity* other) {
+    //     std::cout << "Collision started with entity: " << other->GetName() << std::endl;
+    // });
+    //
+    // script->SetOnCollisionExitCallback([](Entity* other) {
+    //     std::cout << "Collision ended with entity: " << other->GetName() << std::endl;
+    // });
+    //
+    // script->SetOnDestroyCallback([]() {
+    //     std::cout << "Script is being destroyed!" << std::endl;
+    // });
 
     // --------- Other entity same as ent0 ---------
 

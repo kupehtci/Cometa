@@ -20,6 +20,7 @@ private:
 		ComponentStorage<DirectionalLight>,
 		ComponentStorage<ColliderComponent>,
 		ComponentStorage<RigidBody>,
+		ComponentStorage<Script>,
 		ComponentStorage<Tag>
 		> _components;
 

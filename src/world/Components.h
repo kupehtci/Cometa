@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <functional>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm.hpp>
@@ -14,10 +15,13 @@
 #include "render/Material.h"
 
 #include "physics/Collider.h"
-class Collider;
+class Collision;
 
 class Entity;
 class Renderer;
+
+
+#include "world/BaseScript.h"
 
 /**
  * Component virtual class
@@ -379,9 +383,6 @@ public:
 		_inertiaTensor = inertiaTensor;
 		_inverseInertiaTensor = glm::inverse(_inertiaTensor);
 	}
-
-
-
 };
 
 
@@ -398,6 +399,177 @@ public:
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }
+};
+
+
+// ----------------------------------------------
+// |              SCRIPT COMPONENT             |
+// ----------------------------------------------
+//
+// /**
+//  * Script component that allows for writing game scripts that can interact with entities
+//  * This component provides lifecycle methods for game scripting
+//  */
+// class Script : public Component {
+// private:
+//     // Callback events that can be set on script
+//     std::function<void()> _startCallback = nullptr;
+//     std::function<void(float)> _updateCallback = nullptr;
+//     std::function<void(Entity*)> _onCollisionEnterCallback = nullptr;
+//     std::function<void(Entity*)> _onCollisionExitCallback = nullptr;
+//     std::function<void()> _onDestroyCallback = nullptr;
+//
+//     bool _initialized = false;
+//
+// public:
+//     Script() = default;
+//     Script(const Script&) = default;
+//     ~Script() override {
+//         if (_onDestroyCallback) {
+//             _onDestroyCallback();
+//         }
+//     }
+//
+//     void Init() override {
+//         if (!_initialized && _startCallback) {
+//             _startCallback();
+//             _initialized = true;
+//         }
+//     }
+//
+//     /**
+//      * Called by the engine every frame
+//      * @param deltaTime Time since last frame in seconds
+//      */
+//     void Update(float deltaTime) {
+//         if (_updateCallback) {
+//             _updateCallback(deltaTime);
+//         }
+//     }
+//
+//     /**
+//      * Called when this entity's collider enters collision with another entity
+//      * @param other The other entity involved in the collision
+//      */
+//     void OnCollisionEnter(Entity* other) {
+//         if (_onCollisionEnterCallback) {
+//             _onCollisionEnterCallback(other);
+//         }
+//     }
+//
+//     /**
+//      * Called when this entity's collider exits collision with another entity
+//      * @param other The other entity involved in the collision
+//      */
+//     void OnCollisionExit(Entity* other) {
+//         if (_onCollisionExitCallback) {
+//             _onCollisionExitCallback(other);
+//         }
+//     }
+//
+//     // Setters for callback functions
+//     void SetStartCallback(const std::function<void()>& callback) {
+//         _startCallback = callback;
+//     }
+//
+//     void SetUpdateCallback(const std::function<void(float)>& callback) {
+//         _updateCallback = callback;
+//     }
+//
+//     void SetOnCollisionEnterCallback(const std::function<void(Entity*)>& callback) {
+//         _onCollisionEnterCallback = callback;
+//     }
+//
+//     void SetOnCollisionExitCallback(const std::function<void(Entity*)>& callback) {
+//         _onCollisionExitCallback = callback;
+//     }
+//
+//     void SetOnDestroyCallback(const std::function<void()>& callback) {
+//         _onDestroyCallback = callback;
+//     }
+//
+//     bool HasStartCallback() const {
+//         return _startCallback != nullptr;
+//     }
+//
+//     bool HasUpdateCallback() const {
+//         return _updateCallback != nullptr;
+//     }
+//
+//     bool HasOnCollisionEnterCallback() const {
+//         return _onCollisionEnterCallback != nullptr;
+//     }
+//
+//     bool HasOnCollisionExitCallback() const {
+//         return _onCollisionExitCallback != nullptr;
+//     }
+//
+//     bool HasOnDestroyCallback() const {
+//         return _onDestroyCallback != nullptr;
+//     }
+// };
+
+class Script : public Component {
+private:
+	std::unique_ptr<BaseScript> _script = nullptr;
+public:
+	Script() = default;
+
+
+	void Init() override {}
+	/**
+	 * Create and attach a script of the T type with the args passed to the constructor
+	 * @tparam T Type of script to attach
+	 * @tparam Args typename for Arguments
+	 * @param args Arguments of the constructor of the script to attach
+	 */
+	template<typename T, typename... Args>
+	void Attach(Args&&... args){
+		_script = std::make_unique<T>(std::forward<Args>(args)...);
+	}
+
+	/**
+	 * Detach a script from the script component
+	 */
+	void Detach(){
+		_script.reset();
+	}
+
+	// Base script abstraction methods
+	void OnInit() const
+	{
+		if (_script){
+			_script->OnInit();
+		}
+	}
+
+	void OnUpdate(float deltaTime) const
+	{
+		if (_script){
+			_script->OnUpdate(deltaTime);
+		}
+	}
+
+	void OnClose() const
+	{
+		if (_script){
+			_script->OnClose();
+		}
+	}
+
+	void OnCollisionEnter(Entity* other, Collision* collision) const
+	{
+		if (_script){
+			_script->OnCollisionEnter(other, collision);
+		}
+	}
+
+	void OnCollisionExit(Entity* other, Collision* collision) const
+	{
+		if (_script){
+			_script->OnCollisionExit(other, collision);
+		}
+	}
 };
 
 #endif
