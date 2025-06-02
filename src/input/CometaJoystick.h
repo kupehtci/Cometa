@@ -2,11 +2,16 @@
 // Created by Daniel Laplana Gimeno on 2/6/25.
 //
 
-#ifndef COMETAJOYSTICK_H
-#define COMETAJOYSTICK_H
+#ifndef COMETA_JOYSTICK_H
+#define COMETA_JOYSTICK_H
 
 // This file define the different joystick input polling positions
 //
+
+/**
+ *  Cometa joysticks enumerator
+ *  Each one of the joysticks correspond to an index of an available joystick input
+*/
 enum CometaJoystick{
     JOYSTICK_1 =     0,
     JOYSTICK_2 =     1,
@@ -26,4 +31,5 @@ enum CometaJoystick{
     JOYSTICK_16 =    15,
     JOYSTICK_LAST =  15
 };
-#endif //COMETAJOYSTICK_H
+
+#endif //COMETA_JOYSTICK_H

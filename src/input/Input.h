@@ -11,6 +11,7 @@
 // Include custom keys
 #include "input/CometaKeys.h"
 #include "input/CometaJoystick.h"
+#include "input/CometaGamepadInfo.h"
 
 /**
  * Types of inputs available
@@ -69,6 +70,34 @@ public:
      * @return true if its connected, false otherwise
      */
     [[nodiscard]] static bool IsJoystickConnected(CometaJoystick joystick) {return glfwJoystickPresent(joystick) == GLFW_TRUE;}
+
+
+    /**
+     * Check wether the joystick is a valid gamepad
+     * @param joystick Joystick to check is its a gamepad
+     * @return True if joystick is a valid gamepad
+     */
+    [[nodiscard]] static bool IsJoystickAGamepad(CometaJoystick joystick) {return glfwJoystickIsGamepad(joystick) == GLFW_TRUE;}
+
+    [[nodiscard]] static CometaGamepadInfo GetGamepadInfo(CometaJoystick joystick)
+    {
+        CometaGamepadInfo info{};
+        GLFWgamepadstate state{};
+        glfwGetGamepadState(joystick, &state);
+
+        for (int i = 0; i < 15; i++)
+        {
+            info.buttons[i] = state.buttons[i];
+        }
+        info.axes[0] = state.axes[0];
+        info.axes[1] = state.axes[1];
+        info.axes[2] = state.axes[2];
+        info.axes[3] = state.axes[3];
+        info.axes[4] = state.axes[4];
+        info.axes[5] = state.axes[5];
+        return info;
+    }
+
     /**
      * Retrieve the axis of an specific joystick or gamepad.
      * @param joystick CometaJoystick Joystick index

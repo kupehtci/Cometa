@@ -146,8 +146,8 @@ void UILayer::Update()
 
 
 
-    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags)){
-
+    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags))
+    {
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Scene utils"))
@@ -174,28 +174,28 @@ void UILayer::Update()
         ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
 
         ImGui::SeparatorText("Joysticks");
-        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1))
-        {
+
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(JOYSTICK_1)){
             if (ImGui::TreeNode("Joystick 1"))
             {
-                int joystick1AxesCount = 0;
-                const float* axes = Input::GetJoystickAxes(CometaJoystick::JOYSTICK_1, joystick1AxesCount);
-                float axa[2] = {axes[0], axes[1]};
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_1);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
                 ImGui::DragFloat2("Axis left", axa);
-                float axb[2] = {axes[2], axes[3]};
-                ImGui::DragFloat2("Axis right", axb);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("Axis left", axb);
 
                 ImGui::TreePop();
             }
+        }
 
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_2) && Input::IsJoystickAGamepad(JOYSTICK_2)){
             if (ImGui::TreeNode("Joystick 2"))
             {
-                int joystick2AxesCount = 0;
-                const float* axes = Input::GetJoystickAxes(CometaJoystick::JOYSTICK_2, joystick2AxesCount);
-                float axa[2] = {axes[0], axes[1]};
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_2);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
                 ImGui::DragFloat2("Axis left", axa);
-                float axb[2] = {axes[2], axes[3]};
-                ImGui::DragFloat2("Axis right", axb);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("Axis left", axb);
 
                 ImGui::TreePop();
             }
@@ -214,9 +214,7 @@ void UILayer::Update()
 
 
     // ------------ SCENE HIERARCHY ------------
-
     BuildSceneHierarchyPanel();
-
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -243,6 +241,8 @@ void UILayer::HandleEvent(Event& event)
 
     // Handle IMGUI events
     std::cout << "UILayer::HandleEvent" << std::endl;
+
+    // Implement ImGUI event handling here
 }
 
 
