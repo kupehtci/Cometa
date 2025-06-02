@@ -8,6 +8,13 @@
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
 
+// Include custom keys
+#include "input/CometaKeys.h"
+#include "input/CometaJoystick.h"
+
+/**
+ * Types of inputs available
+ */
 enum InputType{
     KEY_PRESSED = 1,
     KEY_RELEASED = 2,
@@ -18,7 +25,9 @@ enum InputType{
     MOUSE_SCROLL = 7,
 };
 
-
+/**
+ * Input manager is the singleton class in charge of input handling
+ */
 class Input : public SingletonManager<Input>{
 private:
     // std::unordered_map<int, int> _keys;
@@ -51,6 +60,22 @@ public:
    static glm::vec2 GetMouseScroll();
 
    void HandleKey(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    // Joystick methods
+
+    /**
+     * Check if a specific joystick or gamepad is connected
+     * @param joystick CometaJoystick index of the joystick to check
+     * @return true if its connected, false otherwise
+     */
+    [[nodiscard]] static bool IsJoystickConnected(CometaJoystick joystick) {return glfwJoystickPresent(joystick) == GLFW_TRUE;}
+    /**
+     * Retrieve the axis of an specific joystick or gamepad.
+     * @param joystick CometaJoystick Joystick index
+     * @param axisCount Passed as reference return the maximum number of axis of the gamepad
+     * @return float array with the axis
+     */
+    [[nodiscard]] static const float* GetJoystickAxes(CometaJoystick joystick, int& axisCount) {return glfwGetJoystickAxes(joystick, &axisCount); }
 }; 
 
 #endif // COMETA_INPUT_H

@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <input/Input.h>
 #include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
 
@@ -172,6 +173,33 @@ void UILayer::Update()
         ImGui::Text("Current DeltaTime %f", Time::GetDeltaTime());
         ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
 
+        ImGui::SeparatorText("Joysticks");
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1))
+        {
+            if (ImGui::TreeNode("Joystick 1"))
+            {
+                int joystick1AxesCount = 0;
+                const float* axes = Input::GetJoystickAxes(CometaJoystick::JOYSTICK_1, joystick1AxesCount);
+                float axa[2] = {axes[0], axes[1]};
+                ImGui::DragFloat2("Axis left", axa);
+                float axb[2] = {axes[2], axes[3]};
+                ImGui::DragFloat2("Axis right", axb);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Joystick 2"))
+            {
+                int joystick2AxesCount = 0;
+                const float* axes = Input::GetJoystickAxes(CometaJoystick::JOYSTICK_2, joystick2AxesCount);
+                float axa[2] = {axes[0], axes[1]};
+                ImGui::DragFloat2("Axis left", axa);
+                float axb[2] = {axes[2], axes[3]};
+                ImGui::DragFloat2("Axis right", axb);
+
+                ImGui::TreePop();
+            }
+        }
 
         ImGui::SeparatorText("Physics simulation");
 
