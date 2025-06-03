@@ -93,7 +93,7 @@ void MapsLayer::Init()
     MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
 
     RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
-    ent0Rb->SetAffectedByGravity(false);
+    ent0Rb->SetAffectedByGravity(true);
 
     ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
     ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
@@ -190,29 +190,6 @@ void MapsLayer::Init()
     ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
     ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
-    // OTHER LIGHT ENTITY
-
-    // Entity* ptLight2 = world0->CreateEntity("Light Point 2");
-    // ptLight2->CreateComponent<PointLight>();
-    // MeshRenderable* ptLight2Renderable = ptLight2->CreateComponent<MeshRenderable>();
-    //
-    // std::shared_ptr<Material> material2 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(0.5f, 0.5f, 0.5f),
-    //                                 2.0f,
-    //                                 "resources/white.jpg",
-    //                                 "resources/white.jpg",
-    //                                 "resources/black.jpg");
-    //
-    // material2->LoadShader("Point light 2 shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    //
-    // ptLight2Renderable->SetMesh(Mesh::CreateSphere());
-    // ptLight2Renderable->SetMaterial(material2);
-    // ptLight2->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
-    // ptLight2->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
-
-
     // ------------ Floor entity ------------
     Entity* floor = world0->CreateEntity("Floor");
     floor->GetComponent<Transform>()->position = glm::vec3(0.0f, -2.0f, -7.0f);
@@ -233,6 +210,10 @@ void MapsLayer::Init()
 
     floorMaterial->LoadShader("Main Shader","src/render/shaders/blinn_phong_shader.vert", "src/render/shaders/blinn_phong_shader.frag");
     floorRenderable->SetMaterial(floorMaterial);
+    ColliderComponent* collider = floor->CreateComponent<ColliderComponent>();
+    // Set box collider with extents to cover the floor and moved down
+    Collider* floorCollider = collider->SetCollider<BoxCollider>(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, -10.0f, 0.0f));
+    dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
 
     // Event bus subscription

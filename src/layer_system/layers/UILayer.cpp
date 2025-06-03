@@ -20,6 +20,9 @@
 #include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
 
+// Custom class for UI utilities
+#include "ui/UIUtils.h"
+
 UILayer::UILayer()
 {
     _name = "UILayer";
@@ -577,23 +580,40 @@ void UILayer::BuildSceneHierarchyPanel()
                                     BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
 
                                     float boxColliderExtents[3] = {boxCollider->GetExtents().x, boxCollider->GetExtents().y, boxCollider->GetExtents().z};
-                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 1.0f))
+                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 0))
                                     {
                                         boxCollider->SetExtents(glm::vec3(boxColliderExtents[0], boxColliderExtents[1], boxColliderExtents[2]));
                                     }
 
-
+                                    float boxColliderCenterOffset[3] = {boxCollider->GetCenter().x, boxCollider->GetCenter().y, boxCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", boxColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        boxCollider->SetCenter(glm::vec3(boxColliderCenterOffset[0], boxColliderCenterOffset[1], boxColliderCenterOffset[2]));
+                                    }
 
                                     float boxColliderRotation[4] = { boxCollider->GetRotation().w, boxCollider->GetRotation().x, boxCollider->GetRotation().y, boxCollider->GetRotation().z};
                                     if (ImGui::DragFloat4( "Rotation (w, x, y, z)", boxColliderRotation, 0.01f, 0.0f, 1.0f))
                                     {
                                         boxCollider->SetRotation(glm::quat(boxColliderRotation[0], boxColliderRotation[1], boxColliderRotation[2], boxColliderRotation[3]));
                                     }
+
                                 }
                                 else if (dynamic_cast<SphereCollider*>(collider) != nullptr)
                                 {
                                     ImGui::Text("---Sphere Collider---");
+                                    SphereCollider* sphereCollider = dynamic_cast<SphereCollider*>(collider);
 
+                                    float sphereColliderCenterOffset[3] = {sphereCollider->GetCenter().x, sphereCollider->GetCenter().y, sphereCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", sphereColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        sphereCollider->SetCenter(glm::vec3(sphereColliderCenterOffset[0], sphereColliderCenterOffset[1], sphereColliderCenterOffset[2]));
+                                    }
+
+                                    float sphereRadius = sphereCollider->GetRadius();
+                                    if (ImGui::SliderFloat("Radius", &sphereRadius, 0.01f, 0.0f, "%.2f"))
+                                    {
+                                        sphereCollider->SetRadius(sphereRadius);
+                                    }
                                 }
                             }
                             else
@@ -612,17 +632,52 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("RigidBody"))
                         {
-
                             if (ImGui::Checkbox("Enabled", &rigidBody->GetEnabledRef()))
 
                             if (ImGui::SmallButton("Reset")) {
                                 rigidBody->Reset();
                             }
 
+                            bool isAffectedGravity = rigidBody->IsAffectedByGravity();
+                            if (ImGui::Checkbox("Affected by gravity", &isAffectedGravity))
+                            {
+                                rigidBody->SetAffectedByGravity(isAffectedGravity);
+                            }
+
+                            ImGui::Text("Linear movement");
+
+                            float mass = rigidBody->GetMass();
+                            if (ImGui::DragFloat("Mass", &mass, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetMass(mass);
+                            }
+
                             float linVel[3] = {rigidBody->GetLinearVelocity().x, rigidBody->GetLinearVelocity().y, rigidBody->GetLinearVelocity().z};
                             if (ImGui::DragFloat3("Linear Velocity", linVel, 0.01f)){
                                 rigidBody->SetLinearVelocity({linVel[0], linVel[1], linVel[2]});
                             }
+
+                            float force[3] = {rigidBody->GetForce().x, rigidBody->GetForce().y, rigidBody->GetForce().z};
+                            if (ImGui::DragFloat3("Force ", force, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetForce({force[0], force[1], force[2]});
+                            }
+
+                            ImGui::Text("Angular movement");
+                            float torque[3] = {rigidBody->GetTorque().x, rigidBody->GetTorque().y, rigidBody->GetTorque().z};
+                            if (ImGui::DragFloat3("Torque ", torque, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetTorque({torque[0], torque[1], torque[2]});
+                            }
+
+                            float angularVel[3] = {rigidBody->GetAngularVelocity().x, rigidBody->GetAngularVelocity().y, rigidBody->GetAngularVelocity().z};
+                            if (ImGui::DragFloat3("Angular velocity", angularVel, 0.01f, 0.0f, 1.0))
+                            {
+                                rigidBody->SetAngularVelocity(glm::vec3(angularVel[0], angularVel[1], angularVel[2]));
+                            }
+
+                            CometaUIUtils::ShowMat3(rigidBody->GetInertiaTensor(), "Inertia tensor", true);
+                            CometaUIUtils::ShowMat3(rigidBody->GetInverseInertiaTensor(), "Inverse Inertia tensor", true);
 
                             ImGui::TreePop();
                         }
@@ -634,19 +689,6 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("Script"))
                         {
-                            // ImGui::SeparatorText("Script Callbacks");
-                            //
-                            // bool hasStartCallback = script->HasStartCallback();
-                            // bool hasUpdateCallback = script->HasUpdateCallback();
-                            // bool hasCollisionEnterCallback = script->HasOnCollisionEnterCallback();
-                            // bool hasCollisionExitCallback = script->HasOnCollisionExitCallback();
-                            // bool hasDestroyCallback = script->HasOnDestroyCallback();
-                            //
-                            // ImGui::Text(hasStartCallback ? "Start callback settled" : "Start callback not settled");
-                            // ImGui::Text(hasUpdateCallback ? "Update callback settled" : "Update callback not settled");
-                            // ImGui::Text(hasCollisionEnterCallback ? "Collision enter callback settled" : "Collision enter callback not settled");
-                            // ImGui::Text(hasCollisionExitCallback ? "Collision exit callback settled" : "Collision exit callback not settled");
-                            // ImGui::Text(hasDestroyCallback ? "Destroy callback settled" : "Destroy exit callback not settled");
                             ImGui::TreePop();
                         }
                     }

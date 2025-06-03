@@ -338,6 +338,7 @@ private:
 	glm::mat3 _inertiaTensor = glm::mat3();
 	glm::mat3 _inverseInertiaTensor = glm::mat3();
 
+	// Utils
 	bool _enabled = true;
 	bool _affectedByGravity = true;
 
@@ -348,13 +349,16 @@ public:
 		_force = { 0.0f, 0.0f, 0.0f };
 		_mass = 1.0f;
 
-		_enabled = true;
 
 		// Angular
 		_torque = { 0.0f, 0.0f, 0.0f };
 		_angularVelocity = { 0.0f, 0.0f, 0.0f };
 		_inertiaTensor = glm::mat3();
 		_inverseInertiaTensor = glm::mat3();
+
+		// Utils
+		_enabled = true;
+		_affectedByGravity = true;
 	}
 
 	RigidBody(const RigidBody&) = default;

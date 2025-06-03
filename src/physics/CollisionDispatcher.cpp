@@ -40,7 +40,7 @@ CollisionPoint CollisionDispatcher::IntersectBoxSphere(const Collider* collider,
     float sphereRadius = sphere->GetRadius();
 
     // Get box transform
-    glm::vec3 boxCenter = transform->position;
+    glm::vec3 boxCenter = transform->position + box->GetCenter();
     glm::vec3 boxHalfSize = box->GetExtents();
 
     // Get box rotation matrix
@@ -122,8 +122,8 @@ CollisionPoint CollisionDispatcher::IntersectBoxBox(const Collider* collider, co
     const auto* box2 = dynamic_cast<const BoxCollider*>(otherCollider);
 
     // Get box centers and extents
-    glm::vec3 center1 = transform->position;
-    glm::vec3 center2 = otherTransform->position;
+    glm::vec3 center1 = transform->position + box1->GetCenter();
+    glm::vec3 center2 = otherTransform->position + box2->GetCenter();
     glm::vec3 extents1 = box1->GetExtents();
     glm::vec3 extents2 = box2->GetExtents();
 

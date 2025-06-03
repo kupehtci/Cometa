@@ -11,6 +11,9 @@
 #include <gtc/matrix_transform.hpp>
 // #include <world/Components.h>
 
+#include <iostream>
+#include <ostream>
+
 #include "physics/CollisionDispatcher.h"
 
 
@@ -51,7 +54,10 @@ public:
         : _extents(extents), _center({0.0f, 0.0f, 0.0f}) {}
 
     BoxCollider(const glm::vec3& extents, const glm::vec3& center)
-    : _extents(extents), _center(center) {}
+    : _extents(extents), _center(center)
+    {
+        std::cout << "BoxCollider constructor called" << std::endl;
+    }
 
     BoxCollider(const glm::vec3& extents, const glm::vec3& center, const glm::quat& rotation)
         : _extents(extents), _center(center), _rotation(rotation) {}
