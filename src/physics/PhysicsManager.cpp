@@ -85,6 +85,16 @@ void PhysicsManager::Update(){
             Transform* transformA = colA->GetOwner()->GetComponent<Transform>();
             Transform* transformB = colB->GetOwner()->GetComponent<Transform>();
 
+            auto typeColliderA = static_cast<int>(colA->GetCollider()->GetType());
+            auto typeColliderB = static_cast<int>(colB->GetCollider()->GetType());
+
+            if (typeColliderA > typeColliderB)
+            {
+                std::swap(colA, colB);
+                std::swap(transformA, transformB);
+                // std::swap(typeColliderA, typeColliderB);
+            }
+
             CollisionPoint point = CollisionDispatcher::Dispatch(colA->GetCollider(), transformA, colB->GetCollider(), transformB);
 
             // If collided, store the collision to be processed in the next step
@@ -148,14 +158,17 @@ void PhysicsManager::Update(){
 
         // Baumgarte stabilization term calculation
         float penetration = std::max(col.point.length - slop, 0.0f);
-        float baumgarteTerm = (_beta / dt) * penetration;
+        // float baumgarteTerm = (_beta / dt) * penetration;
 
-        // Impulse scalar
-        float j = -(1.0f + restitution) * velAlongNormal;
-        j += baumgarteTerm; // Add Baumgarte term
-        j /= totalMass;
+        // // Impulse scalar
+        // float j = -(1.0f + restitution) * velAlongNormal;
+        // j += baumgarteTerm; // Add Baumgarte term
+        // j /= totalMass;
+        //
+        // // Apply impulse
+        // glm::vec3 impulse = j * col.point.normal;
 
-        // Apply impulse
+        float j = (-(1.0f + restitution) * velAlongNormal + (_beta * (penetration/dt)))/totalMass;
         glm::vec3 impulse = j * col.point.normal;
 
 

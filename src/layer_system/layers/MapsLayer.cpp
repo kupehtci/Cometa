@@ -97,6 +97,7 @@ void MapsLayer::Init()
 
     ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
     ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    // ent0Collider->SetCollider<SphereCollider>(2.0f);
 
     DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
     std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;

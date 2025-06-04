@@ -125,7 +125,7 @@ private:
 public:
     SphereCollider() = default;
     explicit SphereCollider(float radius)
-        : _radius(radius), _center({0.0f, 0.0f, 0.0f}) {}
+        : _radius(radius), _center({0.0f, 0.0f, 0.0f}) { }
     SphereCollider(float radius, const glm::vec3& center)
         : _radius(radius), _center(center) {}
 

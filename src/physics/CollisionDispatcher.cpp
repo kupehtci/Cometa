@@ -28,52 +28,117 @@ CollisionPoint CollisionDispatcher::IntersectBoxSphere(const Collider* collider,
 #ifdef PHYSICS_DEBUG
     std::cout << "Collision detected Box sphere" << std::endl;
 #endif
+//
+//     CollisionPoint result{};
+//
+//     // Cast colliders to their specific types
+//     const auto* box = dynamic_cast<const BoxCollider*>(collider);
+//     const auto* sphere = dynamic_cast<const SphereCollider*>(otherCollider);
+//
+//     // Get sphere center in world space
+//     glm::vec3 sphereCenter = otherTransform->position + sphere->GetCenter();
+//     float sphereRadius = sphere->GetRadius();
+//
+//     // Get box transform
+//     glm::vec3 boxCenter = transform->position + box->GetCenter();
+//     glm::vec3 boxHalfSize = box->GetExtents();
+//
+//     // Get box rotation matrix
+//     glm::mat3 boxRotation = glm::mat3(EulerAnglesXYZ(
+//         {glm::radians(transform->rotation.x),
+//          glm::radians(transform->rotation.y),
+//          glm::radians(transform->rotation.z)}
+//     ));
+//
+//     // Transform sphere center to box local space
+//     glm::vec3 localSphereCenter = glm::transpose(boxRotation) * (sphereCenter - boxCenter);
+//
+//     // Find closest point on box to sphere center in local space
+//     glm::vec3 closestPoint;
+//     closestPoint.x = glm::clamp(localSphereCenter.x, -boxHalfSize.x, boxHalfSize.x);
+//     closestPoint.y = glm::clamp(localSphereCenter.y, -boxHalfSize.y, boxHalfSize.y);
+//     closestPoint.z = glm::clamp(localSphereCenter.z, -boxHalfSize.z, boxHalfSize.z);
+//
+//     // Transform closest point back to world space
+//     glm::vec3 worldClosestPoint = boxRotation * closestPoint + boxCenter;
+//
+//     // Calculate distance and normal
+//     glm::vec3 delta = sphereCenter - worldClosestPoint;
+//     float distance = glm::length(delta);
+//
+//     // Check for collision
+//     if (distance <= sphereRadius) {
+//         result.collided = true;
+//
+//         // Calculate normal - pointing from box to sphere
+//         if (distance > 0.0001f) {
+//             result.normal = glm::normalize(delta);
+//         } else {
+//             // If the sphere center is exactly at the closest point, use a default normal
+//             // Find which face of the box we're closest to in local space
+//             glm::vec3 absLocalSphereCenter = glm::abs(localSphereCenter);
+//             if (absLocalSphereCenter.x >= absLocalSphereCenter.y && absLocalSphereCenter.x >= absLocalSphereCenter.z) {
+//                 result.normal = boxRotation * glm::vec3(glm::sign(localSphereCenter.x), 0.0f, 0.0f);
+//             } else if (absLocalSphereCenter.y >= absLocalSphereCenter.x && absLocalSphereCenter.y >= absLocalSphereCenter.z) {
+//                 result.normal = boxRotation * glm::vec3(0.0f, glm::sign(localSphereCenter.y), 0.0f);
+//             } else {
+//                 result.normal = boxRotation * glm::vec3(0.0f, 0.0f, glm::sign(localSphereCenter.z));
+//             }
+//         }
+//
+//         // Calculate penetration depth
+//         result.length = sphereRadius - distance;
+//         result.point = worldClosestPoint; // Contact point on the box
+//
+//         // Calculate contact points
+//         result.a = worldClosestPoint; // Point on the box
+//         result.b = sphereCenter - result.normal * sphereRadius; // Point on the sphere
+//
+// #ifdef PHYSICS_DEBUG
+//         std::cout << "Box-Sphere collision: depth=" << result.length
+//                   << ", normal=(" << result.normal.x << "," << result.normal.y << "," << result.normal.z << ")"
+//                   << ", box pos=(" << boxCenter.x << "," << boxCenter.y << "," << boxCenter.z << ")"
+//                   << ", sphere pos=(" << sphereCenter.x << "," << sphereCenter.y << "," << sphereCenter.z << ")" << std::endl;
+// #endif
+//     }
+//
+//     return result;
 
     CollisionPoint result{};
 
-    // Cast colliders to their specific types
     const auto* box = dynamic_cast<const BoxCollider*>(collider);
     const auto* sphere = dynamic_cast<const SphereCollider*>(otherCollider);
 
-    // Get sphere center in world space
     glm::vec3 sphereCenter = otherTransform->position;
     float sphereRadius = sphere->GetRadius();
 
-    // Get box transform
     glm::vec3 boxCenter = transform->position + box->GetCenter();
     glm::vec3 boxHalfSize = box->GetExtents();
 
-    // Get box rotation matrix
     glm::mat3 boxRotation = glm::mat3(EulerAnglesXYZ(
         {glm::radians(transform->rotation.x),
          glm::radians(transform->rotation.y),
          glm::radians(transform->rotation.z)}
     ));
 
-    // Transform sphere center to box local space
     glm::vec3 localSphereCenter = glm::transpose(boxRotation) * (sphereCenter - boxCenter);
 
-    // Find closest point on box to sphere center in local space
     glm::vec3 closestPoint;
     closestPoint.x = glm::clamp(localSphereCenter.x, -boxHalfSize.x, boxHalfSize.x);
     closestPoint.y = glm::clamp(localSphereCenter.y, -boxHalfSize.y, boxHalfSize.y);
     closestPoint.z = glm::clamp(localSphereCenter.z, -boxHalfSize.z, boxHalfSize.z);
 
-    // Transform closest point back to world space
     glm::vec3 worldClosestPoint = boxRotation * closestPoint + boxCenter;
 
-    // Calculate distance and normal
     glm::vec3 delta = sphereCenter - worldClosestPoint;
     float distance = glm::length(delta);
 
-    // Check for collision
     if (distance <= sphereRadius) {
         result.collided = true;
         result.point = worldClosestPoint;
         result.normal = glm::normalize(delta);
         result.length = sphereRadius - distance;
 
-        // Calculate contact points
         result.a = worldClosestPoint;
         result.b = sphereCenter - result.normal * sphereRadius;
     }
@@ -211,12 +276,13 @@ CollisionPoint CollisionDispatcher::Dispatch(const Collider* collider, const Tra
 {
     auto typeColliderA = static_cast<int>(collider->GetType());
     auto typeColliderB = static_cast<int>(otherCollider->GetType());
-
-    if (typeColliderA > typeColliderB)
-    {
-        std::swap(collider, otherCollider);
-        std::swap(transform, otherTransform);
-    }
+    //
+    // if (typeColliderA > typeColliderB)
+    // {
+    //     std::swap(collider, otherCollider);
+    //     std::swap(transform, otherTransform);
+    //     std::swap(typeColliderA, typeColliderB);
+    // }
 
     CollisionDispatchFunction collisionDispatchFunction = CollisionDispatcher::collisionDispatcher[typeColliderA][typeColliderB];
     if (collisionDispatchFunction)
