@@ -99,16 +99,13 @@ void MapsLayer::Init()
     ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
     // ent0Collider->SetCollider<SphereCollider>(2.0f);
 
-    DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
-    std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
-
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(0.5f, 0.5f, 0.5f),
                                     64.0f,
-                                    /*"resources/bricks_diffuse_map.jpg"*/ "resources/white.jpg",
-                                    "resources/white.jpg",
+                                    "resources/bricks_diffuse_map.jpg",  // "resources/white.jpg",
+                                    "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
     material0->LoadShader("Main Shader",
@@ -130,6 +127,10 @@ void MapsLayer::Init()
 
     Script* script = ent0->CreateComponent<Script>();
     script->Attach<TestScript>("Hello");
+
+    // --------- Directional Light ---------
+    Entity* directionalLight = world0->CreateEntity("DirectionalLight");
+    DirectionalLight* dirLightComp = directionalLight->CreateComponent<DirectionalLight>();
 
     // --------- Other entity same as ent0 ---------
 
@@ -234,15 +235,11 @@ void MapsLayer::Close()
 }
 
 void MapsLayer::HandleEvent(Event& event){
-    std::cout << "MapsLayer::HandleEvent" << std::endl;
-    std::cout << "EventType: " << event.GetEventType() << std::endl;
     if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
     {
         if (dynamic_cast<KeyPressEvent*>(&event)->GetKey() == GLFW_KEY_SPACE)
         {
-
         }
-        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
         event.SetHandled();
     }
 

@@ -23,6 +23,8 @@ namespace fs = std::filesystem;
 // Custom class for UI utilities
 #include "ui/UIUtils.h"
 
+#include "core/Application.h"
+
 UILayer::UILayer()
 {
     _name = "UILayer";
@@ -213,11 +215,35 @@ void UILayer::Update()
 
         ImGui::SeparatorText("Physics simulation");
 
-        isOnSimulation = PhysicsManager::GetInstancePtr()->IsOnSimulation();
-        if (ImGui::Checkbox("OnSimulation", &isOnSimulation))
-        {
+        PhysicsManager* physicsManager = PhysicsManager::GetInstancePtr();
+
+        isOnSimulation = physicsManager->IsOnSimulation();
+        if (ImGui::Checkbox("OnSimulation", &isOnSimulation)){
             PhysicsManager::GetInstancePtr()->SetOnSimulation(isOnSimulation);
         }
+
+        float globalGravity[3] = {physicsManager->GetGravity().x, physicsManager->GetGravity().y, physicsManager->GetGravity().z};
+        if (ImGui::DragFloat3("Gravity", globalGravity)){
+            physicsManager->SetGravity(glm::vec3(globalGravity[0], globalGravity[1], globalGravity[2]));
+        }
+
+        float beta = physicsManager->GetBeta();
+        if (ImGui::DragFloat("Baumgarte Coefficient", &beta, 0.05, 0.0f, 1.0f)){
+            physicsManager->SetBeta(beta);
+        }
+
+        ImGui::SeparatorText("Onion layers");
+        Onion* onion = Application::GetInstancePtr()->GetOnion();
+        uint8_t layerCounter = 0;
+        for (auto it = onion->begin(); it != onion->end(); ++it)
+        {
+            Layer* layer = *it;
+            ImGui::Text("%i - %s", layerCounter, layer->GetName().c_str());
+            layerCounter++;
+        }
+        ImGui::Text("Number of layers: %i", layerCounter);
+        ImGui::Separator();
+
 
         ImGui::End();
     }
