@@ -12,6 +12,8 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include <unordered_map>
+
 #include <filesystem>
 
 class UILayer : public Layer{
@@ -22,6 +24,15 @@ private:
     ImVec2 _thumbnailSize = ImVec2(128, 128);
 
     std::string currentPath = std::filesystem::current_path().string();
+
+    bool isOnSimulation = false;
+    
+    // Maps to store script code for each entity
+    std::unordered_map<uint32_t, std::string> _entityStartCode;
+    std::unordered_map<uint32_t, std::string> _entityUpdateCode;
+    std::unordered_map<uint32_t, std::string> _entityCollisionEnterCode;
+    std::unordered_map<uint32_t, std::string> _entityCollisionExitCode;
+    std::unordered_map<uint32_t, std::string> _entityDestroyCode;
 
 public:
     UILayer();

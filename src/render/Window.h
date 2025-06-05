@@ -5,7 +5,6 @@
 #ifndef AURAGL_WINDOW_H
 #define AURAGL_WINDOW_H
 
-#include "../math/Quad.h"
 #include "../core/Singleton.h"
 #include "../render/Camera.h"
 
@@ -18,10 +17,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm.hpp>
+
 class Window : public Singleton<Window>{
 private:
     GLFWwindow* _window;
-    Quad* _resolution;
+    glm::vec2 _resolution;
     const char* _title;
 
 public: 
@@ -53,7 +54,7 @@ public:
 public:
 
     inline GLFWwindow* GetGlfwWindow(){return _window;}
-    inline Quad GetCurrentResolution(){return *_resolution;}
+    inline glm::vec2 GetCurrentResolution(){return _resolution;}
     inline const char* GetTitle(){return _title;}
 
 public:

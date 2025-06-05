@@ -138,6 +138,21 @@ public:
 	}
 
 
+	// --------- OPERATOR OVERLOAD ------------
+
+	// Take into account that operator[] methods are designed to access and travel through the Dense of the sparse set.
+	// to get the Dense item that is attached to a certain index contained in the Sparse use `T* Get()` method
+
+	T& operator[](size_t index) {
+		if (index >= _size) { COMETA_WARNING("[SPARSE_SET] Accessing not contained dense item"); }
+		return _dense[index];
+	}
+
+	const T& operator[](size_t index) const {
+		if (index >= _size) { COMETA_WARNING("[SPARSE_SET] Accessing not contained dense item"); }
+		return _dense[index];
+	}
+
 	// --------- GETTERS AND SETTERS ---------
 public: 
 	[[nodiscard]] size_t Size() const { return _size;  }

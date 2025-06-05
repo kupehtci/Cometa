@@ -10,12 +10,18 @@
 #include <render/Renderer.h>
 #include <world/Entity.h>
 #include <world/WorldManager.h>
-
+#include <world/Components.h>
 
 #include <filesystem>
 #include <string>
 #include <vector>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <input/Input.h>
+#include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
+
+// Custom class for UI utilities
+#include "ui/UIUtils.h"
 
 UILayer::UILayer()
 {
@@ -120,6 +126,9 @@ void UILayer::Init()
     style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
     style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
     //style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+
+    // Set viewport
+    // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 }
 
 void UILayer::Update()
@@ -140,8 +149,8 @@ void UILayer::Update()
 
 
 
-    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags)){
-
+    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags))
+    {
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Scene utils"))
@@ -157,21 +166,58 @@ void UILayer::Update()
             ImGui::EndMenuBar();
         }
 
-        if (ImGui::Button("Create Empty Entity"))
-        {
-            auto worldManager = WorldManager::GetInstancePtr();
+        // if (ImGui::Button("Create Empty Entity"))
+        // {
+        //     auto worldManager = WorldManager::GetInstancePtr();
+        //
+        // }
 
+        ImGui::SeparatorText("Time");
+        ImGui::Text("Current DeltaTime %f", Time::GetDeltaTime());
+        ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
+
+        ImGui::SeparatorText("Joysticks");
+
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(JOYSTICK_1)){
+            if (ImGui::TreeNode("Joystick 1"))
+            {
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_1);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
+                ImGui::DragFloat2("Axis left", axa);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("Axis left", axb);
+
+                ImGui::TreePop();
+            }
         }
 
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_2) && Input::IsJoystickAGamepad(JOYSTICK_2)){
+            if (ImGui::TreeNode("Joystick 2"))
+            {
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_2);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
+                ImGui::DragFloat2("Axis left", axa);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("Axis left", axb);
+
+                ImGui::TreePop();
+            }
+        }
+
+        ImGui::SeparatorText("Physics simulation");
+
+        isOnSimulation = PhysicsManager::GetInstancePtr()->IsOnSimulation();
+        if (ImGui::Checkbox("OnSimulation", &isOnSimulation))
+        {
+            PhysicsManager::GetInstancePtr()->SetOnSimulation(isOnSimulation);
+        }
 
         ImGui::End();
     }
 
 
     // ------------ SCENE HIERARCHY ------------
-
     BuildSceneHierarchyPanel();
-
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -198,6 +244,8 @@ void UILayer::HandleEvent(Event& event)
 
     // Handle IMGUI events
     std::cout << "UILayer::HandleEvent" << std::endl;
+
+    // Implement ImGUI event handling here
 }
 
 
@@ -267,8 +315,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                 transform->scale.x = scale[0];
                                 transform->scale.y = scale[1];
                                 transform->scale.z = scale[2];
-
                             }
+
+                            ImGui::Text("Parent Transform: ");
+                            transform->GetParent() != nullptr ? ImGui::Text("Parent Transform UID: %u", transform->GetParent()->GetOwner()->GetUID()) : ImGui::Text("none");
 
                             ImGui::TreePop();
                         }
@@ -310,10 +360,14 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     ImGui::TreePop();
                                 }
+                                else
+                                {
+                                    ImGui::Text("No mesh");
+                                }
                             }
 
                             // Material Block
-                            if (meshRenderable->GetMaterial() && ImGui::TreeNode("Material"))
+                            if (ImGui::TreeNode("Material"))
                             {
                                 std::shared_ptr<Material> material = meshRenderable->GetMaterial();
                                 if (material)
@@ -387,6 +441,10 @@ void UILayer::BuildSceneHierarchyPanel()
                                         ImGui::PopStyleVar(1);
                                     }
                                 }
+                                else
+                                {
+                                    ImGui::Text("No material");
+                                }
 
                                 ImGui::TreePop();
                             }
@@ -440,6 +498,16 @@ void UILayer::BuildSceneHierarchyPanel()
                             if (ImGui::DragFloat("Quadratic", &quadratic, 0.01f)){
                                 pointLight->SetQuadratic(quadratic);
                             }
+
+                            // Plot graphical representation of the attenuation
+                            float att[] = {constant + linear * 1 + quadratic * 1,
+                                            constant + linear * 3 + quadratic * 9,
+                                            constant + linear * 5 + quadratic * 25,
+                                            constant + linear * 10 + quadratic * 100,
+                                            constant + linear * 20 + quadratic * 400,
+                                            constant + linear * 40 + quadratic * 1600,
+                                            constant + linear * 60 + quadratic * 3600};
+                            ImGui::PlotLines("Attenuation graph", att, IM_ARRAYSIZE(att));
 
                             ImGui::TreePop();
 
@@ -496,14 +564,64 @@ void UILayer::BuildSceneHierarchyPanel()
                     }
 
                     // Display Collider component if it exists
-                    Collider* collider = entity.GetComponent<Collider>();
-                    if (collider)
+                    ColliderComponent* colliderComp = entity.GetComponent<ColliderComponent>();
+                    if (colliderComp)
                     {
                         if (ImGui::TreeNode("Collider"))
                         {
                             ImGui::Text("Collider Component");
-                            ImGui::TreePop();
 
+                            Collider* collider = colliderComp->GetCollider();
+                            if (collider != nullptr)
+                            {
+                                if (dynamic_cast<BoxCollider*>(collider) != nullptr)
+                                {
+                                    ImGui::Text("---Box Collider---");
+                                    BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
+
+                                    float boxColliderExtents[3] = {boxCollider->GetExtents().x, boxCollider->GetExtents().y, boxCollider->GetExtents().z};
+                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 0))
+                                    {
+                                        boxCollider->SetExtents(glm::vec3(boxColliderExtents[0], boxColliderExtents[1], boxColliderExtents[2]));
+                                    }
+
+                                    float boxColliderCenterOffset[3] = {boxCollider->GetCenter().x, boxCollider->GetCenter().y, boxCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", boxColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        boxCollider->SetCenter(glm::vec3(boxColliderCenterOffset[0], boxColliderCenterOffset[1], boxColliderCenterOffset[2]));
+                                    }
+
+                                    float boxColliderRotation[4] = { boxCollider->GetRotation().w, boxCollider->GetRotation().x, boxCollider->GetRotation().y, boxCollider->GetRotation().z};
+                                    if (ImGui::DragFloat4( "Rotation (w, x, y, z)", boxColliderRotation, 0.01f, 0.0f, 1.0f))
+                                    {
+                                        boxCollider->SetRotation(glm::quat(boxColliderRotation[0], boxColliderRotation[1], boxColliderRotation[2], boxColliderRotation[3]));
+                                    }
+
+                                }
+                                else if (dynamic_cast<SphereCollider*>(collider) != nullptr)
+                                {
+                                    ImGui::Text("---Sphere Collider---");
+                                    SphereCollider* sphereCollider = dynamic_cast<SphereCollider*>(collider);
+
+                                    float sphereColliderCenterOffset[3] = {sphereCollider->GetCenter().x, sphereCollider->GetCenter().y, sphereCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", sphereColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        sphereCollider->SetCenter(glm::vec3(sphereColliderCenterOffset[0], sphereColliderCenterOffset[1], sphereColliderCenterOffset[2]));
+                                    }
+
+                                    float sphereRadius = sphereCollider->GetRadius();
+                                    if (ImGui::SliderFloat("Radius", &sphereRadius, 0.01f, 0.0f, "%.2f"))
+                                    {
+                                        sphereCollider->SetRadius(sphereRadius);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                ImGui::Text("Not defined Collider in Collider Component");
+                            }
+
+                            ImGui::TreePop();
                             ImGui::Separator();
                         }
                     }
@@ -514,14 +632,64 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("RigidBody"))
                         {
-                            ImGui::Text("Linear Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->linearVelocity.x, rigidBody->linearVelocity.y, rigidBody->linearVelocity.z);
-                            ImGui::Text("Angular Velocity: (%.2f, %.2f, %.2f)",
-                                rigidBody->angularVelocity.x, rigidBody->angularVelocity.y, rigidBody->angularVelocity.z);
-                            ImGui::Text("Mass: %.2f", rigidBody->mass);
-                            ImGui::TreePop();
+                            if (ImGui::Checkbox("Enabled", &rigidBody->GetEnabledRef()))
 
-                            ImGui::Separator();
+                            if (ImGui::SmallButton("Reset")) {
+                                rigidBody->Reset();
+                            }
+
+                            bool isAffectedGravity = rigidBody->IsAffectedByGravity();
+                            if (ImGui::Checkbox("Affected by gravity", &isAffectedGravity))
+                            {
+                                rigidBody->SetAffectedByGravity(isAffectedGravity);
+                            }
+
+                            ImGui::Text("Linear movement");
+
+                            float mass = rigidBody->GetMass();
+                            if (ImGui::DragFloat("Mass", &mass, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetMass(mass);
+                            }
+
+                            float linVel[3] = {rigidBody->GetLinearVelocity().x, rigidBody->GetLinearVelocity().y, rigidBody->GetLinearVelocity().z};
+                            if (ImGui::DragFloat3("Linear Velocity", linVel, 0.01f)){
+                                rigidBody->SetLinearVelocity({linVel[0], linVel[1], linVel[2]});
+                            }
+
+                            float force[3] = {rigidBody->GetForce().x, rigidBody->GetForce().y, rigidBody->GetForce().z};
+                            if (ImGui::DragFloat3("Force ", force, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetForce({force[0], force[1], force[2]});
+                            }
+
+                            ImGui::Text("Angular movement");
+                            float torque[3] = {rigidBody->GetTorque().x, rigidBody->GetTorque().y, rigidBody->GetTorque().z};
+                            if (ImGui::DragFloat3("Torque ", torque, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetTorque({torque[0], torque[1], torque[2]});
+                            }
+
+                            float angularVel[3] = {rigidBody->GetAngularVelocity().x, rigidBody->GetAngularVelocity().y, rigidBody->GetAngularVelocity().z};
+                            if (ImGui::DragFloat3("Angular velocity", angularVel, 0.01f, 0.0f, 1.0))
+                            {
+                                rigidBody->SetAngularVelocity(glm::vec3(angularVel[0], angularVel[1], angularVel[2]));
+                            }
+
+                            CometaUIUtils::ShowMat3(rigidBody->GetInertiaTensor(), "Inertia tensor", true);
+                            CometaUIUtils::ShowMat3(rigidBody->GetInverseInertiaTensor(), "Inverse Inertia tensor", true);
+
+                            ImGui::TreePop();
+                        }
+                    }
+                    
+                    // Display Script component if it exists
+                    Script* script = entity.GetComponent<Script>();
+                    if (script)
+                    {
+                        if (ImGui::TreeNode("Script"))
+                        {
+                            ImGui::TreePop();
                         }
                     }
 

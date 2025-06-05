@@ -18,8 +18,9 @@ private:
 		ComponentStorage<SpriteRenderable>,
 		ComponentStorage<PointLight>,
 		ComponentStorage<DirectionalLight>,
-		ComponentStorage<Collider>,
+		ComponentStorage<ColliderComponent>,
 		ComponentStorage<RigidBody>,
+		ComponentStorage<Script>,
 		ComponentStorage<Tag>
 		> _components;
 

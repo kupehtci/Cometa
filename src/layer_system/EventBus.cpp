@@ -28,12 +28,10 @@ void EventBus::Notify(Event& event){
 
     }
 
-    // This can be used to debug when an event has not been handled
+    // Implement here some ececution if the event prooagated through the layers has not been handled
     if (!event.HasBeenHandled())
     {
-        std::cout << "Event has not been handled" << std::endl;
+        // {code here}
+        // COMETA_WARNING("Event propagated has not been handled");
     }
-
-    // std::cout << "=== End of Event Bus NOTIFY ===" << std::endl;
-
 }

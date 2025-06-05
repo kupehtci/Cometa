@@ -1,0 +1,45 @@
+flowchart LR
+%% Material Properties
+    Material("Material Properties struct")
+    Material --> DiffuseMap
+    Material --> Ambient
+    Material --> SpecularMap
+
+    DiffuseMap["Diffuse Map (Albedo)"] -->|"Multiply by light's diffuse"| DiffuseCalc
+    Ambient["Ambient Color"] -->|"Multiply by light's ambient"| AmbientCalc
+    SpecularMap["Specular Map"] -->|"Multiply by light's specular"| SpecularCalc
+    EmissionMap["Emission Map"] -->|"Add directly"| FinalColor
+
+%% Light Properties
+    Light("Light Source struct")
+
+    Light --> LightPosition
+    Light --> LightDiffuse
+    Light --> LightAmbient
+    Light --> LightSpecular
+    LightPosition["Position"] -->|"Calculate direction (L)"| DiffuseCalc
+    LightPosition -->|"Calculate direction (L)"| SpecularCalc
+    LightDiffuse["Diffuse Color"] --> DiffuseCalc
+    LightAmbient["Ambient Color"] --> AmbientCalc
+    LightSpecular["Specular Color"] --> SpecularCalc
+
+%% Attenuation
+    Distance["Distance (d)"] -->|"Attenuation = 1 / (constant + linear*d + quadratic*d²)"| Attenuation
+    Attenuation -->|"Multiply with diffuse & specular"| DiffuseCalc
+    Attenuation -->|"Multiply with diffuse & specular"| SpecularCalc
+
+%% final calculations
+    DiffuseCalc["Diffuse = (L·N) * MaterialDiffuse * LightDiffuse * Attenuation"] --> FinalColor
+    AmbientCalc["Ambient = MaterialAmbient * LightAmbient"] --> FinalColor
+    SpecularCalc["Specular = (R·V)^shininess * MaterialSpecular * LightSpecular * Attenuation"] --> FinalColor
+
+    FinalColor["Final Color = Emission + Ambient + Diffuse + Specular"] --> ShaderOutput[("Shader Output")]
+
+%% Other calculations
+    note1["L = normalize(lightPos - fragPos)\nN = surface normal\nR = reflect(-L, N)\nV = view direction"]:::note
+    note1 -.-> DiffuseCalc
+    note1 -.-> SpecularCalc
+
+
+
+    %%classDef note fill:#000000,stroke:#ccc,font-size:12px;

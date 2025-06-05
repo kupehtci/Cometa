@@ -1,0 +1,62 @@
+flowchart LR
+
+    %% Material
+    Material("Material Properties")
+    Material --> DiffuseMap
+    Material --> Ambient
+    Material --> SpecularMap
+    Material --> EmissionMap
+
+    DiffuseMap["Diffuse Map"] -->|"Multiply"| PointDiffuseCalc
+    DiffuseMap -->|"Multiply"| DirDiffuseCalc
+    Ambient["Ambient Color"] -->|"Multiply"| PointAmbientCalc
+    Ambient -->|"Multiply"| DirAmbientCalc
+    SpecularMap["Specular Map"] -->|"Multiply"| PointSpecularCalc
+    SpecularMap -->|"Multiply"| DirSpecularCalc
+    EmissionMap["Emission"] -->|"Add"| FinalColor
+
+    %% POint light
+    PointLight("Point Light") --> PointPosition
+    PointLight --> PointDiffuse
+    PointLight --> PointAmbient
+    PointLight --> PointSpecular
+    PointLight --> PointAttenuation["Attenuation (const/linear/quad)"]
+
+    PointPosition -->|"L = normalize(pos - fragPos)"| PointDiffuseCalc
+    PointPosition -->|"Calculate distance"| PointAttenuation
+    PointAttenuation -->|"Apply to diffuse/specular"| PointDiffuseCalc
+    PointAttenuation -->|"Apply to diffuse/specular"| PointSpecularCalc
+    PointDiffuse --> PointDiffuseCalc
+    PointAmbient --> PointAmbientCalc
+    PointSpecular --> PointSpecularCalc
+
+    PointDiffuseCalc["Diffuse = (L·N) * DiffuseMap * LightDiffuse * Attenuation"] --> FinalColor
+    PointAmbientCalc["Ambient = Ambient * LightAmbient"] --> FinalColor
+    PointSpecularCalc["Specular = (R·V)^shininess * SpecularMap * LightSpecular * Attenuation"] --> FinalColor
+
+    %% Directional light graph
+    DirLight("Directional Light") --> DirDirection
+    DirLight --> DirDiffuse
+    DirLight --> DirAmbient
+    DirLight --> DirSpecular
+
+    DirDirection -->|"L = -normalize(direction)"| DirDiffuseCalc
+    DirDiffuse --> DirDiffuseCalc
+    DirAmbient --> DirAmbientCalc
+    DirSpecular --> DirSpecularCalc
+
+    DirDiffuseCalc["Diffuse = (L·N) * DiffuseMap * LightDiffuse"] --> FinalColor
+    DirAmbientCalc["Ambient = Ambient * LightAmbient"] --> FinalColor
+    DirSpecularCalc["Specular = (R·V)^shininess * SpecularMap * LightSpecular"] --> FinalColor
+
+
+    FinalColor["Final Color = Emission + Point(Amb+Diff+Spec) + Dir(Amb+Diff+Spec)"] --> ShaderOutput[("Shader Output")]
+
+    note1["L = light direction
+    N = surface normal\nR = reflect(-L, N)\nV = view direction"]:::note
+    note1 -.-> PointDiffuseCalc
+    note1 -.-> PointSpecularCalc
+    note1 -.-> DirDiffuseCalc
+    note1 -.-> DirSpecularCalc
+
+

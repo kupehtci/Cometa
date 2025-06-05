@@ -1,0 +1,50 @@
+
+classDiagram
+    direction LR
+
+    class EventBus{
+        - _subscribers : std::unordered_map~EventType, std::vector~~Layer*~~
+
+        + EventBus()
+        + Subscribe(EventType eventType, Layer* layer) void
+        + Unsubscribe(EventType eventType, Layer* layer) void
+        + Notify(Event& event) void
+    }
+
+
+    class Onion{
+        - _layers : std::vector~Layer~
+        %% - _eventBus : EventBus
+
+        + Init()    void
+        + Update()  void
+        + Close()   void
+        + PushLayer(Layer* layer)   void
+        + PopLayer(Layer* layer)    void
+    }
+
+    Onion --  Layer     : Contains
+    Onion --* EventBus  : Contains
+    Onion --> UILayer   : Update()
+
+    class Layer{
+        <<abstract>>
+        + Init()                    virtual void
+        + Update()                  virtual void
+        + Close()                   virtual void
+        + HandleEvent(Event& e)     virtual bool
+    }
+
+    note for UILayer "Layer can subscribe using:
+                      EventBus::GetInstancePtr()->Subscribe(eventType : COMETA_KEY_PRESS_EVENT, layer : this);"
+
+    class UILayer{
+        + Init()                    void
+        + Update()                  void
+        + Close()                   void
+        + HandleEvent(Event& e)     bool
+    }
+
+    UILayer --|> Layer : Inherits
+
+    UILayer --> EventBus : Subscribe(Event& e)
