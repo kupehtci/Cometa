@@ -235,11 +235,15 @@ void MapsLayer::Close()
 }
 
 void MapsLayer::HandleEvent(Event& event){
+    std::cout << "MapsLayer::HandleEvent" << std::endl;
+    std::cout << "EventType: " << event.GetEventType() << std::endl;
     if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
     {
         if (dynamic_cast<KeyPressEvent*>(&event)->GetKey() == GLFW_KEY_SPACE)
         {
+
         }
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
         event.SetHandled();
     }
 
