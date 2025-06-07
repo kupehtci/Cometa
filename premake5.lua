@@ -15,6 +15,7 @@ IncludeDir["GLFW"] = "vendor/GLFW/include"
 IncludeDir["GLAD"] = "vendor/glad/include"
 IncludeDir["STB_IMAGE"] = "vendor/stb_image"
 IncludeDir["ImGUI"] = "vendor/imgui"
+IncludeDir["Assimp"] = "vendor/assimp/include"
 
 
 -- Include other Premake5 files for:
@@ -33,18 +34,11 @@ project "CometaGL"
         "%{IncludeDir.GLM}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.STB_IMAGE}",
+        "%{IncludeDir.Assimp}",
         "vendor/imgui/backends/imgui_impl_glfw.h",
         "vendor/imgui/backends/imgui_impl_opengl3.h",
         "vendor/imgui/misc/cpp/imgui_stdlib.h",
         "src"
-        --"vendor/GLFW/src"
---             "src/debug",
---             "src/core",
---             "src/components",
---             "src/math",
---             "src/physics",
---             "src/render",
---             "src/ui"
     }
 	files { 
             "src/**.h",
@@ -69,13 +63,13 @@ project "CometaGL"
     filter "system:macosx"
 
         includedirs{
-            "/opt/homebrew/include",
-            --"/vendor/GLFW/include/GLFW_macos"
+            "/opt/homebrew/include"
         }
 
         libdirs{
             "vendor/glad/bin",
-            "vendor/GLFW/lib_macos_arm"
+            "vendor/GLFW/lib_macos_arm",
+            "/opt/homebrew/lib"
         }
 
         links{
@@ -83,24 +77,29 @@ project "CometaGL"
             "OpenGL.framework",
             "glad",
             "Cocoa.framework",
-            "IOKit.framework"
+            "IOKit.framework",
+            "assimp"
         }
 
         defines { "PLATFORM_MACOS" }
     filter "system:linux"
-
+        libdirs{
+            "/usr/local/lib"
+        }
+        links{
+            "assimp"
+        }
 
     -- WINDOWS Expecifications
     filter "system:windows"
-        --includedirs{
-        --
-        --}
         libdirs{
-            "vendor/GLFW/lib"
+            "vendor/GLFW/lib",
+            "vendor/assimp/lib"
         }
         links{
             "glfw3",
-            "glad"
+            "glad",
+            "assimp-vc143-mt"
         }
         defines { "PLATFORM_WINDOWS" }
 

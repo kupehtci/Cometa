@@ -218,6 +218,31 @@ void MapsLayer::Init()
     dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
 
+    // Create Duck entity
+    Entity* duck = world0->CreateEntity("Duck");
+    duck->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -5.0f);
+    duck->GetComponent<Transform>()->scale = glm::vec3(0.01f, 0.01f, 0.01f); // Scale down the duck model
+
+    MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
+    
+    // Create material for the duck
+    std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    64.0f,
+                                    "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    duckMaterial->LoadShader("Main Shader",
+        "src/render/shaders/blinn_phong_shader.vert",
+        "src/render/shaders/blinn_phong_shader.frag");
+    duckRenderable->SetMaterial(duckMaterial);
+
+    // Load the Duck.fbx model
+    duckRenderable->LoadModel("resources/models/Duck.fbx");
+
     // Event bus subscription
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_RELEASE_EVENT, this);

@@ -24,6 +24,18 @@
 //// #include "backends/imgui_impl_glfw.h"
 //// #include "backends/imgui_impl_opengl3.h"
 
+// Helper macro for mesh rendering
+#define RENDER_MESHES(renderable) \
+    if (!renderable.GetMeshes().empty()) { \
+        for (auto& mesh : renderable.GetMeshes()) { \
+            mesh->Bind(); \
+            mesh->Draw(); \
+        } \
+    } else if (renderable.GetMesh()) { \
+        renderable.GetMesh()->Bind(); \
+        renderable.GetMesh()->Draw(); \
+    }
+
 Renderer::Renderer() {
     this->_window = nullptr;
 
@@ -71,7 +83,7 @@ void Renderer::Init(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a Window (Abstraction)
-    _window = Window::GetInstancePtr();
+    _window = Window::GetInstancePtr(); 
     _window->Create(COMETA_DEFAULT_WIDTH, COMETA_DEFAULT_HEIGHT, "CometA");
 
     std::cout << "glfwGetProcAddress address: " << (void*)glfwGetProcAddress << std::endl;
@@ -180,8 +192,7 @@ void Renderer::Update(){
             _shadowMapShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
             
             // Draw the mesh
-            renderable.GetMesh()->Bind();
-            renderable.GetMesh()->Draw();
+            RENDER_MESHES(renderable);
         }
         
         // Unbind the shadow framebuffer
@@ -274,8 +285,7 @@ void Renderer::Update(){
                 _pointShadowMapShader->SetMatrix4("model", transform->GetWorldTransform());
                 
                 // Draw the mesh
-                renderable.GetMesh()->Bind();
-                renderable.GetMesh()->Draw();
+                RENDER_MESHES(renderable);
             }
             
             // Only process the first point light for now as its nto added together into same cubemap
@@ -305,7 +315,7 @@ void Renderer::Update(){
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
 
         renderable.GetMaterial()->Bind();
-        renderable.GetMesh()->Bind();
+        RENDER_MESHES(renderable);
 
         std::shared_ptr<Shader> shader = renderable.GetMaterial()->GetShader();
         shader->Bind();
@@ -362,7 +372,7 @@ void Renderer::Update(){
         shader->SetMatrix4("uModel", transform->GetWorldTransform());
 
         shader->Bind();
-        renderable.GetMesh()->Draw();
+        RENDER_MESHES(renderable);
     }
     // ------- END OF SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
 }
@@ -377,6 +387,10 @@ void Renderer::Close(){
 
     _window->Close();
     glfwTerminate();
+}
+
+void Renderer::AddRenderable(const MeshRenderable& renderable) {
+    _renderables.push_back(renderable);
 }
 
 
