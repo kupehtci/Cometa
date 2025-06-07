@@ -218,14 +218,14 @@ void MapsLayer::Init()
     dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
 
+
     // Create Duck entity
     Entity* duck = world0->CreateEntity("Duck");
     duck->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -5.0f);
-    duck->GetComponent<Transform>()->scale = glm::vec3(0.01f, 0.01f, 0.01f); // Scale down the duck model
+    duck->GetComponent<Transform>()->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
     MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
-    
-    // Create material for the duck
+
     std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),

@@ -25,16 +25,8 @@
 //// #include "backends/imgui_impl_opengl3.h"
 
 // Helper macro for mesh rendering
-#define RENDER_MESHES(renderable) \
-    if (!renderable.GetMeshes().empty()) { \
-        for (auto& mesh : renderable.GetMeshes()) { \
-            mesh->Bind(); \
-            mesh->Draw(); \
-        } \
-    } else if (renderable.GetMesh()) { \
-        renderable.GetMesh()->Bind(); \
-        renderable.GetMesh()->Draw(); \
-    }
+// #define RENDER_MESHES(renderable) \
+
 
 Renderer::Renderer() {
     this->_window = nullptr;
@@ -192,7 +184,15 @@ void Renderer::Update(){
             _shadowMapShader->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
             
             // Draw the mesh
-            RENDER_MESHES(renderable);
+            // RENDER_MESHES(renderable);
+            // renderable.GetMesh()->Bind();
+            // renderable.GetMesh()->Draw();
+            auto meshes = renderable.GetMeshes();
+            for (auto& mesh : meshes)
+            {
+                mesh->Bind();
+                mesh->Draw();
+            }
         }
         
         // Unbind the shadow framebuffer
@@ -285,7 +285,15 @@ void Renderer::Update(){
                 _pointShadowMapShader->SetMatrix4("model", transform->GetWorldTransform());
                 
                 // Draw the mesh
-                RENDER_MESHES(renderable);
+                // RENDER_MESHES(renderable);
+                // renderable.GetMesh()->Bind();
+                // renderable.GetMesh()->Draw();
+                auto meshes = renderable.GetMeshes();
+                for (auto& mesh : meshes)
+                {
+                    mesh->Bind();
+                    mesh->Draw();
+                }
             }
             
             // Only process the first point light for now as its nto added together into same cubemap
@@ -315,7 +323,9 @@ void Renderer::Update(){
         Transform* transform = renderable.GetOwner()->GetComponent<Transform>();
 
         renderable.GetMaterial()->Bind();
-        RENDER_MESHES(renderable);
+        // // RENDER_MESHES(renderable);
+        // renderable.GetMesh()->Bind();
+        // renderable.GetMesh()->Draw();
 
         std::shared_ptr<Shader> shader = renderable.GetMaterial()->GetShader();
         shader->Bind();
@@ -330,14 +340,12 @@ void Renderer::Update(){
             shader->SetFloat3("directionalLight.ambient", directionalLight->GetAmbient());
             shader->SetFloat3("directionalLight.diffuse", directionalLight->GetDiffuse());
             shader->SetFloat3("directionalLight.specular", directionalLight->GetSpecular());
-            
-            // Set the light space matrix for shadow mapping
+
             shader->SetMatrix4("lightSpaceMatrix", directionalLight->GetLightSpaceMatrix());
             
             // Bind the shadow map texture
             if (_shadowFrameBuffer)
             {
-                // Bind the shadow map to texture unit 5 (arbitrary choice)
                 _shadowFrameBuffer->BindDepthTexture(GL_TEXTURE5);
                 shader->SetInt("shadowMap", 5);
             }
@@ -345,7 +353,6 @@ void Renderer::Update(){
             // Bind the point shadow map texture if it exists
             if (_pointShadowFrameBuffer)
             {
-                // Bind the point shadow map to texture unit 6 (arbitrary choice)
                 _pointShadowFrameBuffer->BindDepthCubeMap(GL_TEXTURE6);
                 shader->SetInt("pointShadowMap", 6);
                 shader->SetFloat("far_plane", POINT_LIGHT_FAR_PLANE);
@@ -367,12 +374,19 @@ void Renderer::Update(){
             cnt++;
         }
 
+        // set shader coordinates matrices
         shader->SetMatrix4("uViewProjection", currentWorld->GetCamera()->GetViewProyection());
         shader->SetFloat3("uViewPos", currentWorld->GetCamera()->GetPosition());
         shader->SetMatrix4("uModel", transform->GetWorldTransform());
-
         shader->Bind();
-        RENDER_MESHES(renderable);
+
+        // render all meshes of the MeshRenderable component
+        auto meshes = renderable.GetMeshes();
+        for (auto& mesh : meshes)
+        {
+            mesh->Bind();
+            mesh->Draw();
+        }
     }
     // ------- END OF SECTION - RENDER THE WORLD RENDERING COMPONENTS ------
 }

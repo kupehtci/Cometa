@@ -2,7 +2,9 @@
 #include <iostream>
 #include <filesystem>
 
-Model::Model(const std::string& path, bool gamma) : _gammaCorrection(gamma) {
+Model::Model(const std::string& path) {
+    _path = "";
+    _directory = "";
     LoadModel(path);
 }
 
@@ -19,18 +21,20 @@ void Model::LoadModel(const std::string& path) {
         return;
     }
 
+    _path = path;
     _directory = std::filesystem::path(path).parent_path().string();
     ProcessNode(scene->mRootNode, scene);
 }
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene) {
-    // Process all the node's meshes (if any)
+
+    // Iterate over model's meshes
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         _meshes.push_back(ProcessMesh(mesh, scene));
     }
 
-    // Then do the same for each of its children
+    // iterate over the meshes childs
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         ProcessNode(node->mChildren[i], scene);
     }
@@ -42,12 +46,12 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 
     // Process vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        // Position
+        // positions
         vertices.push_back(mesh->mVertices[i].x);
         vertices.push_back(mesh->mVertices[i].y);
         vertices.push_back(mesh->mVertices[i].z);
 
-        // Normal
+        // normals
         if (mesh->HasNormals()) {
             vertices.push_back(mesh->mNormals[i].x);
             vertices.push_back(mesh->mNormals[i].y);
@@ -58,12 +62,12 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
             vertices.push_back(0.0f);
         }
 
-        // Color (default white)
+        // set default color
         vertices.push_back(1.0f);
         vertices.push_back(1.0f);
         vertices.push_back(1.0f);
 
-        // Texture Coordinates
+        // texture coordinates
         if (mesh->mTextureCoords[0]) {
             vertices.push_back(mesh->mTextureCoords[0][i].x);
             vertices.push_back(mesh->mTextureCoords[0][i].y);
@@ -73,7 +77,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
-    // Process indices
+    // Process the indices of the model
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
@@ -81,7 +85,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
-    // Create mesh
+    // Create mesh object
     std::shared_ptr<Mesh> resultMesh = std::make_shared<Mesh>();
     resultMesh->AddVertices(vertices.data(), vertices.size());
     resultMesh->AddIndices(indices.data(), indices.size());
@@ -108,6 +112,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
 }
 
 void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::shared_ptr<Material>& material) {
+
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);

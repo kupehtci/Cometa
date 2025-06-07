@@ -111,7 +111,7 @@ public:
 class MeshRenderable : public Component {
 private:
 	std::shared_ptr<Mesh> _mesh = nullptr;
-	std::vector<std::shared_ptr<Mesh>> _meshes; // For model loading
+	std::vector<std::shared_ptr<Mesh>> _meshes; // Model loading meshes
 	std::shared_ptr<Material> _material = nullptr;
 
 public:
@@ -121,7 +121,7 @@ public:
 	void Init() override {}
 
 	// Properties management methods
-	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
+	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _meshes.insert(_meshes.begin(), mesh); }
 	void SetMaterial(const std::shared_ptr<Material>& material) {_material = material;}
 
 	// Model loading
@@ -129,22 +129,23 @@ public:
 		Model model(path);
 		_meshes.clear(); // Clear existing meshes
 
-		// for (const auto& mesh : model.GetMeshes()) {
-		// 	// Create a new mesh for each one in the model
-		// 	std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>();
-		// 	newMesh->AddVertices(mesh->GetVertices(), mesh->GetVertexCount() * sizeof(float));
-		// 	newMesh->AddIndices(mesh->GetIndices(), mesh->GetIndexCount() * sizeof(unsigned int));
-		// 	newMesh->SetLayoutBuffer(mesh->GetLayoutBuffer());
-		// 	newMesh->Build();
-		// 	_meshes.push_back(newMesh);
-		// }
+		for (const auto& mesh : model.GetMeshes()) {
+			// Create a new mesh for each one in the model
+			// std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>();
+			// newMesh->AddVertices(mesh->GetVertices(), mesh->GetNumVertices() * sizeof(float));
+			// newMesh->AddIndices(mesh->GetIndices(), mesh->GetNumIndices() * sizeof(unsigned int));
+			// newMesh->SetLayoutBuffer(mesh->GetLayoutBuffer());
+			// newMesh->Build();
+			_meshes.push_back(mesh);
+		}
+
 		if (!_meshes.empty()) {
 			_mesh = _meshes[0]; // For backward compatibility
 		}
 	}
 
 	// ------------ GETTERS ------------
-	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _mesh; }
+	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _meshes[0]; }
 	[[nodiscard]] std::vector<std::shared_ptr<Mesh>> GetMeshes() const { return _meshes; }
 	[[nodiscard]] std::shared_ptr<Material> GetMaterial() const { return _material; }
 };
