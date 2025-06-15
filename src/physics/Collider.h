@@ -16,8 +16,9 @@
 
 #include "physics/CollisionDispatcher.h"
 
-
-// Base Collider class (abstract)
+/**
+ * Astract base class for the different collider shapes of Cometa
+ */
 class Collider {
 public:
     enum class ColliderType {

@@ -84,7 +84,8 @@ void MapsLayer::Init()
 
     WorldManagerRef->CreateWorld(0);
     WorldManagerRef->SetCurrentWorld(0);
-    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
+    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0);
+
     world0->SetCamera(&_camera);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
