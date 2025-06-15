@@ -181,8 +181,12 @@ void UILayer::Update()
         //
         // }
 
+        float deltaTime = Time::GetDeltaTime();
+        float fps = 1/deltaTime;
+
         ImGui::SeparatorText("Time");
-        ImGui::Text("Current DeltaTime %f", Time::GetDeltaTime());
+        ImGui::Text("Current DeltaTime %f", deltaTime);
+        ImGui::Text("Current FPS %f", fps);
         ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
 
         ImGui::SeparatorText("Joysticks");

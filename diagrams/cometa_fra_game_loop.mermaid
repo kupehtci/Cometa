@@ -1,0 +1,27 @@
+flowchart
+    id1[Time Init] --> renderinit[Render init]
+    renderinit --> inputinit[Input init]
+    inputinit --> physicsinit[Physics init]
+    physicsinit --> worldinit[World init]
+    worldinit --> onioninit[Onion init]
+    onioninit --> scriptinit[Script init]
+    scriptinit --> mainloop[Main Loop]
+    
+    mainloop --> timeupdate[Time Update]
+    timeupdate --> worldupdate[World Update]
+    worldupdate --> physicsupdate[Physics Update]
+    physicsupdate --> renderupdate[Render Update]
+    renderupdate --> inputupdate[Input Update]
+    inputupdate --> onionupdate[Onion Update]
+    onionupdate --> scriptupdate[Script Update]
+    scriptupdate --> render[Render Frame]
+    render --> checkclose{Check Close?}
+    checkclose -->|No| mainloop
+    checkclose -->|Yes| cleanup[Cleanup]
+    
+    cleanup --> scriptclose[Script Close]
+    scriptclose --> physicsclose[Physics Close]
+    physicsclose --> inputclose[Input Close]
+    inputclose --> renderclose[Render Close]
+    renderclose --> worldclose[World Close]
+    worldclose --> timeclose[Time Close]
