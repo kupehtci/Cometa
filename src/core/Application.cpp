@@ -44,20 +44,15 @@ void Application::Init(){
     _physicsManager = PhysicsManager::GetInstancePtr();
 
     // Push the layers
-    // // Push cometa layer previous implementation
-    //CometaLayer* cometaLayer = new CometaLayer();
-    //_onion.PushLayer(cometaLayer);
-
-    // // Push material layer used for materials
-    // MaterialLayer* matLayer = new MaterialLayer();
-    // _onion.PushLayer(matLayer);
-
-    // Light maps testing
     UILayer* uiLayer = new UILayer();
     _onion.PushLayer(uiLayer);
 
     MapsLayer* mapsLayer = new MapsLayer();
     _onion.PushLayer(mapsLayer);
+
+    // Initialize scritpt manager
+    ScriptManager::Create();
+    _scriptManager = ScriptManager::GetInstancePtr();
 
 
     // Initialize managers
@@ -66,8 +61,9 @@ void Application::Init(){
     _time->Init();
     _input->Init();
     _physicsManager->Init();
-
     _onion.Init();
+
+    _scriptManager->Init();
 }
 
 void Application::Running() {
@@ -80,6 +76,7 @@ void Application::Running() {
         _renderer->Update();
         _input->Update();
         _onion.Update();
+        _scriptManager->Update();
 
 
         // Once all has been loaded, render into screen
@@ -94,6 +91,7 @@ void Application::Running() {
 }
 
 void Application::Close() {
+    _scriptManager->Close();
     _physicsManager->Close();
     _input->Close();
     _renderer->Close();
