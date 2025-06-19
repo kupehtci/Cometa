@@ -1,22 +1,28 @@
-//
 // Created by Daniel Laplana Gimeno on 18/4/25.
 //
 
 #include "MapsLayer.h"
+
+//
+#include <layer_system/EventBus.h>
+#include <physics/Collider.h>
 
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
 
 #include "world/Entity.h"
-#include "world/World.h"
+#include "world/WorldManager.h" // #include "world/World.h"
 #include "world/Components.h"
 
+#include "input/Input.h"
+
+#include "world/TestScript.h"
 
 
 MapsLayer::MapsLayer()
 {
-
+    _name = "MapsLayer";
 }
 
 MapsLayer::~MapsLayer()
@@ -26,98 +32,6 @@ MapsLayer::~MapsLayer()
 
 void MapsLayer::Init()
 {
-    _texture = new Texture("./resources/macos_example.jpg");
-    _camera = Camera();
-
-    _mat = Material(glm::vec3(1.0f, 1.0f, 1.0f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(0.5f, 0.5f, 0.5f),
-                                    2.0f,
-                                    "resources/bricks_diffuse_map.jpg",
-                                    "resources/bricks_specular_map.jpg",
-                                    "resources/black.jpg");
-
-    World world0 = World();
-    Entity* ent0 = world0.CreateEntity("Entity0");
-    Renderable* rend = ent0->CreateComponent<Renderable>();
-
-    ent0->CreateComponent<Collider>();
-
-    if (ent0->HasComponent<Transform>())
-    {
-        std::cout << "Has transform ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Renderable>())
-    {
-        std::cout << "Has renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<SpriteRenderable>())
-    {
-        std::cout << "Has sprite renderable ent0 " << std::endl;
-    }
-
-    if (ent0->HasComponent<Collider>())
-    {
-        std::cout << "Has collider ent0 " << std::endl;
-    }
-
-    Entity* ent1 = world0.CreateEntity("Entity1");
-    
-
-    // Debug the world created
-    world0.DebugPrint();
-}
-
-void MapsLayer::Update()
-{
-    Shader* mainShader = new Shader("Main Shader",
-        "src/render/shaders/light_map_shader.vert",
-        "src/render/shaders/light_map_shader.frag");
-    mainShader->Bind();
-
-    Texture* materialDiffuseMap = _mat.GetDiffuseMap();
-    int diffuseMapIndex = 0;
-    mainShader->SetInt("material.diffuse", diffuseMapIndex);
-    materialDiffuseMap->Bind(diffuseMapIndex);
-
-    Texture* materialSpecularMap = _mat.GetSpecularMap();
-    int specularMapIndex = 1;
-    mainShader->SetInt("material.specular", specularMapIndex);
-    materialSpecularMap->Bind(specularMapIndex);
-
-    Texture* materialEmissionMap = _mat.GetEmissionMap();
-    int emissionMapIndex = 2;
-    mainShader->SetInt("material.emission", emissionMapIndex);
-    materialEmissionMap->Bind(emissionMapIndex);
-
-
-    mainShader->SetFloat3("material.color", _mat.GetColor());
-    // mainShader->SetFloat3("material.ambient", mat.GetAmbient());
-    mainShader->SetFloat3("material.diffuse", _mat.GetDiffuse());
-    // mainShader->SetFloat3("material.specular", _mat.GetSpecular());
-    mainShader->SetFloat("material.shininess", _mat.GetShininess());
-
-    // glm::vec3 lightPosition = glm::vec3(glm::cos(glfwGetTime()), glm::cos(glfwGetTime()) , -2.0f);
-    glm::vec3 lightPosition = glm::vec3(3.0f, 1.0f, 0.0f);
-
-    mainShader->SetFloat3("light.position", lightPosition);
-    mainShader->SetFloat3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)/*glm::vec3(0.2f, 0.2f, 0.2f)*/);
-    mainShader->SetFloat3("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-    mainShader->SetFloat3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-    // Update camera and its proyection
-    _camera.OnUpdate();
-    mainShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    mainShader->SetFloat3("uViewPos", _camera.GetPosition());                    // Set the view position for the fragment shader
-
-
-    glm::mat4 modelRotated = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-    mainShader->SetMatrix4("uModel", modelRotated);
-
-
     float vertices[] = {
         // Front face
         // positions          // normals           // colors            // texture coords
@@ -166,57 +80,186 @@ void MapsLayer::Update()
         20, 21, 22,   22, 23, 20   // Left
     };
 
-    Mesh mesh0 = Mesh();
-    mesh0.AddVertices(vertices, sizeof(vertices) / sizeof(float));
-    mesh0.AddIndices(indices, sizeof(indices) / sizeof(uint32_t));
-    mesh0.SetLayoutBuffer(
-    {
+    _camera = Camera();
+
+    WorldManagerRef->CreateWorld(0);
+    WorldManagerRef->SetCurrentWorld(0);
+    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0);
+
+    world0->SetCamera(&_camera);
+
+    Entity* ent0 = world0->CreateEntity("Entity0");
+    ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 3.0f, -7.0f);
+
+    MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
+
+    RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
+    ent0Rb->SetAffectedByGravity(true);
+
+    ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
+    ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+    // ent0Collider->SetCollider<SphereCollider>(2.0f);
+
+    std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    64.0f,
+                                    "resources/bricks_diffuse_map.jpg",  // "resources/white.jpg",
+                                    "resources/bricks_specular_map.jpg",
+                                    "resources/black.jpg");
+
+    material0->LoadShader("Main Shader",
+        "src/render/shaders/blinn_phong_shader.vert",
+        "src/render/shaders/blinn_phong_shader.frag");
+    ent0Renderable->SetMaterial(material0);
+
+    std::shared_ptr<Mesh> mesh0 = std::make_shared<Mesh>();
+    mesh0->AddVertices(vertices, sizeof(vertices) / sizeof(float));
+    mesh0->AddIndices(indices, sizeof(indices) / sizeof(unsigned int));
+    mesh0->SetLayoutBuffer({
         {0, DataType::Float3, "aPos"},
         {1, DataType::Float3, "aNormal"},
         {2, DataType::Float3, "aColor"},
         {3, DataType::Float2, "aTexCoord"}
         });
-    mesh0.Build();
+    mesh0->Build();
+    ent0Renderable->SetMesh(mesh0);
 
-    mesh0.Draw();
+    Script* script = ent0->CreateComponent<Script>();
+    script->Attach<TestScript>("Hello");
+
+    // --------- Directional Light ---------
+    Entity* directionalLight = world0->CreateEntity("DirectionalLight");
+    DirectionalLight* dirLightComp = directionalLight->CreateComponent<DirectionalLight>();
+
+    // --------- Other entity same as ent0 ---------
+
+    Entity* ent1 = world0->CreateEntity("Entity1");
+    ent1->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -7.0f);
+    ColliderComponent* ent1Collider = ent1->CreateComponent<ColliderComponent>();
+    
+    ent1Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    auto* ent1Renderable = ent1->CreateComponent<MeshRenderable>();
+
+    ent1Renderable->SetMaterial(material0);
+    ent1Renderable->SetMesh(mesh0);
+
+    // ENTITY 2
+    Entity* ent2 = world0->CreateEntity("Entity2");
+    ent2->GetComponent<Transform>()->position = glm::vec3(2.0f, 0.0f, -7.0f);
+    ColliderComponent* ent2Collider = ent2->CreateComponent<ColliderComponent>();
+
+    ent2Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    auto* ent2Renderable = ent2->CreateComponent<MeshRenderable>();
+
+    ent2Renderable->SetMaterial(material0);
+    ent2Renderable->SetMesh(mesh0);
+
+    // ENTITY 3
+
+    Entity* ent3 = world0->CreateEntity("Entity3");
+    ent3->GetComponent<Transform>()->position = glm::vec3(-2.0f, 0.0f, -7.0f);
+    ColliderComponent* ent3Collider = ent3->CreateComponent<ColliderComponent>();
+
+    ent3Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    auto* ent3Renderable = ent3->CreateComponent<MeshRenderable>();
+
+    ent3Renderable->SetMaterial(material0);
+    ent3Renderable->SetMesh(mesh0);
+
+    // --------- Light entity ---------
+    Entity* ptlight0 = world0->CreateEntity("Light Point 1");
+    ptlight0->CreateComponent<PointLight>();
+
+    MeshRenderable* ptlight0Renderable = ptlight0->CreateComponent<MeshRenderable>();
+
+    std::shared_ptr<Material> material1 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    2.0f,
+                                    "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    material1->LoadShader("Main Shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
+
+    ptlight0Renderable->SetMesh(Mesh::CreateSphere());
+    ptlight0Renderable->SetMaterial(material1);
+    ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
+    ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
+
+    // ------------ Floor entity ------------
+    Entity* floor = world0->CreateEntity("Floor");
+    floor->GetComponent<Transform>()->position = glm::vec3(0.0f, -2.0f, -7.0f);
+    floor->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 90.0f, 0.0f);
+    floor->GetComponent<Transform>()->scale = glm::vec3(20.0f, 0.0f, 20.0f);
+
+    MeshRenderable* floorRenderable = floor->CreateComponent<MeshRenderable>();
+    floorRenderable->SetMesh(Mesh::CreatePlane());
+
+    std::shared_ptr<Material> floorMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(1.0f, 0.5f, 0.31f),
+                                    glm::vec3(0.5f, 0.5f, 0.5f),
+                                    64.0f,
+                                    /*"resources/bricks_diffuse_map.jpg"*/ "resources/white.jpg",
+                                    "resources/white.jpg",
+                                    "resources/black.jpg");
+
+    floorMaterial->LoadShader("Main Shader","src/render/shaders/blinn_phong_shader.vert", "src/render/shaders/blinn_phong_shader.frag");
+    floorRenderable->SetMaterial(floorMaterial);
+    ColliderComponent* collider = floor->CreateComponent<ColliderComponent>();
+    // Set box collider with extents to cover the floor and moved down
+    Collider* floorCollider = collider->SetCollider<BoxCollider>(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, -10.0f, 0.0f));
+    dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
 
-    // ------------------ DRAW MORE CUBES ---------------------------
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 0.0f, -4.0f - i)));
-        mesh0.Draw();
+
+    // Create Duck entity
+    for (int i = 0; i < 2; i++){
+        Entity* duck = world0->CreateEntity("Duck" + std::to_string(i));
+        Transform* transform = duck->GetComponent<Transform>();
+        transform->position = glm::vec3(0.0f, i * 10.0f, -5.0f);
+        transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        // duck->CreateComponent<RigidBody>();
+        // ColliderComponent* colliderComp = duck->CreateComponent<ColliderComponent>();
+        // colliderComp->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+
+        MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
+
+        std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(0.5f, 0.5f, 0.5f),
+                                        64.0f,
+                                        "resources/white.jpg",
+                                        "resources/white.jpg",
+                                        "resources/black.jpg");
+
+        duckMaterial->LoadShader("Main Shader",
+            "src/render/shaders/blinn_phong_shader.vert",
+            "src/render/shaders/blinn_phong_shader.frag");
+        duckRenderable->SetMaterial(duckMaterial);
+        duckRenderable->LoadModel("resources/models/Duck.fbx");
     }
 
-    for (int i = 0; i < 6; i++)
-    {
-        mainShader->SetMatrix4("uModel", glm::translate(glm::mat4(1.0f), glm::vec3(1.0f + i, 1.0f, -5.0f - i)));
-        mesh0.Draw();
-    }
-    // ------------------ END OF DRAWING MORE CUBES ---------------------------
+    // Load the Duck.fbx model
 
+    // Event bus subscription
+    EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
+    EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_RELEASE_EVENT, this);
+}
 
-    mainShader->Unbind();
+void MapsLayer::Update()
+{
 
-
-    // --------- Draw LIGHT POINT ---------
-
-    Shader* lightShader = new Shader("Light Shader", "src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    lightShader->Bind();
-
-    lightShader->SetMatrix4("uViewProjection", _camera.GetViewProyection());
-    glm::mat4 lightPosMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
-    lightPosMatrix = glm::scale(lightPosMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
-
-    lightShader->SetMatrix4("uModel", lightPosMatrix);
-
-    mesh0.Bind();
-    mesh0.Draw();
-    //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-
-    lightShader->Unbind();
-
-    // --------- END OF DRAWING LIGHT POINT ---------
 }
 
 
@@ -226,5 +269,29 @@ void MapsLayer::Close()
 }
 
 void MapsLayer::HandleEvent(Event& event){
+    std::cout << "MapsLayer::HandleEvent" << std::endl;
+    std::cout << "EventType: " << event.GetEventType() << std::endl;
+    if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
+    {
+        if (dynamic_cast<KeyPressEvent*>(&event)->GetKey() == GLFW_KEY_SPACE)
+        {
 
+        }
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+    }
+
+    switch (event.GetEventType())
+    {
+    case COMETA_MOUSE_BUTTON_PRESS_EVENT:
+        std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    case COMETA_MOUSE_BUTTON_RELEASE_EVENT:
+        std::cout << "MAPS LAYER handled key release: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
+        event.SetHandled();
+        break;
+    default:
+        break;
+    }
 }

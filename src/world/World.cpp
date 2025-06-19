@@ -13,7 +13,10 @@ World::World()
     worldInstanceCount++;
     std::cout << "World::World() --> worldInstanceCount: " << worldInstanceCount << std::endl;
     _entities = SparseSet<Entity>();
+
+    // TODO: Implement camera search between each one of the instances
 }
+
 World::~World()
 {
 
@@ -31,14 +34,12 @@ Entity* World::CreateEntity(const std::string& name)
     uint32_t newUid = newEntity.GetUID();
     newEntity._parentWorld = this;
     _entities.Add(newUid, newEntity);
-    // std::cout << "previous to create component transform " << std::endl;
 
     // Create an initial transform component for the entity
     newEntity.CreateComponent<Transform>();
 
     return _entities.Get(newUid);
 }
-
 
 /**
  * Delete an entity and its components associated
@@ -52,11 +53,21 @@ bool World::RemoveEntity(const uint32_t& uid)
         COMETA_WARNING("[WORLD] Tried to delete entity that doesnt exist or its not contained in this world");
         return false;
     }
+
+    _componentRegistry.GetStorage<Transform>().Pop(_uid);
+    _componentRegistry.GetStorage<MeshRenderable>().Pop(_uid);
+    _componentRegistry.GetStorage<SpriteRenderable>().Pop(_uid);
+    _componentRegistry.GetStorage<PointLight>().Pop(_uid);
+    _componentRegistry.GetStorage<DirectionalLight>().Pop(_uid);
+    _componentRegistry.GetStorage<ColliderComponent>().Pop(_uid);
+    _componentRegistry.GetStorage<RigidBody>().Pop(_uid);
+    _componentRegistry.GetStorage<Script>().Pop(_uid);
+    _componentRegistry.GetStorage<Tag>().Pop(_uid);
+
     _entities.Pop(uid);
+
     return true;
 }
-
-
 
 
 void World::DebugPrint(){
@@ -87,8 +98,16 @@ void World::DebugPrint(){
                           << transform->scale.z << ")" << std::endl;
             }
 
-            if (entity->HasComponent<Renderable>()) {
-                std::cout << "  - Renderable: Yes" << std::endl;
+            if (entity->HasComponent<MeshRenderable>()) {
+                std::cout << "  - MeshRenderable: Yes" << std::endl;
+                MeshRenderable* renderable = entity->GetComponent<MeshRenderable>();
+                if (renderable->GetMesh() != nullptr){
+                    std::cout << "      - Has mesh" << std::endl;
+                }
+
+                if (renderable->GetMaterial() != nullptr){
+                    std::cout << "      - Has material" << std::endl;
+                }
             }
 
             if (entity->HasComponent<SpriteRenderable>()) {
@@ -100,7 +119,7 @@ void World::DebugPrint(){
                           << sprite->color.a << ")" << std::endl;
             }
 
-            if (entity->HasComponent<Collider>()) {
+            if (entity->HasComponent<ColliderComponent>()) {
                 std::cout << "  - Collider: Yes" << std::endl;
             }
 

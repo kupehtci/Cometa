@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
+#include <map>
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
@@ -20,29 +20,27 @@
 class Shader {
 
 private:
-    unsigned int _shaderUID;
+    unsigned int _shaderUID;                                        // UID of the shader once it has been compiled
     std::unordered_map<GLenum, std::string> _shaderSources;         // Store as a map (Shader type - source code)
     std::unordered_map<GLenum, std::string> _filePaths;             // Store as a map (Shader type - file path)
-    std::string _debugName;
-    bool _isCompiled = false;
+    std::string _debugName;                                         // Name for debugging purposes or UI
+    bool _isCompiled = false;                                       // Keep track if Render backend has the shader compiled
 
-    // std::unordered_map<std::string, unsigned int> _shadersCache;    // Cache of all the shaders
+    static std::unordered_map<std::string, std::shared_ptr<Shader>> _shadersCache;    // Cache of all the shaders
 
 public:
 
-    /**
-     * CONSTRUCTOR
-     * Create a shader program composed of a Vertex and Fragment shader references by its source.
-     * @param name (std::string) Debug name assigned to the shader
-     * @param vertexShaderSource (const std::string&) Vertex Shader source's path
-     * @param fragmentShaderSource (const std::string&) Fragment Shader source's path
-     */
-    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource );
-
-    /**
-     * Default destructor of the shader
-     */
+    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
+    Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource, const std::string& geometryShaderSource);
     ~Shader();
+
+    // ------------ CACHED METHODS ------------
+    // Chached methods are the most recomendable way to create and load a shader program.
+    // Invoked as an static method --> Shader shader = Shader::LoadShader(...)
+
+    static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    static std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath, const std::string& geometryShaderPath);
+    static void Debug();
 
     // ------------ UNIFORMS METHODS ------------
         
@@ -54,14 +52,12 @@ public:
      */
     void SetBool(const std::string& variableName, const bool& value)const;
 
-
     /**
      * Set the value of a float uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (float) new value of the variable
      */
     void SetFloat(const std::string& variableName, const float& value) const;
-
 
     /**
      * Set the value of a 2 float vector uniform variable
@@ -70,14 +66,12 @@ public:
      */
     void SetFloat2(const std::string& variableName, const glm::vec2& value) const;
 
-
     /**
      * Set the value of a 3 floats vector uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (glm::vec3) new value of the variable
      */
     void SetFloat3(const std::string& variableName, const glm::vec3& value) const;
-
 
     /**
      * Set the value of a 4 floats vector uniform variable
@@ -86,14 +80,12 @@ public:
      */
     void SetFloat4(const std::string& variableName, const glm::vec4& value) const;
 
-
     /**
      * Set the value of an int  uniform variable
      * @param variableName (std::string) name of the uniform variable to set
      * @param value (int) new value of the variable
      */
     void SetInt(const std::string& variableName, const int& value) const;
-
 
     /**
      * Set the value of an array of int uniform variable
@@ -103,7 +95,6 @@ public:
      * @param count (uint32_t) number of values within the int array
      */
     void SetIntArray(const std::string& variableName, const int* values, uint32_t count) const;
-
 
     /**
      * Set the value of an Matrix 4 x 4 uniform variable
@@ -156,33 +147,10 @@ public:
     // ----------------- GETTERS AND SETTERS -----------------
 
 public:
-    /**
-     * Get the source code of one of the loaded shaders
-     */
-    inline std::string GetSourceCode(GLenum shaderType){
-        return _shaderSources[GL_FRAGMENT_SHADER];
-    }
-
-    /**
-     * Get the file path of the shader that is loaded
-     * @return
-     */
-    inline std::string GetFilePath(GLenum shaderType){
-        return _filePaths[shaderType];
-    }
-
-    /**
-     * Get the Shader's Unique ID
-     * If shader has not be compiled yet correctly the UID will be 0
-     * @returns (unsigned int) Shader's Unique ID that can be used as a reference to it
-     */
-     inline unsigned int GetShaderUID() const{
-         return _shaderUID;
-     }
-
-    [[nodiscard]] inline bool IsCompiled() const{
-        return _isCompiled;
-    }
+    [[nodiscard]] std::string GetSourceCode(GLenum shaderType){ return _shaderSources[shaderType]; }
+    [[nodiscard]] std::string GetFilePath(GLenum shaderType){ return _filePaths[shaderType];}
+    [[nodiscard]] unsigned int GetShaderUID() const{ return _shaderUID; }
+    [[nodiscard]] inline bool IsCompiled() const{ return _isCompiled; }
 
 };
 

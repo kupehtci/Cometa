@@ -12,7 +12,7 @@ private:
     Camera _camera;
 public:
     CometaLayer();
-    ~CometaLayer();
+    ~CometaLayer() override;
 
     void Init() override;
     void Update() override;

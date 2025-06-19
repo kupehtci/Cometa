@@ -14,8 +14,8 @@ protected:
 	std::vector<int> _sparse;
 
 	size_t _size = 0;					// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
-	size_t _capacity = 100;				// Maximum capacity of the Sparse.
-	size_t _denseCapacity = 100;		// Maximum capacity of the Dense.
+	size_t _capacity = 1000;				// Maximum capacity of the Sparse.
+	size_t _denseCapacity = 1000;		// Maximum capacity of the Dense.
 
 	size_t _lastInsertedSparse = 0;		// Keeps track of the last item inserted in the sparse. This is helpful for popping items (removing efficiently)
 
@@ -23,8 +23,8 @@ protected:
 public: 
 	SparseSet() {
 		_size = 0;
-		_capacity = 100;
-		_denseCapacity = 100;
+		_capacity = 1000;
+		_denseCapacity = 1000;
 
 		_dense.reserve(_denseCapacity);
 		//_dense = std::vector<T>(_denseCapacity);
@@ -40,12 +40,16 @@ public:
 			return;
 		}
 
-		// Increase dense and dense Index capacity if full
-		if (_size >= _denseCapacity) {
+		// Increase dense and dense Index capacity if full or about to be full
+		if (_size >= _denseCapacity - 1) {
 			_denseCapacity = _denseCapacity * 2;
-			_dense.reserve(_denseCapacity);
-			_denseIndex.reserve(_denseCapacity);
+			_dense.resize(_denseCapacity);
+			_denseIndex.resize(_denseCapacity);
+			_capacity = _denseCapacity;
+			_sparse.resize(_capacity, -1);
+			std::cout << "Increased dense capacity to: " << _denseCapacity << std::endl;
 		}
+		
 		// Increase sparse if index to insert is out of scope
 		while (_capacity <= index)
 		{
@@ -56,8 +60,8 @@ public:
 		std::cout << "Added value at index: " << index << " dense capacity: " << _denseCapacity << std::endl;
 
 		_sparse[index] = _size;
-		_dense.push_back(value);
-		_denseIndex.push_back(static_cast<int>(index));
+		_dense[_size] = value;
+		_denseIndex[_size] = static_cast<int>(index);
 
 		_size++;
 	}
@@ -82,6 +86,11 @@ public:
 		}
 
 		return &_dense[_sparse[index]];
+	}
+
+	T* GetFirst()
+	{
+		return _size == 0 ? nullptr : &_dense[0];
 	}
 
 	T* GetLast() {
@@ -132,6 +141,21 @@ public:
 		}
 	}
 
+
+	// --------- OPERATOR OVERLOAD ------------
+
+	// Take into account that operator[] methods are designed to access and travel through the Dense of the sparse set.
+	// to get the Dense item that is attached to a certain index contained in the Sparse use `T* Get()` method
+
+	T& operator[](size_t index) {
+		if (index >= _size) { COMETA_WARNING("[SPARSE_SET] Accessing not contained dense item"); }
+		return _dense[index];
+	}
+
+	const T& operator[](size_t index) const {
+		if (index >= _size) { COMETA_WARNING("[SPARSE_SET] Accessing not contained dense item"); }
+		return _dense[index];
+	}
 
 	// --------- GETTERS AND SETTERS ---------
 public: 

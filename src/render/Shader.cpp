@@ -6,25 +6,13 @@
 #include <filesystem>
 #include "debug/Assertion.h"
 
+// Implement the cache for the shaders
+// Static member
+std::unordered_map<std::string, std::shared_ptr<Shader>> Shader::_shadersCache = std::unordered_map<std::string, std::shared_ptr<Shader>>(20);
 
-//Shader::Shader() {
-//    _shaderUID = 0;
-//    _shaderType = GL_NONE;
-//    _sourceCode = "";
-//    _filePath = "";
-//}
-
-//Shader::Shader(std::string filePath, GLenum shaderType){
-//    _shaderUID = 0;
-//    _sourceCode = "";
-//    _filePath = filePath;
-//    _shaderType = shaderType;
-//    LoadFromFile(filePath);
-//    CompileShader();
-//}
 
 Shader::Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource){
-
+    _debugName = name;
     _shaderUID = 0;
 
     _shaderSources[GL_VERTEX_SHADER] = LoadFromFile(vertexShaderSource);
@@ -33,7 +21,21 @@ Shader::Shader(const std::string& name, const std::string& vertexShaderSource, c
     _filePaths[GL_VERTEX_SHADER] = vertexShaderSource;
     _filePaths[GL_FRAGMENT_SHADER] = fragmentShaderSource;
 
+    // std::cout << "Shader constructor called for " << name << std::endl;
+    CompileShaderProgram();
+}
+
+Shader::Shader(const std::string& name, const std::string& vertexShaderSource, const std::string& fragmentShaderSource, const std::string& geometryShaderSource){
     _debugName = name;
+    _shaderUID = 0;
+
+    _shaderSources[GL_VERTEX_SHADER] = LoadFromFile(vertexShaderSource);
+    _shaderSources[GL_FRAGMENT_SHADER] = LoadFromFile(fragmentShaderSource);
+    _shaderSources[GL_GEOMETRY_SHADER] = LoadFromFile(geometryShaderSource);
+
+    _filePaths[GL_VERTEX_SHADER] = vertexShaderSource;
+    _filePaths[GL_FRAGMENT_SHADER] = fragmentShaderSource;
+    _filePaths[GL_GEOMETRY_SHADER] = geometryShaderSource;
 
     CompileShaderProgram();
 }
@@ -44,11 +46,58 @@ Shader::~Shader(){
     Delete();
 }
 
+// ------------ CACHED METHODS ------------
+
+// Static method to load shaders
+std::shared_ptr<Shader> Shader::LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+{
+    const std::string key = vertexShaderPath + "__" + fragmentShaderPath;
+
+    // std::unordered_map<std::string,std::shared_ptr<Shader>>::iterator
+    auto cacheIterator = _shadersCache.find(key);
+
+    if (cacheIterator != _shadersCache.end()){
+        return cacheIterator->second;
+    }
+
+    std::shared_ptr<Shader> shader = std::make_shared<Shader>(name, vertexShaderPath, fragmentShaderPath);
+    _shadersCache.insert( {key,shader});
+    return shader;
+}
+
+// Static method to load shaders with geometry shader
+std::shared_ptr<Shader> Shader::LoadShader(const std::string& name, const std::string& vertexShaderPath, const std::string& fragmentShaderPath, const std::string& geometryShaderPath)
+{
+    const std::string key = vertexShaderPath + "__" + fragmentShaderPath + "__" + geometryShaderPath;
+
+    auto cacheIterator = _shadersCache.find(key);
+
+    if (cacheIterator != _shadersCache.end()){
+        return cacheIterator->second;
+    }
+
+    std::shared_ptr<Shader> shader = std::make_shared<Shader>(name, vertexShaderPath, fragmentShaderPath, geometryShaderPath);
+    _shadersCache.insert( {key,shader});
+    return shader;
+}
+
+void Shader::Debug()
+{
+    unsigned int i = 0;
+    for (auto shader : _shadersCache)
+    {
+        std::cout << "Shader cached [" << i << "] : " << shader.second->_debugName << std::endl;
+        std::cout << "   VERTEX SHADER     source code path: " << shader.second->GetFilePath(GL_VERTEX_SHADER) << std::endl;
+        std::cout << "   FRAGMENT SHADER   source code path: " << shader.second->GetFilePath(GL_FRAGMENT_SHADER) << std::endl;
+    }
+}
+
+
 // ------------ UNIFORM METHODS ------------
 
 void Shader::SetBool(const std::string& variableName, const bool& value) const{
     int location = glGetUniformLocation(_shaderUID, variableName.c_str());
-    glUniform1i(location,(int)value);
+    glUniform1i(location,static_cast<int>(value));
 }
 
 void Shader::SetFloat(const std::string& variableName, const float& value) const{

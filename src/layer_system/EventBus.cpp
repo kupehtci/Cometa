@@ -23,5 +23,15 @@ void EventBus::Notify(Event& event){
 
     for(Layer* layer : _subscribers[event.GetEventType()]){
         layer->HandleEvent(event);
+
+        if (event.HasBeenHandled()) break;
+
+    }
+
+    // Implement here some ececution if the event prooagated through the layers has not been handled
+    if (!event.HasBeenHandled())
+    {
+        // {code here}
+        // COMETA_WARNING("Event propagated has not been handled");
     }
 }

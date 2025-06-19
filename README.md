@@ -19,3 +19,8 @@ This engine is intended to provide a foundation or a base for common game featur
 
 Cometa is currently under development. 
 
+
+### Future improvements
+
+* Make unable to Load material into a MeshRenderable if no shader is loaded. 
+

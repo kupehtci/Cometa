@@ -5,16 +5,22 @@
 #include "world/Components.h"
 #include "world/ComponentStorage.h"
 
-
+/**
+ * Registry for the Component Storages of each type
+ * On addition of new components, they should be added into the tuple in order to be stored within the registries
+ */
 class ComponentRegistry {
 
-private: 
+private:
 	std::tuple<
 		ComponentStorage<Transform>,
-		ComponentStorage<Renderable>,
+		ComponentStorage<MeshRenderable>,
 		ComponentStorage<SpriteRenderable>,
-		ComponentStorage<Collider>,
+		ComponentStorage<PointLight>,
+		ComponentStorage<DirectionalLight>,
+		ComponentStorage<ColliderComponent>,
 		ComponentStorage<RigidBody>,
+		ComponentStorage<Script>,
 		ComponentStorage<Tag>
 		> _components;
 
@@ -79,6 +85,19 @@ public:
 	ComponentStorage<T>& GetStorage() {
 		return std::get<ComponentStorage<T>>(_components);
 	}
+
+	// inline void Debug()
+	// {
+	// 	std::cout << "=== ComponentRegistry ===" << std::endl;
+	// 	for (auto storage : _components)
+	// 	{
+	// 		std::cout << "StorageComponent type: " << typeid(storage).name() << "\n";
+	// 		for (auto it = storage.begin(); it != storage.end(); ++it)
+	// 		{
+	// 			std::cout << it->first << ": " << it->second << "\n";
+	// 		}
+	// 	}
+	// }
 };
 
 #endif // COMETA_COMPONENT_REGISTRY_H

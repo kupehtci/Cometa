@@ -1,0 +1,19 @@
+flowchart TD;
+%% Trigger event
+    S0("Develop a shader or use a built-in one") --> S1
+    S1("Load shader") --> S2_1
+    S2_1("Define Vertex data and indices") --> S2_2
+    S2_2("Create VAO") --> S2_3
+    S2_3("Create VBO and set vertex data") --> S2_4
+    S2_4("Create EBO and set indices") --> S2_5
+    S2_5("Create LayoutBuffer and set layout of the vertex Data") --> DEC_TEX
+
+    DEC_TEX{"Has texture"} -- "YES" --> TEX_1
+    DEC_TEX -- "NO" --> S3
+
+    %% Texture path
+    TEX_1("Load texture") --> TEX_2
+    TEX_2("Set texture uniform in shader") --> S3
+
+    S3("Define Model and View proyection matrices for 3D rendering") --> S4
+    S4("Draw call")

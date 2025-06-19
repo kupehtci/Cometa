@@ -25,7 +25,7 @@ void CometaLayer::Update(){
     // ALso update the uViewProjection used for generating the neccesary matrices for the camera in the shader
 
 
-    Shader* mainShader = Renderer::GetInstancePtr()->GetObjectShader();
+    Shader* mainShader = nullptr; //Renderer::GetInstancePtr()->GetObjectShader();
     mainShader->Bind();
 
     float vertices[] = {

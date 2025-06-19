@@ -12,7 +12,7 @@ private:
     Camera _camera;
 public:
     MaterialLayer();
-    ~MaterialLayer();
+    ~MaterialLayer() override;
 
     void Init() override;
     void Update() override;

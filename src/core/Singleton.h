@@ -19,7 +19,7 @@ public:
     static T* instance;
 
     Singleton(){};
-    ~Singleton(){};
+    virtual ~Singleton(){};
 
     inline static void Create() {
         if(!instance){
@@ -39,7 +39,6 @@ public:
         if(!instance){
             Create();
             return instance;
-//            return nullptr; // in this case if instance is not initialized, return nullprt
         }
         else{
             return instance;
@@ -55,9 +54,10 @@ T* Singleton<T>::instance = nullptr;
 //// of methods that can be used from all the managers
 //// TODO: Implement
 template<class T>
-        class SingletonManager : public Singleton <T>{
+class SingletonManager : public Singleton <T>{
 
 public:
+    // virtual ~SingletonManager() = 0;
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void Close() = 0;

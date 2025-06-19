@@ -10,13 +10,10 @@ class Onion {
 
 private: 
     std::vector<Layer*> _layers;
-    const EventBus* _eventBus; 
+    // const EventBus* _eventBus;
 
 public: 
     Onion(){
-        // Singleton<EventBus>::Create();
-        // _eventBus = Singleton<EventBus>::GetInstancePtr();
-
         _layers = std::vector<Layer*>();
     }
 
@@ -31,7 +28,7 @@ public:
     std::vector<Layer*>::iterator end() { return _layers.end(); }
 
     // Get the Event Bus to be able to subscribe and publish events
-    const EventBus* GetEventBus() const { return _eventBus; }
+    // const EventBus* GetEventBus() const { return _eventBus; }
 }; 
 
 #endif
