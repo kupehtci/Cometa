@@ -141,20 +141,19 @@ public:
 	// Model loading
 	void LoadModel(const std::string& path) {
 		Model model(path);
-		_meshes.clear(); // Clear existing meshes
+		_meshes.clear();
 
 		for (const auto& mesh : model.GetMeshes()) {
-			// Create a new mesh for each one in the model
-			// std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>();
-			// newMesh->AddVertices(mesh->GetVertices(), mesh->GetNumVertices() * sizeof(float));
-			// newMesh->AddIndices(mesh->GetIndices(), mesh->GetNumIndices() * sizeof(unsigned int));
-			// newMesh->SetLayoutBuffer(mesh->GetLayoutBuffer());
-			// newMesh->Build();
 			_meshes.push_back(mesh);
+			
+			std::shared_ptr<Material> meshMaterial = model.GetMeshMaterial(mesh);
+			if (meshMaterial) {
+				_material = meshMaterial;
+			}
 		}
 
 		if (!_meshes.empty()) {
-			_mesh = _meshes[0]; // For backward compatibility
+			_mesh = _meshes[0];
 		}
 	}
 
