@@ -242,6 +242,7 @@ void MapsLayer::Init()
                                         "resources/white.jpg",
                                         "resources/white.jpg",
                                         "resources/black.jpg");
+                                        
 
         duckMaterial->LoadShader("Main Shader",
             "src/render/shaders/blinn_phong_shader.vert",
@@ -254,6 +255,7 @@ void MapsLayer::Init()
     Entity* zelda = world0->CreateEntity("Zelda");
     Transform* transform = zelda->GetComponent<Transform>();
     transform->position = glm::vec3(0.0f, 5.0f, -5.0f);
+    transform->rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
     transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 

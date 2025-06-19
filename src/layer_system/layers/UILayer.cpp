@@ -449,22 +449,39 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     // ====== MATERIAL MAPS ======
                                     ImGui::SeparatorText("DIFFUSE MAP");
-                                    ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
-                                    ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetDiffuseMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
+                                        ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No diffuse map");
+                                    }
 
                                     ImGui::SeparatorText("SPECULAR MAP");
-                                    ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
-                                    ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetSpecularMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
+                                        ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No specular map");
+                                    }
 
                                     ImGui::SeparatorText("EMISSION MAP");
-                                    ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
-                                    ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetEmissionMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
+                                        ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
 
                                     // ====== SHADER ======
                                     std::shared_ptr<Shader> shader = material->GetShader();

@@ -1,6 +1,7 @@
 #include "Model.h"
 #include <iostream>
 #include <filesystem>
+#include "debug/Assertion.h"
 
 Model::Model(const std::string& path) {
     _path = "";
@@ -99,64 +100,49 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* mesh, const aiScene* scene) {
     resultMesh->Build();
 
     // Process material
-    if (mesh->mMaterialIndex >= 0) {
+    if (mesh != nullptr && mesh->mMaterialIndex >= 0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         std::shared_ptr<Material> meshMaterial = std::make_shared<Material>();
         
-        // Load textures for different types
+        // aiString texturePath;
+        // if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS) {
+        //     std::string fullPath = _directory + "/" + texturePath.C_Str();
+        //     meshMaterial->SetTexture(std::make_shared<Texture>(fullPath));
+        // } else {
+        //     meshMaterial->SetTexture(nullptr); 
+        // }
+        
+        // Load material textures
         LoadMaterialTextures(material, aiTextureType_DIFFUSE, meshMaterial);
         LoadMaterialTextures(material, aiTextureType_SPECULAR, meshMaterial);
         LoadMaterialTextures(material, aiTextureType_EMISSIVE, meshMaterial);
         
+        // Set the shader for the material
         meshMaterial->LoadShader("Main Shader",
             "src/render/shaders/blinn_phong_shader.vert",
             "src/render/shaders/blinn_phong_shader.frag");
 
-        // Store the material with the mesh
+        // Store the material to the model's mesh
         _materials[resultMesh] = meshMaterial;
     }
+    else{
+        COMETA_ASSERT("[Model] Material cannot be found"); 
+    }
 
-    // // Process material
-    // if (mesh->mMaterialIndex >= 0) {
-    //     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    //     std::shared_ptr<Material> meshMaterial = std::make_shared<Material>();
-        
-    //     // Load material textures
-    //     LoadMaterialTextures(material, aiTextureType_DIFFUSE, meshMaterial);
-    //     LoadMaterialTextures(material, aiTextureType_SPECULAR, meshMaterial);
-    //     LoadMaterialTextures(material, aiTextureType_EMISSIVE, meshMaterial);
-    //     LoadMaterialTextures(material, aiTextureType_NORMALS, meshMaterial);
-
-    //     // Extract material properties
-    //     aiColor3D color(0.0f, 0.0f, 0.0f);
-    //     if(material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
-    //         meshMaterial->SetColor(glm::vec3(color.r, color.g, color.b));
-    //     }
-
-    //     float shininess = 0.0f;
-    //     if(material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
-    //         meshMaterial->SetShininess(shininess);
-    //     }
-
-    //     // Assign material to mesh
-    //     resultMesh->SetMaterial(meshMaterial);
-    // }
-
-    // return resultMesh;
+    return resultMesh;
 }
 
 void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::shared_ptr<Material>& material) {
-    // Load material properties
-    aiColor3D color(0.f, 0.f, 0.f);
-    aiColor3D ambient(0.f, 0.f, 0.f);
-    aiColor3D diffuse(0.f, 0.f, 0.f);
-    aiColor3D specular(0.f, 0.f, 0.f);
-    float shininess = 0.0f;
+    
+    aiColor3D color(1.f, 1.f, 1.f);
+    aiColor3D ambient(1.f, 0.5f, 0.31f);
+    aiColor3D diffuse(1.f, 0.5f, 0.31f);
+    aiColor3D specular(0.5f, 0.5f, 0.5f);
+    float shininess = 64.0f;
 
-    // Extract material properties
-    if(mat->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
-        material->SetColor(glm::vec3(color.r, color.g, color.b));
-    }
+    
+    material->SetColor(glm::vec3(color.r, color.g, color.b));
+
     if(mat->Get(AI_MATKEY_COLOR_AMBIENT, ambient) == AI_SUCCESS) {
         material->SetAmbient(glm::vec3(ambient.r, ambient.g, ambient.b));
     }
@@ -170,10 +156,11 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::share
         material->SetShininess(shininess);
     }
 
-    // Load material textures
+    // Load textures of the specified type
+    bool textureLoaded = false;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
-        mat->GetTexture(type, i, &str);
+        textureLoaded = (mat->GetTexture(type, i, &str) == AI_SUCCESS);
         
         std::string texturePath = _directory + "/" + str.C_Str();
         
@@ -186,6 +173,23 @@ void Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::share
                 break;
             case aiTextureType_EMISSIVE:
                 material->LoadEmissionMap(texturePath);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    // Load default textures if no texture was loaded
+    if (!textureLoaded) {
+        switch (type) {
+            case aiTextureType_DIFFUSE:
+                material->LoadDiffuseMap("resources/white.jpg");  // white as default diffuse
+                break;
+            case aiTextureType_SPECULAR:
+                material->LoadSpecularMap("resources/grey.jpg");  // grey as default specular
+                break;
+            case aiTextureType_EMISSIVE:
+                material->LoadEmissionMap("resources/black.jpg"); // black as default emission
                 break;
             default:
                 break;
