@@ -28,6 +28,12 @@ namespace fs = std::filesystem;
 UILayer::UILayer()
 {
     _name = "UILayer";
+    // Initialize history arrays with zeros
+    for (int i = 0; i < HISTORY_SIZE; i++) {
+        _fpsHistory[i] = 0.0f;
+        _deltaTimeHistory[i] = 0.0f;
+    }
+    _historyIndex = 0;
 }
 
 UILayer::~UILayer()
@@ -146,17 +152,25 @@ void UILayer::Update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    float deltaTime = Time::GetDeltaTime();
+    float fps = 1/deltaTime;
+    
+    // Update plot timer for the Performance Graphs
+    _plotUpdateTimer += deltaTime;
+    if (_plotUpdateTimer >= 1.0f) {
+        _fpsHistory[_historyIndex] = fps;
+        _deltaTimeHistory[_historyIndex] = deltaTime;
+        _historyIndex = (_historyIndex + 1) % HISTORY_SIZE;
+        _plotUpdateTimer = 0.0f;
+    }
 
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None
     | ImGuiWindowFlags_NoCollapse
     | ImGuiWindowFlags_MenuBar;
-    // | ImGuiConfigFlags_DockingEnable;
 
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed |
                            ImGuiTreeNodeFlags_SpanAvailWidth |
                            ImGuiTreeNodeFlags_FramePadding;
-
-
 
     if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags))
     {
@@ -175,19 +189,26 @@ void UILayer::Update()
             ImGui::EndMenuBar();
         }
 
-        // if (ImGui::Button("Create Empty Entity"))
-        // {
-        //     auto worldManager = WorldManager::GetInstancePtr();
-        //
-        // }
-
-        float deltaTime = Time::GetDeltaTime();
-        float fps = 1/deltaTime;
-
         ImGui::SeparatorText("Time");
         ImGui::Text("Current DeltaTime %f", deltaTime);
         ImGui::Text("Current FPS %f", fps);
         ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
+
+        // Display FPS and Delta Time graphs
+        ImGui::SeparatorText("Performance Graphs");
+        
+        // Performance Graphs
+        // FPS Graph
+        ImGui::Text("FPS History (Last 30 seconds, updated every 2 seconds)");
+        ImGui::PlotLines("##FPS", _fpsHistory, HISTORY_SIZE, _historyIndex, 
+            "FPS", 0.0f, 200.0f, ImVec2(-1, 80.0f));
+        
+        // Delta Time Graph
+        ImGui::Text("Delta Time History (Last 30 seconds, updated every 2 seconds)");
+        ImGui::PlotLines("##DeltaTime", _deltaTimeHistory, HISTORY_SIZE, _historyIndex, 
+            "Delta Time (s)", 0.0f, 0.1f, ImVec2(-1, 80.0f));
+
+        // end of Performance Graphcs
 
         ImGui::SeparatorText("Joysticks");
 

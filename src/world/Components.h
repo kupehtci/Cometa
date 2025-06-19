@@ -118,6 +118,20 @@ public:
 	MeshRenderable() = default;
 	MeshRenderable(const MeshRenderable&) = default;
 
+	MeshRenderable& operator=(const MeshRenderable& other) {
+		if (this != &other) {
+			_meshes.clear();
+			_meshes = other._meshes;
+			_material = other._material;
+			if (!_meshes.empty()) {
+				_mesh = _meshes[0];
+			} else {
+				_mesh = nullptr;
+			}
+		}
+		return *this;
+	}
+
 	void Init() override {}
 
 	// Properties management methods

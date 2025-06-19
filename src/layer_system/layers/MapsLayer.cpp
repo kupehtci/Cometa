@@ -221,28 +221,36 @@ void MapsLayer::Init()
 
 
     // Create Duck entity
-    Entity* duck = world0->CreateEntity("Duck");
-    duck->GetComponent<Transform>()->position = glm::vec3(0.0f, 0.0f, -5.0f);
-    duck->GetComponent<Transform>()->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    for (int i = 0; i < 2; i++){
+        Entity* duck = world0->CreateEntity("Duck" + std::to_string(i));
+        Transform* transform = duck->GetComponent<Transform>();
+        transform->position = glm::vec3(0.0f, i * 10.0f, -5.0f);
+        transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
+        // duck->CreateComponent<RigidBody>();
+        // ColliderComponent* colliderComp = duck->CreateComponent<ColliderComponent>();
+        // colliderComp->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
 
-    std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(1.0f, 0.5f, 0.31f),
-                                    glm::vec3(0.5f, 0.5f, 0.5f),
-                                    64.0f,
-                                    "resources/white.jpg",
-                                    "resources/white.jpg",
-                                    "resources/black.jpg");
 
-    duckMaterial->LoadShader("Main Shader",
-        "src/render/shaders/blinn_phong_shader.vert",
-        "src/render/shaders/blinn_phong_shader.frag");
-    duckRenderable->SetMaterial(duckMaterial);
+        MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
+
+        std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(0.5f, 0.5f, 0.5f),
+                                        64.0f,
+                                        "resources/white.jpg",
+                                        "resources/white.jpg",
+                                        "resources/black.jpg");
+
+        duckMaterial->LoadShader("Main Shader",
+            "src/render/shaders/blinn_phong_shader.vert",
+            "src/render/shaders/blinn_phong_shader.frag");
+        duckRenderable->SetMaterial(duckMaterial);
+        duckRenderable->LoadModel("resources/models/Duck.fbx");
+    }
 
     // Load the Duck.fbx model
-    duckRenderable->LoadModel("resources/models/Duck.fbx");
 
     // Event bus subscription
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);

@@ -32,7 +32,7 @@ public:
 		}
 
 		// Increase dense and sparse capacity
-		if (this->_size >= this->_denseCapacity) {
+		if (this->_size >= this->_denseCapacity - 1) {
 			this->_denseCapacity = this->_capacity = this->_denseCapacity * 2;
 			this->_dense.resize(this->_denseCapacity);
 			this->_sparse.resize(this->_capacity, -1);
