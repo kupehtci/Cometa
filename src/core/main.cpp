@@ -1,21 +1,7 @@
-//
-//// #define GLFW_INCLUDE_VULKAN
-//
-
 #include "../core/Application.h"
 
-#include <filesystem>
-#include <iostream>
-
-#include "../debug/Assertion.h"
-
-//#include "layer_system/Onion.h"
-//#include "layer_system/Layer.h"
-//
-//#include "types/SparseSet.h"
-#include "world/Components.h"
-#include "world/Entity.h"
-#include "world/ComponentRegistry.h"
+// Main entry point of the C++ application
+// IN this file Application is created, initialized and keeps running.
 
 int main() {
 

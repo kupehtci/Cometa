@@ -4,11 +4,11 @@
 
 #include "core/Application.h"
 
+#include <layer_system/layers/DemoLayer.h>
+
 #include "layer_system/layers/MapsLayer.h"
 #include "layer_system/layers/UILayer.h"
-
-#include "layer_system/layers/CometaLayer.h"
-#include "layer_system/layers/MaterialLayer.h"
+#include "layer_system/layers/DemoLayer.h"
 
 Application::Application(){
     this->_isRunning = true;
@@ -47,8 +47,8 @@ void Application::Init(){
     UILayer* uiLayer = new UILayer();
     _onion.PushLayer(uiLayer);
 
-    MapsLayer* mapsLayer = new MapsLayer();
-    _onion.PushLayer(mapsLayer);
+    DemoLayer* demoLayer = new DemoLayer();
+    _onion.PushLayer(demoLayer);
 
     // Initialize scritpt manager
     ScriptManager::Create();
@@ -67,7 +67,7 @@ void Application::Init(){
 }
 
 void Application::Running() {
-    while(this->_isRunning){
+    while(_isRunning){
 
         // Update the managers
         _time->Update();
@@ -79,11 +79,10 @@ void Application::Running() {
         _scriptManager->Update();
 
 
-        // Once all has been loaded, render into screen
         _renderer->Render();
 
-        // Check if window must close
-        if (_isRunning)
+        // Check if application should close
+        if (!_isRunning)
         {
             _isRunning = !_renderer->GetWindow()->ShouldHandleCloseWindow();
         }

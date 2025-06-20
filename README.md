@@ -17,7 +17,7 @@ Cometa Framework is a lightweight C++ game development framework built developed
 
 ### Getting started
 
-As Cometa use other repositories and systems as dependencies and these ones are handled as git submodules, in order to pull them together clone the repository:
+As Cometa use other repositories and systems as dependencies and these are handled as git submodules, in order to pull them together clone the repository:
 ```bash
 git clone --recurse-submodules https://github.com/kupehtci/Cometa.git
 ```
@@ -27,6 +27,23 @@ In order to execute the project, you are going to need premake5 in MacOS distrib
 
 For both systems, premake5 is integrated as a built-in binary, `premake5` for MacOS and `premake5.exe` for Windows.
 In the case of MacOS, it will normally indicate that "Apple cannot verify the app to not contain malicious software". To overpass this, go to Setting > Privacy and Security  and in security properties an option for allowing premake5 execution will appear: 
+
+![Security message in MacOS](./diagrams/images/macos_security_premake.png)
+
+After that, you can use the `build.sh` or `build.ps1` scripts to execute the project on MacOS or to generate a Visual Studio solution for Windows.
+```bash
+# For MacOS compilation
+./build.sh -t macos   
+
+# For windows compilation
+./build.ps1
+```
+
+`Build.sh` can also be used in Windows by using Git Bash, WSL or another CLI tool that allow UNIX script execution: 
+```bash
+./build.sh -t macos
+```
+
 
 
 ### Dependencies
