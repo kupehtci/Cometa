@@ -144,6 +144,7 @@ void UILayer::Init()
     style->FrameRounding = 3;
     style->PopupRounding = 4;
     style->ChildRounding = 4;
+    style->FrameBorderSize = 0.0f; 
 }
 
 void UILayer::Update()
@@ -183,7 +184,11 @@ void UILayer::Update()
                     ImGui::Text("Hierarchy");
                     _sceneHierarchyOpen  = !_sceneHierarchyOpen;
                 }
-
+                // Add ImGui Demo toggle
+                if (ImGui::MenuItem("Show ImGui Demo", nullptr, _showImGuiDemo))
+                {
+                    _showImGuiDemo = !_showImGuiDemo;
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -277,6 +282,11 @@ void UILayer::Update()
 
     // ------------ SCENE HIERARCHY ------------
     BuildSceneHierarchyPanel();
+
+    // Show ImGui demo window if toggled
+    if (_showImGuiDemo) {
+        ImGui::ShowDemoWindow(&_showImGuiDemo);
+    }
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -82,7 +82,7 @@ void Application::Running() {
         _renderer->Render();
 
         // Check if application should close
-        if (!_isRunning)
+        if (_isRunning)
         {
             _isRunning = !_renderer->GetWindow()->ShouldHandleCloseWindow();
         }

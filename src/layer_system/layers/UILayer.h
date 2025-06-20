@@ -29,8 +29,9 @@ private:
 
     #pragma region ImGuiConfiguration
     bool _mainWindowOpen = true;
-    bool _sceneHierarchyOpen = false;
+    bool _sceneHierarchyOpen = true;
     ImVec2 _thumbnailSize = ImVec2(128, 128);
+    bool _showImGuiDemo = false;
     #pragma endregion
 
     // std::string currentPath = std::filesystem::current_path().string();

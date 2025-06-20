@@ -6,7 +6,7 @@
 //
 #include <layer_system/EventBus.h>
 #include <physics/Collider.h>
-
+#include "debug/Assertion.h"
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
@@ -258,23 +258,9 @@ void MapsLayer::Init()
     transform->rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
     transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-
     MeshRenderable* zeldaRenderable = zelda->CreateComponent<MeshRenderable>();
-
-    // std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(0.5f, 0.5f, 0.5f),
-    //                                 64.0f,
-    //                                 "resources/white.jpg",
-    //                                 "resources/white.jpg",
-    //                                 "resources/black.jpg");
-
-    // duckMaterial->LoadShader("Main Shader",
-    //     "src/render/shaders/blinn_phong_shader.vert",
-    //     "src/render/shaders/blinn_phong_shader.frag");
-    // duckRenderable->SetMaterial(duckMaterial);
     zeldaRenderable->LoadModel("resources/models/ZeldaHorse/HorseLoved.fbx");
+
 
     // Event bus subscription
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
