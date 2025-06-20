@@ -210,6 +210,7 @@ void UILayer::Update()
 
         // end of Performance Graphcs
 
+
         ImGui::SeparatorText("Joysticks");
 
         if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(JOYSTICK_1)){
@@ -217,9 +218,9 @@ void UILayer::Update()
             {
                 CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_1);
                 float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
-                ImGui::DragFloat2("Axis left", axa);
+                ImGui::DragFloat2("J1 Axis left", axa);
                 float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
-                ImGui::DragFloat2("Axis left", axb);
+                ImGui::DragFloat2("J1 Axis right", axb);
 
                 ImGui::TreePop();
             }
@@ -230,9 +231,9 @@ void UILayer::Update()
             {
                 CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_2);
                 float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
-                ImGui::DragFloat2("Axis left", axa);
+                ImGui::DragFloat2("J2 Axis left", axa);
                 float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
-                ImGui::DragFloat2("Axis left", axb);
+                ImGui::DragFloat2("J2 Axis right", axb);
 
                 ImGui::TreePop();
             }
@@ -449,22 +450,39 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     // ====== MATERIAL MAPS ======
                                     ImGui::SeparatorText("DIFFUSE MAP");
-                                    ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
-                                    ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetDiffuseMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
+                                        ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No diffuse map");
+                                    }
 
                                     ImGui::SeparatorText("SPECULAR MAP");
-                                    ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
-                                    ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetSpecularMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
+                                        ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No specular map");
+                                    }
 
                                     ImGui::SeparatorText("EMISSION MAP");
-                                    ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
-                                    ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetEmissionMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
+                                        ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
 
                                     // ====== SHADER ======
                                     std::shared_ptr<Shader> shader = material->GetShader();

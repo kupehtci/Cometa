@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -20,8 +21,11 @@
  */
 class Model {
 private:
-    // Meshed that compose the model
+    // Meshes that compose the model
     std::vector<std::shared_ptr<Mesh>> _meshes;
+
+    // Map to store materials for each mesh
+    std::unordered_map<std::shared_ptr<Mesh>, std::shared_ptr<Material>> _materials;
 
     // directory from where the model is loaded
     // is needed for material loading
@@ -78,6 +82,16 @@ public:
      * @return Vector of shared pointers containing the meshes
      */
     [[nodiscard]] std::vector<std::shared_ptr<Mesh>> GetMeshes() const { return _meshes; }
+
+    /**
+     * Get the material associated with a specific mesh
+     * @param mesh The mesh whose material we want to retrieve
+     * @return Shared pointer to the material, or nullptr if no material is found
+     */
+    [[nodiscard]] std::shared_ptr<Material> GetMeshMaterial(const std::shared_ptr<Mesh>& mesh) const {
+        auto it = _materials.find(mesh);
+        return it != _materials.end() ? it->second : nullptr;
+    }
 };
 
-#endif //COMETA_MODEL_H 
+#endif //COMETA_MODEL_H
