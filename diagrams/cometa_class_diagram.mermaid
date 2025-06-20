@@ -1,0 +1,769 @@
+classDiagram
+    direction TB
+    class Singleton~T~{
+        <<abstract>>
+        + GetInstance() T*
+        + GetInstancePtr() T*
+    }
+    class SingletonManager~T~{
+        <<abstract>>
+        + Init()
+        + Update()
+        + Close()
+    }
+    class Application{
+        - _isRunning : bool
+        - _worldManager : WorldManager*
+        - _renderer : Renderer*
+        - _physicsManager : PhysicsManager*
+        - _time : Time*
+        - _input : Input*
+        - _onion : Onion
+        + Init()
+        + Running()
+        + Close()
+        + OnEvent()
+        + GetOnion()
+        - MustClose()
+    }
+    class Time{
+        - _deltaTime : float
+        - _timeScale : float
+        - _lastFrameTime : float
+        + Init()
+        + Update()
+        + Close()
+        - UpdateDeltaTime()
+        + GetDeltaTime() float
+        + GetTimeScale() float
+    }
+
+    %% Rendering System Classes
+    class Renderer{
+        - _window : Window*
+        - _depthCulling : bool
+        - _shadowFrameBuffer : FrameBuffer*
+        - _pointShadowFrameBuffer : CubeMapFrameBuffer*
+        - _shadowMapShader : Shader*
+        - _pointShadowMapShader : Shader*
+        + Init()
+        + Update()
+        + Close()
+        + Render()
+        + GetWindow()
+        + SetDepthCulling(bool)
+        + SetFaceCulling(FACE_CULLING_MODE)
+    }
+    class Window{
+        - _window : GLFWwindow*
+        - _resolution : vec2
+        - _title : const char*
+        + Create()
+        + Init()
+        + Update()
+        + Close()
+        + SwapBuffers()
+        + ShouldHandleCloseWindow() bool
+        + GetGlfwWindow() GLFWwindow*
+        + GetCurrentResolution() glm::vec2
+        + GetTitle()
+        + HandleResize(GLFWwindow*, int, int)
+        + HandleMouse(GLFWwindow*, double, double)
+    }
+    class Camera{
+        - _position : vec3
+        - _direction : vec3
+        - _up : vec3
+        - _right : vec3
+        - _fov : float
+        - _pitch : float
+        - _yaw : float
+        - _near : float
+        - _far : float
+        - _movementSpeed : float
+        - _sensitivity : float
+        - _projectionMatrix : mat4
+        - _viewMatrix : mat4
+        + OnUpdate()
+        + GetPosition()
+        + GetDirection()
+        + GetUp()
+        + GetRight()
+        + GetNear()
+        + GetFar()
+        + GetFov()
+        + GetProyectionMatrix()
+        + GetViewMatrix()
+        + GetViewProyection()
+    }
+
+    class CustomCamera{
+        ...
+    }
+
+    CustomCamera --|> Camera
+
+
+%%    class Mesh{
+%%        -VertexArray* _vao
+%%        -vector~float~ _vertices
+%%        -uint32_t _numVertices
+%%        -vector~uint32_t~ _indices
+%%        -uint32_t _numIndicess
+%%        +AddVertices(float*, uint32_t)
+%%        +AddIndices(uint32_t*, uint32_t)
+%%        +Build()
+%%        +Draw()
+%%        +Bind()
+%%        +Unbind()
+%%        +CreateBox() Mesh*
+%%        +CreateSphere() Mesh*
+%%        +CreatePlane() Mesh*
+%%        +Debug()
+%%        +GetVertexArray() VertexArray&
+%%        +GetNumVertices() uint32_t
+%%        +GetNumIndices() uint32_t
+%%        +SetLayoutBuffer(LayoutBuffer)
+%%    }
+
+    class Material{
+        - _color : vec3
+        - _ambient : vec3
+        - _diffuse : vec3
+        - _specular : vec3
+        - _shininess : float
+        - _diffuseMap : Texture*
+        - _specularMap : Texture*
+        - _emissionMap : Texture*
+        - _hasDiffuseMap : bool
+        - _hasSpecularMap : bool
+        - _hasEmissionMap : bool
+        - _shader : Shader*
+        + LoadDiffuseMap(string)
+        + LoadSpecularMap(string)
+        + LoadEmissionMap(string)
+        + LoadShader(Shader)
+        + LoadShader(string, string, string)
+        + UnsetShader()
+        + Bind()
+    }
+
+%%    class Shader{
+%%        -uint32_t _shaderUID
+%%        -map~GLenum, string~ _shaderSources
+%%        -map~GLenum, string~ _filePaths
+%%        -string _debugName
+%%        -bool _isCompiled
+%%        -static map~string, Shader*~ _shadersCache
+%%        +LoadShader(string, string, string) Shader*
+%%        +LoadShader(string, string, string, string) Shader*
+%%        +Debug()
+%%        +SetBool(string, bool)
+%%        +SetFloat(string, float)
+%%        +SetFloat2(string, glm::vec2)
+%%        +SetFloat3(string, glm::vec3)
+%%        +SetFloat4(string, glm::vec4)
+%%        +SetInt(string, int)
+%%        +SetIntArray(string, int*, uint32_t)
+%%        +SetMat4(string, glm::mat4)
+%%        +Bind()
+%%        +Unbind()
+%%    }
+
+%%    class Texture{
+%%        -uint32_t _uid
+%%        -uint32_t _width
+%%        -uint32_t _height
+%%        -uint8_t _channels
+%%        -string _path
+%%        +Bind(GLenum)
+%%        +Delete()
+%%        +GetUID() uint32_t
+%%        +GetWidth() uint32_t
+%%        +GetHeight() uint32_t
+%%        +GetSize() glm::vec2
+%%        +GetPath() string
+%%        +IsLoaded() bool
+%%    }
+
+%%    class Buffer{
+%%        <<abstract>>
+%%        #uint32_t _uid
+%%        +Bind()
+%%        +Unbind()
+%%        +GetUid() uint32_t
+%%    }
+%%    class VertexBuffer{
+%%        +Bind()
+%%        +Unbind()
+%%    }
+%%    class IndexBuffer{
+%%        -uint32_t _count
+%%        +Bind()
+%%        +Unbind()
+%%        +GetCount() uint32_t
+%%    }
+%%    class VertexArray{
+%%        -vector~VertexBuffer*~ _vertexBuffers
+%%        -IndexBuffer* _indexBuffer
+%%        -LayoutBuffer _layoutBuffer
+%%        +Bind()
+%%        +Unbind()
+%%        +AddVertexBuffer(VertexBuffer&)
+%%        +AddIndexBuffer(IndexBuffer&)
+%%        +CreateVertexBuffer(float*, uint32_t)
+%%        +CreateIndexBuffer(uint32_t*, uint32_t)
+%%        +GetVertexBuffers() vector~VertexBuffer*~&
+%%        +GetIndexBuffer() IndexBuffer*&
+%%        +GetLayoutBuffer() LayoutBuffer&
+%%        +SetLayoutBuffer(LayoutBuffer)
+%%    }
+%%    class LayoutBuffer{
+%%        -vector~Layout~ _layouts
+%%        -uint32_t _size
+%%        +Build()
+%%        +Enable()
+%%        +Add(Layout)
+%%        +Bind()
+%%        +Unbind()
+%%        +Debug()
+%%        +ToString() string
+%%    }
+%%    class Layout{
+%%        +string _name
+%%        +uint32_t _position
+%%        +DataType _type
+%%        +uint32_t _size
+%%        +uint32_t _offset
+%%    }
+    class FrameBuffer{
+        - _fbo : uint32_t
+        - _depthTexture : uint32_t
+        - _width : uint32_t
+        - _height : uint32_t
+
+        + bind()
+        + Unbind()
+        + getDepthTextureID()
+        + GetWidth()
+        + GetHeight()
+    }
+    class CubeMapFrameBuffer{
+        - _fbo : uint32_t
+        - _depthCubeMap : uint32_t
+        - _width : uint32_t
+        - _height : uint32_t
+
+        + Bind()
+        + Unbind()
+        + Delete()
+        + BindDepthCubeMap(GLenum textureUnit)
+        + GetDepthCubeMapID()
+        + GetWidth()
+        + GetHeight()
+    }
+
+    %% World and Entity System Classes
+    class World{
+        -SparseSet~Entity~ _entities
+        -ComponentRegistry _componentRegistry
+        -Camera* _camera
+        -int _uid
+        +static int worldInstanceCount
+        +CreateEntity(string) Entity*
+        +RemoveEntity(uint32_t) bool
+        +DebugPrint()
+        +GetNumEntities() size_t
+        +GetEntities() SparseSet~Entity~&
+        +GetComponentRegistry() ComponentRegistry&
+        +GetCamera() Camera*
+        +SetCamera(Camera*)
+        +GetUID() int
+    }
+    class WorldManager{
+        - _worlds : map~uint32_t, World*~
+        - _currentWorld : World*
+        + Init()
+        + Update()
+        + Close()
+        + CreateWorld(uint32_t) World*
+        + GetWorld(uint32_t) World*
+        + AddWorld(World*, uint32_t) World*
+        + SetCurrentWorld(size_t)
+        + GetCurrentWorld() World*
+    }
+    class Entity{
+        - _uid : uint32_t
+        - _name : string
+        - _parentWorld : World*
+        + CreateComponent~T~() T*
+        + GetComponent~T~() T*
+        + RemoveComponent~T~()
+        + HasComponent~T~() bool
+        + GetUID() uint32_t
+        + GetName() string
+        + GetParentWorld() World*
+        + SetName(string)
+    }
+    class Component{
+        <<abstract>>
+        - _owner : Entity*
+        + Init()
+        + GetOwner() Entity*
+        + SetOwner(Entity*)
+    }
+    class Transform{
+        + position : vec3
+        + rotation : vec3
+        + scale : vec3
+        - _parent : Transform*
+        + Init()
+        + GetTransform() glm::mat4
+        + GetWorldTransform() glm::mat4
+        + SetParent(Transform*)
+        + GetParent() Transform*
+    }
+    class MeshRenderable{
+        - _mesh : Mesh*
+        - _material : Material*
+        + Init()
+        + SetMesh(Mesh*)
+        + SetMaterial(Material*)
+        + GetMesh() Mesh*
+        + GetMaterial() Material*
+    }
+    class SpriteRenderable{
+        + texture : Texture
+        + color : vec4
+        + Init()
+    }
+    class ComponentRegistry{
+        - std::tuple~
+        ComponentStorage~Transform~,
+        ComponentStorage~MeshRenderable~,
+        ComponentStorage~SpriteRenderable~,
+        ComponentStorage~PointLight~,
+        ComponentStorage~DirectionalLight~,
+        ComponentStorage~ColliderComponent~,
+        ComponentStorage~RigidBody~,
+        ComponentStorage~Tag~>
+        ~ _components;
+
+        + AddComponent~T~(uid, component)
+        + CreateComponent~T~(uid)
+        + RemoveComponent~T~(uid)
+        + HasComponent~T~(uid)
+        + GetStorage~T~()
+    }
+
+    class ComponentStorage{
+        + Create(index)
+    }
+
+    class SparseSet~T~{
+        - _dense : vector<T>
+        - _denseIndex : vector<int>
+        - _sparse : vector<int>
+        - _size : size_t
+        - _capacity : size_t
+        - _denseCapacity : size_t
+        - _lastInsertedSparse : size_t
+
+        + Add(index , value : T)
+        + Pop(index)
+        + Get(index)
+        + GetFirst()
+        + GetLast()
+        + Contains(index)
+        + Clear()
+        + GetDenseIndex()
+        + Print()
+        + PrintIndex()
+        + begin()
+        + end()
+    }
+
+    %% Physics System Classes
+    class PhysicsManager{
+        - _gravity : vec3
+        - _beta : float
+        - _onSimulation : bool
+        + Init()
+        + Update()
+        + Close()
+        + IsOnSimulation() bool
+        + SetOnSimulation(bool)
+    }
+
+    class RigidBody{
+        - _linearVelocity : vec3
+        - _force : vec3
+        - _mass : float
+        - _torque : vec3
+        - _angularVelocity : vec3
+        - _inertiaTensor : mat3
+        - _inverseInertiaTensor : mat3
+        - _enabled : bool
+
+        + RigidBody()
+        + Init()
+        + Reset()
+        + GetMass()
+        + GetLinearVelocity()
+        + GetAngularVelocity()
+        + GetForce()
+        + GetTorque()
+        + GetInertiaTensor()
+        + GetInverseInertiaTensor()
+        + IsEnabled()
+        + GetEnabled()
+        + SetEnabled(bool isEnabled)
+        + SetMass(float mass)
+        + SetLinearVelocity(const glm::vec3& linearVelocity)
+        + SetAngularVelocity(const glm::vec3& angularVelocity)s
+        + SetForce(const glm::vec3& force)
+        + SetTorque(const glm::vec3& torque)
+        + SetInertiaTensor(mat3)
+    }
+
+    class ColliderType{
+        <<enumeration>>
+        BOX_COLLIDER
+        SPHERE_COLLIDER
+        COUNT
+    }
+
+    class Collider{
+        <<abstract>>
+        + GetType() ColliderType
+        + DebugDraw()
+        + CalculateInertiaTensor(float) glm::mat3
+        + CalculateInverseInertiaTensor(float) glm::mat3
+    }
+
+    class BoxCollider{
+        - _extents : vec3
+        - _center : vec3
+        - _rotation : quat
+        + GetType() ColliderType
+        + CalculateInertiaTensor(float) : mat3
+        + CalculateInverseInertiaTensor(float) : mat3
+    }
+
+    class SphereCollider{
+        - _radius : float
+        - _center : vec3
+        + CalculateInertiaTensor(float) : mat3
+        + CalculateInverseInertiaTensor(float) : mat3
+    }
+
+    class ColliderComponent{
+        - _collider : Collider*
+        - _isTrigger : bool
+    }
+
+    class Collision{
+        + ColliderComponent A
+        + ColliderComponent B
+        + CollisionPoint point
+    }
+
+    class CollisionPoint{
+        + a : vec3
+        + b : vec3
+        + point : vec3
+        + normal : vec3
+        + length : float
+        + collided : bool
+    }
+
+    class CollisionDispatcher{
+        - CollisionDispatchFunction : function~CollisionPoint~
+        IntersectBoxSphere(Collider* colA, Collider* colB);
+        IntersectSphereSphere(Collider* colA, Collider* colB);
+        IntersectBoxBox(Collider* colA, Collider* colB);
+        Dispatch(Collider* colA, Collider* colB);
+    }
+
+    Collision "*" *-- "1" CollisionPoint
+    Collision "*" *-- "2" ColliderComponent
+    ColliderComponent -- Collider
+    Collision -- CollisionDispatcher
+
+    %% Light Components
+    class PointLight{
+        - _ambient : vec3
+        - _diffuse : vec3
+        - _specular : vec3
+        - _constant : float
+        - _linear : float
+        - _quadratic : float
+        + Init()
+        + GetAmbient()
+        + GetDiffuse()
+        + GetSpecular()
+        + GetConstant()
+        + GetLinear()
+        + GetQuadratic()
+        + SetAmbient(glm::vec3)
+        + SetDiffuse(glm::vec3)
+        + SetSpecular(glm::vec3)
+        + SetConstant(float)
+        + SetLinear(float)
+        + SetQuadratic(float)
+    }
+    class DirectionalLight{
+        - _direction : vec3
+        - _ambient : vec3
+        - _diffuse : vec3
+        - _specular : vec3
+        - _shadowNearPlane : float
+        - _shadowFarPlane : float
+        - _shadowOrthoSize : float
+        - _lightSpaceMatrix : mat4
+        - _lightSpaceMatrixDirty : bool
+        - UpdateLightSpaceMatrix()
+        + Init()
+        + GetDirection()
+        + GetAmbient()
+        + GetDiffuse()
+        + GetSpecular()
+        + GetShadowNearPlane()
+        + GetShadowFarPlane()
+        + GetShadowOrthoSize()
+        + GetLightSpaceMatrix()
+        + SetDirection(glm::vec3)
+        + SetAmbient(glm::vec3)
+        + SetDiffuse(glm::vec3)
+        + SetSpecular(glm::vec3)
+        + SetShadowNearPlane(float)
+        + SetShadowFarPlane(float)
+        + SetShadowOrthoSize(float)
+    }
+
+    %% Input System
+    class Input{
+        - _xpos : float
+        - _ypos : float
+        - _xDeltaPos : float
+        - _yDeltaPos : float
+        - CursorMode _cursorMode
+        + Init()
+        + Update()
+        + Close()
+        + IsKeyPressed(int)
+        + IsMouseButtonPressed(int)
+        + IsKeyReleased(int)
+        + GetMousePosition() glm::vec2
+        + GetMouseDelta() glm::vec2
+        + GetMouseScroll() glm::vec2
+    }
+
+    class Layer{
+        <<abstract>>
+        # string _name
+        + Init()
+        + Update()
+        + Close()
+        + HandleEvent(Event&)
+        + GetName() string
+    }
+    class Onion{
+        - _layers : vector~Layer*~
+        %% - _eventBus : EventBus*
+        + Init()
+        + Update()
+        + Close()
+        + PushLayer(Layer*)
+        + PopLayer(Layer*)
+        + begin()
+        + end()
+        + GetEventBus()
+    }
+    class EventBus{
+        - _subscribers : map~EventType, vector~Layer*~~
+        + Subscribe(EventType, Layer*)
+        + Unsubscribe(EventType, Layer*)
+        + Notify(Event&)
+    }
+
+    class EventType{
+        <<enumeration>>
+        NONE
+        WINDOW_CLOSE
+        WINDOW_RESIZE
+        COMETA_KEY_PRESS_EVENT
+        COMETA_KEY_RELEASE_EVENT
+        COMETA_MOUSE_MOVE_EVENT
+        COMETA_MOUSE_SCROLL_EVENT
+        COMETA_MOUSE_BUTTON_PRESS_EVENT
+        COMETA_MOUSE_BUTTON_RELEASE_EVENT
+    }
+
+    class Event{
+        - _handled : bool
+        - _type : EventType
+        + GetType()
+    }
+
+    class MouseMoveEvent{
+        - _x : float
+        - _y : float
+        + GetX()
+        + GetY()
+    }
+
+    class MouseScrollEvent{
+        - _offsetX : float
+        - _offsetY : float
+        + GetOffsetX()
+        + GetOffsetY()
+    }
+
+    class MousePressButtonEvent{
+        - mouseCode : int
+        + GetMouseCode()
+    }
+
+    class MouseReleaseButtonEvent{
+        - mouseCode : int
+        + GetMouseCode()
+    }
+
+    class KeyPressEvent{
+        - _key : int
+        - _repeat : bool
+        + GetKey()
+        + GetRepeat()
+    }
+
+    class KeyReleaseEvent{
+        - _key : int
+        + GetKey()
+    }
+
+    %% Scripting
+    class ScriptManager{
+        - map<uint64_t, bool> _activeCollisions
+        + GenerateCollisionKey(Entity* entityA, Entity* entityB)
+        + Init()
+        + Update()
+        + Close()
+        + InitScripts(World* world)
+        + UpdateScripts(World* world, float deltaTime)
+        + CloseScripts(World* world)
+        + ProcessCollision(Entity* entityA, Entity* entityB, Collision* collision, bool isColliding)
+    }
+
+    class Script{
+        - _script : BaseScript*
+        + Attach~T~(Args)
+        + Detach()
+        + OnInit()
+        + OnUpdate()
+        + OnClose()
+        + OnCollisionEnter(Entity* other, Collision* collision)
+        + OnCollisionExit(Entity* other, Collision* collision)
+    }
+
+    class BaseScript{
+        + OnInit()
+        + OnUpdate(float deltaTime)
+        + OnClose()
+        + OnCollisionEnter(Entity* other, Collision* collision)
+        + OnCollisionExit(Entity* other, Collision* collision)
+    }
+
+    class CustomScript{
+        <<abstract>>
+        + OnInit()
+        + OnUpdate(float deltaTime)
+        + OnClose()
+        + OnCollisionEnter(Entity* other, Collision* collision)
+        + OnCollisionExit(Entity* other, Collision* collision)
+    }
+
+    Script --|> Component
+    Script --> BaseScript
+    CustomScript --|> BaseScript
+    ScriptManager --> Script
+    ScriptManager --|> SingletonManager
+
+    %% Events
+    Event <|-- MouseMoveEvent
+    Event <|-- MouseScrollEvent
+    Event <|-- MousePressButtonEvent
+    Event <|-- MouseReleaseButtonEvent
+    Event <|-- KeyPressEvent
+    Event <|-- KeyReleaseEvent
+
+
+    SingletonManager --|> Singleton
+    Application --|> Singleton
+    Renderer --|> SingletonManager
+    Window --|> Singleton
+    Time --|> SingletonManager
+    WorldManager --|> SingletonManager
+    PhysicsManager --|> SingletonManager
+    Input --|> SingletonManager
+    EventBus --|> Singleton
+
+    VertexBuffer --|> Buffer
+    IndexBuffer --|> Buffer
+    VertexArray --|> Buffer
+    CubeMapFrameBuffer --|> FrameBuffer
+
+    BoxCollider --|> Collider
+    SphereCollider --|> Collider
+
+    Transform --|> Component
+    MeshRenderable --|> Component
+    SpriteRenderable --|> Component
+    PointLight --|> Component
+    DirectionalLight --|> Component
+    ColliderComponent --|> Component
+    Rigidbody --|> Component
+
+    %% Composition Relationships
+    Application "1" *-- "1" Onion
+    Application "1" *-- "1" WorldManager
+    Application "1" *-- "1" Renderer
+    Application "1" *-- "1" PhysicsManager
+    Application "1" *-- "1" Time
+    Application "1" *-- "1" Input
+
+    Renderer "1" *-- "1" Window
+    Renderer "1" *-- "1" FrameBuffer
+    Renderer "1" *-- "1" CubeMapFrameBuffer
+%%    Renderer "1" *-- "*" Shader
+
+    World "1" *-- "*" Entity
+    World "1" *-- "1" ComponentRegistry
+    World "1" *-- "1" Camera
+    WorldManager "1" *-- "*" World
+
+    Entity "1" *-- "*" Component
+
+    ComponentRegistry "1" *-- "*" ComponentStorage
+    ComponentStorage --|> SparseSet
+
+    Mesh "1" *-- "1" VertexArray
+    Material "1" *-- "*" Texture
+    Material "1" *-- "1" Shader
+
+    VertexArray "1" *-- "*" VertexBuffer
+    VertexArray "1" *-- "1" IndexBuffer
+    VertexArray "1" *-- "1" LayoutBuffer
+    LayoutBuffer "1" *-- "*" Layout
+
+    MeshRenderable "1" *-- "1" Mesh
+    MeshRenderable "1" *-- "1" Material
+    SpriteRenderable "1" *-- "1" Texture
+
+    ColliderComponent "1" *-- "1" Collider
+
+    Onion "1" *-- "*" Layer
+    Onion "1" *-- "1" EventBus
+    EventBus -- Event
+
+
