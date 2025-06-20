@@ -23,7 +23,7 @@ IncludeDir["Assimp"] = "vendor/assimp/include"
 
 include "vendor/glad"
 
-project "CometaGL"
+project "CometaFramework"
 	kind "ConsoleApp"
 	language "C++"
     cppdialect "C++17"
