@@ -31,11 +31,21 @@ public:
 			return this->Get(index);
 		}
 
-		// Increase dense and sparse capacity
-		if (this->_size >= this->_denseCapacity - 1) {
-			this->_denseCapacity = this->_capacity = this->_denseCapacity * 2;
-			this->_dense.resize(this->_denseCapacity);
-			this->_sparse.resize(this->_capacity, -1);
+		// Increase dense and dense Index capacity if full or about to be full
+		if (_size >= _denseCapacity - 1) {
+			_denseCapacity = _denseCapacity * 2;
+			_dense.resize(_denseCapacity);
+			_denseIndex.resize(_denseCapacity);
+			_capacity = _denseCapacity;
+			_sparse.resize(_capacity, -1);
+			std::cout << "Increased dense capacity to: " << _denseCapacity << std::endl;
+		}
+
+		// Increase sparse if index to insert is out of scope
+		while (_capacity <= index)
+		{
+			_capacity *= 2;
+			_sparse.resize(_capacity, -1);
 		}
 
 		// std::cout << "Created component for Entity: " << index << " new dense capacity: " << this->_denseCapacity << std::endl;

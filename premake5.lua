@@ -40,6 +40,7 @@ project "CometaFramework"
         "vendor/imgui/misc/cpp/imgui_stdlib.h",
         "src"
     }
+
 	files { 
             "src/**.h",
             "src/**.cpp",
@@ -53,6 +54,11 @@ project "CometaFramework"
             "vendor/imgui/backends/imgui_impl_glfw.cpp",
             "vendor/imgui/backends/imgui_impl_opengl3.cpp",
             "vendor/imgui/misc/cpp/imgui_stdlib.cpp"
+    }
+
+    libdirs{
+        "vendor/assimp/include/assimp",
+        "vendor/assimp/bin/Debug"
     }
 
 
@@ -92,17 +98,28 @@ project "CometaFramework"
 
     -- WINDOWS Expecifications
     filter "system:windows"
+        includedirs{
+            "vendor/assimp/include/assimp",
+            "vendor/assimp/bin/Debug"
+        }
         libdirs{
             "vendor/GLFW/lib",
-            "vendor/assimp/lib"
+            "vendor/assimp/lib/Debug",
+            "vendor/assimp/bin/Debug"
         }
         links{
             "glfw3",
             "glad",
-            "assimp-vc143-mt"
+            "assimp-vc143-mtd"
+            -- "assimp"
         }
-        defines { "PLATFORM_WINDOWS" }
 
+        -- postbuildcommands {
+        --     "{COPYFILE} vendor/assimp/bin/Debug/assimp-vc143-mtd.dll bin/%{cfg.targetdir}"
+        -- }
+
+        buildoptions { "/NODEFAULTLIB:MSVCRT" }
+        defines { "PLATFORM_WINDOWS" }
 
 	filter { "configurations:Debug" }
         defines { "DEBUG" }

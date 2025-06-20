@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Settle for macOS and windows
 # Define the OS of compilation by using "-t" flag followed by "macos", "windows" or "linux"
 

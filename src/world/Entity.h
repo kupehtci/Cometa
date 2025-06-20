@@ -85,5 +85,4 @@ public:
 
 
 
-
 #endif //COMETA_ENTITY_H
