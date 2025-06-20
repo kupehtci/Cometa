@@ -210,6 +210,7 @@ void UILayer::Update()
 
         // end of Performance Graphcs
 
+
         ImGui::SeparatorText("Joysticks");
 
         if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(JOYSTICK_1)){
@@ -217,9 +218,9 @@ void UILayer::Update()
             {
                 CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_1);
                 float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
-                ImGui::DragFloat2("Axis left", axa);
+                ImGui::DragFloat2("J1 Axis left", axa);
                 float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
-                ImGui::DragFloat2("Axis left", axb);
+                ImGui::DragFloat2("J1 Axis right", axb);
 
                 ImGui::TreePop();
             }
@@ -230,9 +231,9 @@ void UILayer::Update()
             {
                 CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_2);
                 float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
-                ImGui::DragFloat2("Axis left", axa);
+                ImGui::DragFloat2("J2 Axis left", axa);
                 float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
-                ImGui::DragFloat2("Axis left", axb);
+                ImGui::DragFloat2("J2 Axis right", axb);
 
                 ImGui::TreePop();
             }
