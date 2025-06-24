@@ -1,7 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 12/2/25.
-//
-
 #include "Camera.h"
 #include "Window.h"
 #include "Renderer.h"
@@ -74,7 +70,7 @@ Camera::~Camera() {
 
 void Camera::OnUpdate() {
 
-    // Move camera with ALT key pressedx
+    // --- Keyboard and mouse movement ---
     _right = glm::normalize(glm::cross(_up, _direction)); 
 
     if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
@@ -90,6 +86,27 @@ void Camera::OnUpdate() {
         }
         if(Input::IsKeyPressed(GLFW_KEY_D)) {
             _position -= _right * _movementSpeed * Time::GetDeltaTime();
+        }
+    }
+
+    // --- Gamepad movement ---
+    if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(CometaJoystick::JOYSTICK_1)) {
+        CometaGamepadInfo gamepad = Input::GetGamepadInfo(CometaJoystick::JOYSTICK_1);
+        if (gamepad.buttons[5]) {
+            float moveX = gamepad.axes[0]; 
+            float moveY = gamepad.axes[1]; 
+            const float deadzone = 0.15f;
+            if (fabs(moveX) > deadzone || fabs(moveY) > deadzone) {
+                _position += - _right * moveX * _movementSpeed * Time::GetDeltaTime();
+                _position += _direction * -moveY * _movementSpeed * Time::GetDeltaTime();
+            }
+
+            float lookX = gamepad.axes[2];
+            float lookY = gamepad.axes[3];
+            if (fabs(lookX) > deadzone || fabs(lookY) > deadzone) {
+                _yaw += lookX * _sensitivity * 5.0f;
+                _pitch -= lookY * _sensitivity * 5.0f;
+            }
         }
     }
 

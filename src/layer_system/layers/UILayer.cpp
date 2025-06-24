@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 1/5/25.
-//
 
 #include "UILayer.h"
 
@@ -10,18 +7,30 @@
 #include <render/Renderer.h>
 #include <world/Entity.h>
 #include <world/WorldManager.h>
-
+#include <world/Components.h>
 
 #include <filesystem>
 #include <string>
 #include <vector>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <input/Input.h>
 #include <physics/PhysicsManager.h>
 namespace fs = std::filesystem;
+
+// Custom class for UI utilities
+#include "ui/UIUtils.h"
+
+#include "core/Application.h"
 
 UILayer::UILayer()
 {
     _name = "UILayer";
+    // Initialize history arrays with zeros
+    for (int i = 0; i < HISTORY_SIZE; i++) {
+        _fpsHistory[i] = 0.0f;
+        _deltaTimeHistory[i] = 0.0f;
+    }
+    _historyIndex = 0;
 }
 
 UILayer::~UILayer()
@@ -53,78 +62,86 @@ void UILayer::Init()
 
     // Fonst assign
     float fontSize = 15.0f;
+
     io.Fonts->AddFontFromFileTTF("resources/Fonts/jetbrains/JetBrainsMonoNL-Regular.ttf", fontSize);
     io.FontDefault = io.Fonts->AddFontFromFileTTF("resources/Fonts/jetbrains/JetBrainsMonoNL-Regular.ttf", fontSize);
 
-    style->WindowPadding = ImVec2(15, 15);
-    style->WindowRounding = 5.0f;
-    style->FramePadding = ImVec2(5, 5);
-    style->FrameRounding = 4.0f;
-    style->ItemSpacing = ImVec2(12, 8);
-    style->ItemInnerSpacing = ImVec2(8, 6);
-    style->IndentSpacing = 25.0f;
-    style->ScrollbarSize = 15.0f;
-    style->ScrollbarRounding = 9.0f;
-    style->GrabMinSize = 5.0f;
-    style->GrabRounding = 3.0f;
+    auto &colors = ImGui::GetStyle().Colors;
 
-    style->ScaleAllSizes(0.3f);
+    // Windows
+    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.1f, 0.13f, 1.0f};
+    colors[ImGuiCol_MenuBarBg] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
 
-    //style->ChildRounding = 3.0f; 
-    //style->ChildBorderSize = 15.0f;
+    // Border
+    colors[ImGuiCol_Border] = ImVec4{0.44f, 0.37f, 0.61f, 0.29f};
+    colors[ImGuiCol_BorderShadow] = ImVec4{0.0f, 0.0f, 0.0f, 0.24f};
 
+    // Text
+    colors[ImGuiCol_Text] = ImVec4{1.0f, 1.0f, 1.0f, 1.0f};
+    colors[ImGuiCol_TextDisabled] = ImVec4{0.5f, 0.5f, 0.5f, 1.0f};
 
+    // Headers
+    colors[ImGuiCol_Header] = ImVec4{0.13f, 0.13f, 0.17, 1.0f};
+    colors[ImGuiCol_HeaderHovered] = ImVec4{0.19f, 0.2f, 0.25f, 1.0f};
+    colors[ImGuiCol_HeaderActive] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
 
-    style->Colors[ImGuiCol_Text] = ImVec4(0.40f, 0.39f, 0.38f, 1.00f);
-    style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.40f, 0.39f, 0.38f, 0.77f);
-    style->Colors[ImGuiCol_WindowBg] = ImVec4(0.92f, 0.91f, 0.88f, 0.70f);
-    // style->Colors[ImGuiCol_ChildWindowBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.58f);
-    style->Colors[ImGuiCol_PopupBg] = ImVec4(0.92f, 0.91f, 0.88f, 0.92f);
-    style->Colors[ImGuiCol_Border] = ImVec4(0.84f, 0.83f, 0.80f, 0.65f);
-    style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
-    style->Colors[ImGuiCol_FrameBg] = ImVec4(1.00f, 0.98f, 0.95f, 1.00f);
-    style->Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.99f, 1.00f, 0.40f, 0.78f);
-    style->Colors[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 1.00f, 0.00f, 1.00f);
-    style->Colors[ImGuiCol_TitleBg] = ImVec4(1.00f, 0.98f, 0.95f, 1.00f);
-    style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
-    style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-    style->Colors[ImGuiCol_MenuBarBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.47f);
-    style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(1.00f, 0.98f, 0.95f, 1.00f);
-    style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.00f, 0.00f, 0.00f, 0.21f);
-    style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.90f, 0.91f, 0.00f, 0.78f);
-    style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-    // style->Colors[ImGuiCol_ComboBg] = ImVec4(1.00f, 0.98f, 0.95f, 1.00f);
-    style->Colors[ImGuiCol_CheckMark] = ImVec4(0.25f, 1.00f, 0.00f, 0.80f);
-    
-    style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.00f, 0.00f, 0.00f, 0.14f);
-    style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    // Buttons
+    colors[ImGuiCol_Button] = ImVec4{0.13f, 0.13f, 0.17, 1.0f};
+    colors[ImGuiCol_ButtonHovered] = ImVec4{0.19f, 0.2f, 0.25f, 1.0f};
+    colors[ImGuiCol_ButtonActive] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_CheckMark] = ImVec4{0.74f, 0.58f, 0.98f, 1.0f};
 
-    style->Colors[ImGuiCol_Button] = ImVec4(0.00f, 0.00f, 0.00f, 0.14f);
-    style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.99f, 1.00f, 0.22f, 0.86f);
-    style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    // Popups
+    colors[ImGuiCol_PopupBg] = ImVec4{0.1f, 0.1f, 0.13f, 0.92f};
 
-    style->Colors[ImGuiCol_Header] = ImVec4(0.655f, 0.627f, 0.741f, 0.76f);
-    style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.655f, 0.627f, 0.741f, 0.86f);
-    style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.655f, 0.627f, 0.741f, 1.00f);
+    // Slider
+    colors[ImGuiCol_SliderGrab] = ImVec4{0.44f, 0.37f, 0.61f, 0.54f};
+    colors[ImGuiCol_SliderGrabActive] = ImVec4{0.74f, 0.58f, 0.98f, 0.54f};
 
-    // style->Colors[ImGuiCol_Column] = ImVec4(0.00f, 0.00f, 0.00f, 0.32f);
-    /*style->Colors[ImGuiCol_ColumnHovered] = ImVec4(0.25f, 1.00f, 0.00f, 0.78f);
-    style->Colors[ImGuiCol_ColumnActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);*/
-    style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.04f);
-    style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.25f, 1.00f, 0.00f, 0.78f);
-    style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-   /* style->Colors[ImGuiCol_CloseButton] = ImVec4(0.40f, 0.39f, 0.38f, 0.16f);
-    style->Colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.40f, 0.39f, 0.38f, 0.39f);
-    style->Colors[ImGuiCol_CloseButtonActive] = ImVec4(0.40f, 0.39f, 0.38f, 1.00f);*/
-    style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-    style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-    style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-    style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-    style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
-    //style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+    // Frame BG
+    colors[ImGuiCol_FrameBg] = ImVec4{0.13f, 0.13, 0.17, 1.0f};
+    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.19f, 0.2f, 0.25f, 1.0f};
+    colors[ImGuiCol_FrameBgActive] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
 
-    // Set viewport
-    // ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    // Tabs
+    colors[ImGuiCol_Tab] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_TabHovered] = ImVec4{0.24, 0.24f, 0.32f, 1.0f};
+    colors[ImGuiCol_TabActive] = ImVec4{0.2f, 0.22f, 0.27f, 1.0f};
+    colors[ImGuiCol_TabUnfocused] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+
+    // Title
+    colors[ImGuiCol_TitleBg] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_TitleBgActive] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+
+    // Scrollbar
+    colors[ImGuiCol_ScrollbarBg] = ImVec4{0.1f, 0.1f, 0.13f, 1.0f};
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4{0.16f, 0.16f, 0.21f, 1.0f};
+    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4{0.19f, 0.2f, 0.25f, 1.0f};
+    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4{0.24f, 0.24f, 0.32f, 1.0f};
+
+    // Seperator
+    colors[ImGuiCol_Separator] = ImVec4{0.44f, 0.37f, 0.61f, 1.0f};
+    colors[ImGuiCol_SeparatorHovered] = ImVec4{0.74f, 0.58f, 0.98f, 1.0f};
+    colors[ImGuiCol_SeparatorActive] = ImVec4{0.84f, 0.58f, 1.0f, 1.0f};
+
+    // Resize Grip
+    colors[ImGuiCol_ResizeGrip] = ImVec4{0.44f, 0.37f, 0.61f, 0.29f};
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4{0.74f, 0.58f, 0.98f, 0.29f};
+    colors[ImGuiCol_ResizeGripActive] = ImVec4{0.84f, 0.58f, 1.0f, 0.29f};
+
+    // Docking
+    colors[ImGuiCol_DockingPreview] = ImVec4{0.44f, 0.37f, 0.61f, 1.0f};
+
+    style->TabRounding = 4;
+    style->ScrollbarRounding = 9;
+    style->WindowRounding = 7;
+    style->GrabRounding = 3;
+    style->FrameRounding = 3;
+    style->PopupRounding = 4;
+    style->ChildRounding = 4;
+    style->FrameBorderSize = 0.0f; 
 }
 
 void UILayer::Update()
@@ -133,20 +150,28 @@ void UILayer::Update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    float deltaTime = Time::GetDeltaTime();
+    float fps = 1/deltaTime;
+    
+    // Update plot timer for the Performance Graphs
+    _plotUpdateTimer += deltaTime;
+    if (_plotUpdateTimer >= 1.0f) {
+        _fpsHistory[_historyIndex] = fps;
+        _deltaTimeHistory[_historyIndex] = deltaTime;
+        _historyIndex = (_historyIndex + 1) % HISTORY_SIZE;
+        _plotUpdateTimer = 0.0f;
+    }
 
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None
     | ImGuiWindowFlags_NoCollapse
     | ImGuiWindowFlags_MenuBar;
-    // | ImGuiConfigFlags_DockingEnable;
 
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed |
                            ImGuiTreeNodeFlags_SpanAvailWidth |
                            ImGuiTreeNodeFlags_FramePadding;
 
-
-
-    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags)){
-
+    if (ImGui::Begin("Cometa", &_mainWindowOpen, windowFlags))
+    {
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Scene utils"))
@@ -156,39 +181,109 @@ void UILayer::Update()
                     ImGui::Text("Hierarchy");
                     _sceneHierarchyOpen  = !_sceneHierarchyOpen;
                 }
-
+                // Add ImGui Demo toggle
+                if (ImGui::MenuItem("Show ImGui Demo", nullptr, _showImGuiDemo))
+                {
+                    _showImGuiDemo = !_showImGuiDemo;
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
         }
 
-        // if (ImGui::Button("Create Empty Entity"))
-        // {
-        //     auto worldManager = WorldManager::GetInstancePtr();
-        //
-        // }
-
         ImGui::SeparatorText("Time");
-        ImGui::Text("Current DeltaTime %f", Time::GetDeltaTime());
+        ImGui::Text("Current DeltaTime %f", deltaTime);
+        ImGui::Text("Current FPS %f", fps);
         ImGui::Text("Current Time Scale %f", Time::GetTimeScale());
 
+        // Display FPS and Delta Time graphs
+        ImGui::SeparatorText("Performance Graphs");
+        
+        // Performance Graphs
+        // FPS Graph
+        ImGui::Text("FPS History (Last 30 seconds, updated every 2 seconds)");
+        ImGui::PlotLines("##FPS", _fpsHistory, HISTORY_SIZE, _historyIndex, 
+            "FPS", 0.0f, 200.0f, ImVec2(-1, 80.0f));
+        
+        // Delta Time Graph
+        ImGui::Text("Delta Time History (Last 30 seconds, updated every 2 seconds)");
+        ImGui::PlotLines("##DeltaTime", _deltaTimeHistory, HISTORY_SIZE, _historyIndex, 
+            "Delta Time (s)", 0.0f, 0.1f, ImVec2(-1, 80.0f));
+
+        // end of Performance Graphcs
+
+
+        ImGui::SeparatorText("Joysticks");
+
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_1) && Input::IsJoystickAGamepad(JOYSTICK_1)){
+            if (ImGui::TreeNode("Joystick 1"))
+            {
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_1);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
+                ImGui::DragFloat2("J1 Axis left", axa);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("J1 Axis right", axb);
+
+                ImGui::TreePop();
+            }
+        }
+
+        if (Input::IsJoystickConnected(CometaJoystick::JOYSTICK_2) && Input::IsJoystickAGamepad(JOYSTICK_2)){
+            if (ImGui::TreeNode("Joystick 2"))
+            {
+                CometaGamepadInfo gamepadInfo = Input::GetGamepadInfo(JOYSTICK_2);
+                float axa[2] = {gamepadInfo.axes[0], gamepadInfo.axes[1]};
+                ImGui::DragFloat2("J2 Axis left", axa);
+                float axb[2] = {gamepadInfo.axes[2], gamepadInfo.axes[3]};
+                ImGui::DragFloat2("J2 Axis right", axb);
+
+                ImGui::TreePop();
+            }
+        }
 
         ImGui::SeparatorText("Physics simulation");
 
-        isOnSimulation = PhysicsManager::GetInstancePtr()->IsOnSimulation();
-        if (ImGui::Checkbox("OnSimulation", &isOnSimulation))
-        {
+        PhysicsManager* physicsManager = PhysicsManager::GetInstancePtr();
+
+        isOnSimulation = physicsManager->IsOnSimulation();
+        if (ImGui::Checkbox("OnSimulation", &isOnSimulation)){
             PhysicsManager::GetInstancePtr()->SetOnSimulation(isOnSimulation);
         }
+
+        float globalGravity[3] = {physicsManager->GetGravity().x, physicsManager->GetGravity().y, physicsManager->GetGravity().z};
+        if (ImGui::DragFloat3("Gravity", globalGravity)){
+            physicsManager->SetGravity(glm::vec3(globalGravity[0], globalGravity[1], globalGravity[2]));
+        }
+
+        float beta = physicsManager->GetBeta();
+        if (ImGui::DragFloat("Baumgarte Coefficient", &beta, 0.05, 0.0f, 1.0f)){
+            physicsManager->SetBeta(beta);
+        }
+
+        ImGui::SeparatorText("Onion layers");
+        Onion* onion = Application::GetInstancePtr()->GetOnion();
+        uint8_t layerCounter = 0;
+        for (auto it = onion->begin(); it != onion->end(); ++it)
+        {
+            Layer* layer = *it;
+            ImGui::Text("%i - %s", layerCounter, layer->GetName().c_str());
+            layerCounter++;
+        }
+        ImGui::Text("Number of layers: %i", layerCounter);
+        ImGui::Separator();
+
 
         ImGui::End();
     }
 
 
     // ------------ SCENE HIERARCHY ------------
-
     BuildSceneHierarchyPanel();
 
+    // Show ImGui demo window if toggled
+    if (_showImGuiDemo) {
+        ImGui::ShowDemoWindow(&_showImGuiDemo);
+    }
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -215,6 +310,8 @@ void UILayer::HandleEvent(Event& event)
 
     // Handle IMGUI events
     std::cout << "UILayer::HandleEvent" << std::endl;
+
+    // Implement ImGUI event handling here
 }
 
 
@@ -360,22 +457,39 @@ void UILayer::BuildSceneHierarchyPanel()
 
                                     // ====== MATERIAL MAPS ======
                                     ImGui::SeparatorText("DIFFUSE MAP");
-                                    ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
-                                    ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetDiffuseMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetDiffuseMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetDiffuseMap()->GetWidth(), material->GetDiffuseMap()->GetHeight());
+                                        ImGui::Image(material->GetDiffuseMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No diffuse map");
+                                    }
 
                                     ImGui::SeparatorText("SPECULAR MAP");
-                                    ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
-                                    ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetSpecularMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetSpecularMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetSpecularMap()->GetWidth(), material->GetSpecularMap()->GetHeight());
+                                        ImGui::Image(material->GetSpecularMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
+                                    else
+                                    {
+                                        ImGui::Text("No specular map");
+                                    }
 
                                     ImGui::SeparatorText("EMISSION MAP");
-                                    ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
-                                    ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
-                                    ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
-                                    ImGui::Dummy(ImVec2(0,10));
+                                    if(material->GetEmissionMap())
+                                    {
+                                        ImGui::Text("Path: %s", material->GetEmissionMap()->GetPath().c_str());
+                                        ImGui::Text("Resolution: %d x %d", material->GetEmissionMap()->GetWidth(), material->GetEmissionMap()->GetHeight());
+                                        ImGui::Image(material->GetEmissionMap()->GetUID(), _thumbnailSize);
+                                        ImGui::Dummy(ImVec2(0,10));
+                                    }
 
                                     // ====== SHADER ======
                                     std::shared_ptr<Shader> shader = material->GetShader();
@@ -549,23 +663,40 @@ void UILayer::BuildSceneHierarchyPanel()
                                     BoxCollider* boxCollider = dynamic_cast<BoxCollider*>(collider);
 
                                     float boxColliderExtents[3] = {boxCollider->GetExtents().x, boxCollider->GetExtents().y, boxCollider->GetExtents().z};
-                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 1.0f))
+                                    if (ImGui::DragFloat3("Extents", boxColliderExtents, 0.01f, 0.0f, 0))
                                     {
                                         boxCollider->SetExtents(glm::vec3(boxColliderExtents[0], boxColliderExtents[1], boxColliderExtents[2]));
                                     }
 
-
+                                    float boxColliderCenterOffset[3] = {boxCollider->GetCenter().x, boxCollider->GetCenter().y, boxCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", boxColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        boxCollider->SetCenter(glm::vec3(boxColliderCenterOffset[0], boxColliderCenterOffset[1], boxColliderCenterOffset[2]));
+                                    }
 
                                     float boxColliderRotation[4] = { boxCollider->GetRotation().w, boxCollider->GetRotation().x, boxCollider->GetRotation().y, boxCollider->GetRotation().z};
                                     if (ImGui::DragFloat4( "Rotation (w, x, y, z)", boxColliderRotation, 0.01f, 0.0f, 1.0f))
                                     {
                                         boxCollider->SetRotation(glm::quat(boxColliderRotation[0], boxColliderRotation[1], boxColliderRotation[2], boxColliderRotation[3]));
                                     }
+
                                 }
                                 else if (dynamic_cast<SphereCollider*>(collider) != nullptr)
                                 {
                                     ImGui::Text("---Sphere Collider---");
+                                    SphereCollider* sphereCollider = dynamic_cast<SphereCollider*>(collider);
 
+                                    float sphereColliderCenterOffset[3] = {sphereCollider->GetCenter().x, sphereCollider->GetCenter().y, sphereCollider->GetCenter().z };
+                                    if (ImGui::DragFloat3("Center", sphereColliderCenterOffset, 0.1f, 0.0f, 0))
+                                    {
+                                        sphereCollider->SetCenter(glm::vec3(sphereColliderCenterOffset[0], sphereColliderCenterOffset[1], sphereColliderCenterOffset[2]));
+                                    }
+
+                                    float sphereRadius = sphereCollider->GetRadius();
+                                    if (ImGui::SliderFloat("Radius", &sphereRadius, 0.01f, 0.0f, "%.2f"))
+                                    {
+                                        sphereCollider->SetRadius(sphereRadius);
+                                    }
                                 }
                             }
                             else
@@ -584,11 +715,24 @@ void UILayer::BuildSceneHierarchyPanel()
                     {
                         if (ImGui::TreeNode("RigidBody"))
                         {
-
                             if (ImGui::Checkbox("Enabled", &rigidBody->GetEnabledRef()))
 
                             if (ImGui::SmallButton("Reset")) {
                                 rigidBody->Reset();
+                            }
+
+                            bool isAffectedGravity = rigidBody->IsAffectedByGravity();
+                            if (ImGui::Checkbox("Affected by gravity", &isAffectedGravity))
+                            {
+                                rigidBody->SetAffectedByGravity(isAffectedGravity);
+                            }
+
+                            ImGui::Text("Linear movement");
+
+                            float mass = rigidBody->GetMass();
+                            if (ImGui::DragFloat("Mass", &mass, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetMass(mass);
                             }
 
                             float linVel[3] = {rigidBody->GetLinearVelocity().x, rigidBody->GetLinearVelocity().y, rigidBody->GetLinearVelocity().z};
@@ -596,10 +740,40 @@ void UILayer::BuildSceneHierarchyPanel()
                                 rigidBody->SetLinearVelocity({linVel[0], linVel[1], linVel[2]});
                             }
 
+                            float force[3] = {rigidBody->GetForce().x, rigidBody->GetForce().y, rigidBody->GetForce().z};
+                            if (ImGui::DragFloat3("Force ", force, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetForce({force[0], force[1], force[2]});
+                            }
+
+                            ImGui::Text("Angular movement");
+                            float torque[3] = {rigidBody->GetTorque().x, rigidBody->GetTorque().y, rigidBody->GetTorque().z};
+                            if (ImGui::DragFloat3("Torque ", torque, 0.01f, 0.0f, 1.0f))
+                            {
+                                rigidBody->SetTorque({torque[0], torque[1], torque[2]});
+                            }
+
+                            float angularVel[3] = {rigidBody->GetAngularVelocity().x, rigidBody->GetAngularVelocity().y, rigidBody->GetAngularVelocity().z};
+                            if (ImGui::DragFloat3("Angular velocity", angularVel, 0.01f, 0.0f, 1.0))
+                            {
+                                rigidBody->SetAngularVelocity(glm::vec3(angularVel[0], angularVel[1], angularVel[2]));
+                            }
+
+                            CometaUIUtils::ShowMat3(rigidBody->GetInertiaTensor(), "Inertia tensor", true);
+                            CometaUIUtils::ShowMat3(rigidBody->GetInverseInertiaTensor(), "Inverse Inertia tensor", true);
+
                             ImGui::TreePop();
                         }
-
-
+                    }
+                    
+                    // Display Script component if it exists
+                    Script* script = entity.GetComponent<Script>();
+                    if (script)
+                    {
+                        if (ImGui::TreeNode("Script"))
+                        {
+                            ImGui::TreePop();
+                        }
                     }
 
                     ImGui::TreePop();

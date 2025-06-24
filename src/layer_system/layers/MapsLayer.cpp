@@ -1,12 +1,10 @@
-// Created by Daniel Laplana Gimeno on 18/4/25.
-//
 
 #include "MapsLayer.h"
 
 //
 #include <layer_system/EventBus.h>
 #include <physics/Collider.h>
-
+#include "debug/Assertion.h"
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
@@ -15,6 +13,9 @@
 #include "world/WorldManager.h" // #include "world/World.h"
 #include "world/Components.h"
 
+#include "input/Input.h"
+
+#include "world/TestScript.h"
 
 
 MapsLayer::MapsLayer()
@@ -81,33 +82,31 @@ void MapsLayer::Init()
 
     WorldManagerRef->CreateWorld(0);
     WorldManagerRef->SetCurrentWorld(0);
-    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0); // World();
+    std::shared_ptr<World> world0 = WorldManagerRef->GetWorld(0);
+
     world0->SetCamera(&_camera);
 
     Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 3.0f, -7.0f);
 
     MeshRenderable* ent0Renderable =  ent0->CreateComponent<MeshRenderable>();
+
     RigidBody* ent0Rb = ent0->CreateComponent<RigidBody>();
+    ent0Rb->SetAffectedByGravity(true);
+
     ColliderComponent* ent0Collider = ent0->CreateComponent<ColliderComponent>();
     ent0Collider->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    DirectionalLight* dir_light = ent0->CreateComponent<DirectionalLight>();
-    std::cout << "Directional light direction: (" << dir_light->GetDirection().x << " , " << dir_light->GetDirection().y << " , " << dir_light->GetDirection().z << ")" <<std::endl;
+    // ent0Collider->SetCollider<SphereCollider>(2.0f);
 
     std::shared_ptr<Material> material0 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(0.5f, 0.5f, 0.5f),
                                     64.0f,
-                                    /*"resources/bricks_diffuse_map.jpg"*/ "resources/white.jpg",
-                                    "resources/white.jpg",
+                                    "resources/bricks_diffuse_map.jpg",  // "resources/white.jpg",
+                                    "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
-
-    // material0->LoadShader("Main Shader",
-    //     "src/render/shaders/light_map_shader.vert",
-    //     "src/render/shaders/light_map_shader.frag");
     material0->LoadShader("Main Shader",
         "src/render/shaders/blinn_phong_shader.vert",
         "src/render/shaders/blinn_phong_shader.frag");
@@ -124,6 +123,13 @@ void MapsLayer::Init()
         });
     mesh0->Build();
     ent0Renderable->SetMesh(mesh0);
+
+    Script* script = ent0->CreateComponent<Script>();
+    script->Attach<TestScript>("Hello");
+
+    // --------- Directional Light ---------
+    Entity* directionalLight = world0->CreateEntity("DirectionalLight");
+    DirectionalLight* dirLightComp = directionalLight->CreateComponent<DirectionalLight>();
 
     // --------- Other entity same as ent0 ---------
 
@@ -185,29 +191,6 @@ void MapsLayer::Init()
     ptlight0->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
     ptlight0->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
 
-    // OTHER LIGHT ENTITY
-
-    // Entity* ptLight2 = world0->CreateEntity("Light Point 2");
-    // ptLight2->CreateComponent<PointLight>();
-    // MeshRenderable* ptLight2Renderable = ptLight2->CreateComponent<MeshRenderable>();
-    //
-    // std::shared_ptr<Material> material2 = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(1.0f, 0.5f, 0.31f),
-    //                                 glm::vec3(0.5f, 0.5f, 0.5f),
-    //                                 2.0f,
-    //                                 "resources/white.jpg",
-    //                                 "resources/white.jpg",
-    //                                 "resources/black.jpg");
-    //
-    // material2->LoadShader("Point light 2 shader","src/render/shaders/light_shader.vert", "src/render/shaders/light_shader.frag");
-    //
-    // ptLight2Renderable->SetMesh(Mesh::CreateSphere());
-    // ptLight2Renderable->SetMaterial(material2);
-    // ptLight2->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.0f, 5.0f);
-    // ptLight2->GetComponent<Transform>()->scale = glm::vec3(0.2f, 0.2f, 0.2f);
-
-
     // ------------ Floor entity ------------
     Entity* floor = world0->CreateEntity("Floor");
     floor->GetComponent<Transform>()->position = glm::vec3(0.0f, -2.0f, -7.0f);
@@ -228,6 +211,53 @@ void MapsLayer::Init()
 
     floorMaterial->LoadShader("Main Shader","src/render/shaders/blinn_phong_shader.vert", "src/render/shaders/blinn_phong_shader.frag");
     floorRenderable->SetMaterial(floorMaterial);
+    ColliderComponent* collider = floor->CreateComponent<ColliderComponent>();
+    // Set box collider with extents to cover the floor and moved down
+    Collider* floorCollider = collider->SetCollider<BoxCollider>(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, -10.0f, 0.0f));
+    dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
+
+
+
+    // Create Duck entity
+    for (int i = 0; i < 2; i++){
+        Entity* duck = world0->CreateEntity("Duck" + std::to_string(i));
+        Transform* transform = duck->GetComponent<Transform>();
+        transform->position = glm::vec3(0.0f, i * 10.0f, -5.0f);
+        transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        // duck->CreateComponent<RigidBody>();
+        // ColliderComponent* colliderComp = duck->CreateComponent<ColliderComponent>();
+        // colliderComp->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
+
+
+        MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
+
+        std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(1.0f, 0.5f, 0.31f),
+                                        glm::vec3(0.5f, 0.5f, 0.5f),
+                                        64.0f,
+                                        "resources/white.jpg",
+                                        "resources/white.jpg",
+                                        "resources/black.jpg");
+                                        
+
+        duckMaterial->LoadShader("Main Shader",
+            "src/render/shaders/blinn_phong_shader.vert",
+            "src/render/shaders/blinn_phong_shader.frag");
+        duckRenderable->SetMaterial(duckMaterial);
+        duckRenderable->LoadModel("resources/models/Duck.fbx");
+    }
+
+    // Load Zelda
+    Entity* zelda = world0->CreateEntity("Zelda");
+    Transform* transform = zelda->GetComponent<Transform>();
+    transform->position = glm::vec3(0.0f, 5.0f, -5.0f);
+    transform->rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
+    transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    MeshRenderable* zeldaRenderable = zelda->CreateComponent<MeshRenderable>();
+    zeldaRenderable->LoadModel("resources/models/ZeldaHorse/HorseLoved.fbx");
 
 
     // Event bus subscription
@@ -251,6 +281,10 @@ void MapsLayer::HandleEvent(Event& event){
     std::cout << "EventType: " << event.GetEventType() << std::endl;
     if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)
     {
+        if (dynamic_cast<KeyPressEvent*>(&event)->GetKey() == GLFW_KEY_SPACE)
+        {
+
+        }
         std::cout << "MAPS LAYER handled key press: " << dynamic_cast<KeyPressEvent&>(event).GetKey() << std::endl;
         event.SetHandled();
     }

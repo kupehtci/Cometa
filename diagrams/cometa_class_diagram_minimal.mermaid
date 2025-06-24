@@ -1,0 +1,259 @@
+classDiagram
+    direction LR
+
+    class Singleton~T~{
+        <<abstract>>
+    }
+    class SingletonManager~T~{
+        <<abstract>>
+    }
+    class Application{
+    }
+    class Time{
+    }
+
+%% Rendering System Classes
+    class Renderer{
+
+    }
+    class Window{
+    }
+    class Camera{
+
+    }
+
+    class Mesh{
+    }
+
+    class Material{
+    }
+
+    class Shader{
+    }
+
+    class Texture{
+    }
+
+    class Buffer{
+        <<abstract>>
+    }
+    class VertexBuffer{
+    }
+    class IndexBuffer{
+    }
+    class VertexArray{
+    }
+    class LayoutBuffer{
+    }
+    class Layout{
+    }
+    class FrameBuffer{
+    }
+    class CubeMapFrameBuffer{
+    }
+
+%% World and Entity System Classes
+    class World{
+    }
+    class WorldManager{
+    }
+    class Entity{
+    }
+    class Component{
+        <<abstract>>
+    }
+    class Transform{
+    }
+    class MeshRenderable{
+    }
+    class SpriteRenderable{
+
+    }
+    class ComponentRegistry{
+    }
+
+    class ComponentStorage{
+    }
+
+    class SparseSet~T~{
+    }
+
+%% Physics System Classes
+    class PhysicsManager{
+    }
+
+    class RigidBody{
+    }
+
+    class ColliderType{
+        <<enumeration>>
+    }
+
+    class Collider{
+        <<abstract>>
+    }
+
+    class BoxCollider{
+    }
+
+    class SphereCollider{
+    }
+
+    class ColliderComponent{
+    }
+
+    class Collision{
+    }
+
+    class CollisionPoint{
+    }
+
+    class CollisionDispatcher{
+    }
+
+    Collision "*" *-- "1" CollisionPoint
+    Collision "*" *-- "2" ColliderComponent
+    ColliderComponent -- Collider
+    Collision -- CollisionDispatcher
+
+%% Light Components
+    class PointLight{
+    }
+    class DirectionalLight{
+    }
+
+%% Input System
+    class Input{
+    }
+
+    class Layer{
+        <<abstract>>
+    }
+    class Onion{
+    }
+    class EventBus{
+    }
+
+    class EventType{
+        <<enumeration>>
+    }
+
+    class Event{
+    }
+
+    class MouseMoveEvent{
+    }
+
+    class MouseScrollEvent{
+    }
+
+    class MousePressButtonEvent{
+    }
+
+    class MouseReleaseButtonEvent{
+    }
+
+    class KeyPressEvent{
+    }
+
+    class KeyReleaseEvent{
+    }
+
+%% Scripting
+    class ScriptManager{
+    }
+
+    class Script{
+    }
+
+    class BaseScript{
+    }
+
+    class CustomScript{
+        <<abstract>>
+    }
+
+    Script --|> Component
+    Script --> BaseScript
+    CustomScript --|> BaseScript
+    ScriptManager --> Script
+    ScriptManager --|> SingletonManager
+
+%% Events
+    Event <|-- MouseMoveEvent
+    Event <|-- MouseScrollEvent
+    Event <|-- MousePressButtonEvent
+    Event <|-- MouseReleaseButtonEvent
+    Event <|-- KeyPressEvent
+    Event <|-- KeyReleaseEvent
+
+
+    SingletonManager --|> Singleton
+    Application --|> Singleton
+    Renderer --|> SingletonManager
+    Window --|> Singleton
+    Time --|> SingletonManager
+    WorldManager --|> SingletonManager
+    PhysicsManager --|> SingletonManager
+    Input --|> SingletonManager
+    EventBus --|> Singleton
+
+    VertexBuffer --|> Buffer
+    IndexBuffer --|> Buffer
+    VertexArray --|> Buffer
+    CubeMapFrameBuffer --|> FrameBuffer
+
+    BoxCollider --|> Collider
+    SphereCollider --|> Collider
+
+    Transform --|> Component
+    MeshRenderable --|> Component
+    SpriteRenderable --|> Component
+    PointLight --|> Component
+    DirectionalLight --|> Component
+    ColliderComponent --|> Component
+    Rigidbody --|> Component
+
+%% Composition Relationships
+    Application "1" *-- "1" Onion
+    Application "1" *-- "1" WorldManager
+    Application "1" *-- "1" Renderer
+    Application "1" *-- "1" PhysicsManager
+    Application "1" *-- "1" Time
+    Application "1" *-- "1" Input
+
+    Renderer "1" *-- "1" Window
+    Renderer "1" *-- "1" FrameBuffer
+    Renderer "1" *-- "1" CubeMapFrameBuffer
+%%    Renderer "1" *-- "*" Shader
+
+    World "1" *-- "*" Entity
+    World "1" *-- "1" ComponentRegistry
+    World "1" *-- "1" Camera
+    WorldManager "1" *-- "*" World
+
+    Entity "1" *-- "*" Component
+
+    ComponentRegistry "1" *-- "*" ComponentStorage
+    ComponentStorage --|> SparseSet
+
+    Mesh "1" *-- "1" VertexArray
+    Material "1" *-- "*" Texture
+    Material "1" *-- "1" Shader
+
+    VertexArray "1" *-- "*" VertexBuffer
+    VertexArray "1" *-- "1" IndexBuffer
+    VertexArray "1" *-- "1" LayoutBuffer
+    LayoutBuffer "1" *-- "*" Layout
+
+    MeshRenderable "1" *-- "1" Mesh
+    MeshRenderable "1" *-- "1" Material
+    SpriteRenderable "1" *-- "1" Texture
+
+    ColliderComponent "1" *-- "1" Collider
+
+    Onion "1" *-- "*" Layer
+    Onion "1" *-- "1" EventBus
+    EventBus -- Event
+
+

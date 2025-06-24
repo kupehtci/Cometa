@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 5/12/24.
-//
 #include <iostream>
 
 #ifndef AURAGL_ASSERTION_H

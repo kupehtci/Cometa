@@ -1,9 +1,7 @@
-//
-// Created by Daniel Laplana Gimeno on 28/4/25.
-//
 
 #include "WorldManager.h"
-// #include "World.h"
+#include "ScriptSystem.h"
+#include "core/Time.h"
 
 WorldManager::WorldManager(){
     //this->_worlds = std::vector<std::shared_ptr<World>>(10, nullptr);
@@ -17,12 +15,25 @@ WorldManager::~WorldManager(){
 
 void WorldManager::Init(){
     // std::cout << "WorldManager::Init()" << std::endl;
+    
+    // Initialize ScriptSystem
+    if (_currentWorld) {
+        ScriptManagerRef->InitScripts(_currentWorld.get());
+    }
 }
 void WorldManager::Update(){
     // std::cout << "WorldManager::Update()" << std::endl;
+    
+    // Update scripts in the current world
+    if (_currentWorld) {
+        ScriptManagerRef->UpdateScripts(_currentWorld.get(), Time::GetDeltaTime());
+    }
 }
 void WorldManager::Close(){
     // std::cout << "WorldManager::Close()" << std::endl;
+    
+    // Clean up ScriptSystem
+    // ScriptManagerRef::Destroy();
 }
 
 // ------------ World management methods ------------
@@ -62,6 +73,10 @@ void WorldManager::SetCurrentWorld(size_t index)
         return;
     }
     _currentWorld = _worlds[index];
+
+    if (_currentWorld) {
+        ScriptManagerRef->InitScripts(_currentWorld.get());
+    }
 }
 
 std::shared_ptr<World> WorldManager::GetCurrentWorld()

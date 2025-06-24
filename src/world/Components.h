@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <functional>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm.hpp>
@@ -12,18 +13,22 @@
 #include "render/Texture.h"
 #include "render/Mesh.h"
 #include "render/Material.h"
+#include "render/Model.h"
 
 #include "physics/Collider.h"
-class Collider;
+class Collision;
 
 class Entity;
 class Renderer;
+
+
+#include "world/BaseScript.h"
 
 /**
  * Component virtual class
  */
 class Component {
-private:
+protected:
 	Entity* _owner = nullptr;
 
 public:
@@ -106,21 +111,55 @@ public:
 class MeshRenderable : public Component {
 private:
 	std::shared_ptr<Mesh> _mesh = nullptr;
+	std::vector<std::shared_ptr<Mesh>> _meshes; // Model loading meshes
 	std::shared_ptr<Material> _material = nullptr;
 
 public:
 	MeshRenderable() = default;
 	MeshRenderable(const MeshRenderable&) = default;
 
+	MeshRenderable& operator=(const MeshRenderable& other) {
+		if (this != &other) {
+			_meshes.clear();
+			_meshes = other._meshes;
+			_material = other._material;
+			if (!_meshes.empty()) {
+				_mesh = _meshes[0];
+			} else {
+				_mesh = nullptr;
+			}
+		}
+		return *this;
+	}
+
 	void Init() override {}
 
 	// Properties management methods
-
-	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
+	void SetMesh(const std::shared_ptr<Mesh>& mesh) { _meshes.insert(_meshes.begin(), mesh); }
 	void SetMaterial(const std::shared_ptr<Material>& material) {_material = material;}
 
+	// Model loading
+	void LoadModel(const std::string& path) {
+		Model model(path);
+		_meshes.clear();
+
+		for (const auto& mesh : model.GetMeshes()) {
+			_meshes.push_back(mesh);
+			
+			std::shared_ptr<Material> meshMaterial = model.GetMeshMaterial(mesh);
+			if (meshMaterial) {
+				_material = meshMaterial;
+			}
+		}
+
+		if (!_meshes.empty()) {
+			_mesh = _meshes[0];
+		}
+	}
+
 	// ------------ GETTERS ------------
-	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _mesh; }
+	[[nodiscard]] std::shared_ptr<Mesh> GetMesh() const { return _meshes[0]; }
+	[[nodiscard]] std::vector<std::shared_ptr<Mesh>> GetMeshes() const { return _meshes; }
 	[[nodiscard]] std::shared_ptr<Material> GetMaterial() const { return _material; }
 };
 
@@ -334,7 +373,9 @@ private:
 	glm::mat3 _inertiaTensor = glm::mat3();
 	glm::mat3 _inverseInertiaTensor = glm::mat3();
 
+	// Utils
 	bool _enabled = true;
+	bool _affectedByGravity = true;
 
 public:
 	RigidBody(){
@@ -343,13 +384,16 @@ public:
 		_force = { 0.0f, 0.0f, 0.0f };
 		_mass = 1.0f;
 
-		_enabled = true;
 
 		// Angular
 		_torque = { 0.0f, 0.0f, 0.0f };
 		_angularVelocity = { 0.0f, 0.0f, 0.0f };
 		_inertiaTensor = glm::mat3();
 		_inverseInertiaTensor = glm::mat3();
+
+		// Utils
+		_enabled = true;
+		_affectedByGravity = true;
 	}
 
 	RigidBody(const RigidBody&) = default;
@@ -369,6 +413,9 @@ public:
 	[[nodiscard]] bool& GetEnabledRef() { return _enabled; }
 	void SetEnabled(bool isEnabled) { _enabled = isEnabled; }
 
+	[[nodiscard]] bool IsAffectedByGravity() const { return _affectedByGravity; }
+	void SetAffectedByGravity(bool value) {_affectedByGravity = value;}
+
 	void SetMass(float mass) { _mass = mass; Init(); }
 	void SetLinearVelocity(const glm::vec3& linearVelocity) { _linearVelocity = linearVelocity; }
 	void SetAngularVelocity(const glm::vec3& angularVelocity) { _angularVelocity = angularVelocity; }
@@ -379,9 +426,6 @@ public:
 		_inertiaTensor = inertiaTensor;
 		_inverseInertiaTensor = glm::inverse(_inertiaTensor);
 	}
-
-
-
 };
 
 
@@ -398,6 +442,87 @@ public:
 
 	std::string GetTag() { return _tag;  }
 	void SetTag(const std::string& tag) { _tag = tag; }
+};
+
+
+
+class Script : public Component {
+private:
+	std::shared_ptr<BaseScript> _script = nullptr;
+public:
+	Script() = default;
+	Script(const Script&) = default;
+
+	// Move constructor
+	// Script(Script&& other)
+	// 	: Component(std::move(other)),  // Don't forget to move the base class
+	// 	  _script(std::move(other._script))
+	// {}
+	//
+	// // Move assignment operator
+	// Script& operator=(Script&& other) noexcept {
+	// 	if (this != &other) {
+	// 		Component::operator=(std::move(other));  // Move base class
+	// 		_script = std::move(other._script);
+	// 	}
+	// 	return *this;
+	// }
+
+	void Init() override {}
+	/**
+	 * Create and attach a script of the T type with the args passed to the constructor
+	 * @tparam T Type of script to attach
+	 * @tparam Args typename for Arguments
+	 * @param args Arguments of the constructor of the script to attach
+	 */
+	template<typename T, typename... Args>
+	void Attach(Args&&... args){
+		_script = std::make_shared<T>(std::forward<Args>(args)...);
+		_script->_entity = _owner;
+	}
+
+	/**
+	 * Detach a script from the script component
+	 */
+	void Detach(){
+		_script.reset();
+	}
+
+	// Base script abstraction methods
+	void OnInit() const
+	{
+		if (_script){
+			_script->OnInit();
+		}
+	}
+
+	void OnUpdate(float deltaTime) const
+	{
+		if (_script){
+			_script->OnUpdate(deltaTime);
+		}
+	}
+
+	void OnClose() const
+	{
+		if (_script){
+			_script->OnClose();
+		}
+	}
+
+	void OnCollisionEnter(Entity* other, Collision* collision) const
+	{
+		if (_script){
+			_script->OnCollisionEnter(other, collision);
+		}
+	}
+
+	void OnCollisionExit(Entity* other, Collision* collision) const
+	{
+		if (_script){
+			_script->OnCollisionExit(other, collision);
+		}
+	}
 };
 
 #endif
