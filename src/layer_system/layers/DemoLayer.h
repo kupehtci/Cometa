@@ -1,6 +1,6 @@
 
-#ifndef COMETA_MAPSLAYER_H
-#define COMETA_MAPSLAYER_H
+#ifndef COMETA_DEMO_LAYER_H
+#define COMETA_DEMO_LAYER_H
 
 #include <iostream>
 #include <render/Material.h>
@@ -9,15 +9,15 @@
 #include "render/Texture.h"
 #include "render/Camera.h"
 
-class MapsLayer : public Layer{
+class DemoLayer : public Layer{
 
 private:
     Camera _camera;
     // Material _mat;
 
 public:
-    MapsLayer();
-    ~MapsLayer() override;
+    DemoLayer();
+    ~DemoLayer() override;
 
 public:
     void Init() override;
@@ -27,4 +27,4 @@ public:
     void HandleEvent(Event& event) override;
 };
 
-#endif //COMETA_MAPSLAYER_H
+#endif //COMETA_DEMO_LAYER_H

@@ -14,8 +14,8 @@ protected:
 	std::vector<int> _sparse;
 
 	size_t _size = 0;					// Number of elements within the Sparse Set. Its also a pointer to the end of the sparse set
-	size_t _capacity = 1000;				// Maximum capacity of the Sparse.
-	size_t _denseCapacity = 1000;		// Maximum capacity of the Dense.
+	size_t _capacity = 100;				// Maximum capacity of the Sparse.
+	size_t _denseCapacity = 100;		// Maximum capacity of the Dense.
 
 	size_t _lastInsertedSparse = 0;		// Keeps track of the last item inserted in the sparse. This is helpful for popping items (removing efficiently)
 
@@ -27,8 +27,13 @@ public:
 		_denseCapacity = 1000;
 
 		_dense.reserve(_denseCapacity);
-		//_dense = std::vector<T>(_denseCapacity);
+		_dense.resize(_denseCapacity); 
+		
 		_denseIndex.reserve(_denseCapacity);  // = std::vector<int>(_denseCapacity);
+		
+		_denseIndex.resize(_denseCapacity);
+		
+		_sparse.resize(_capacity, -1);
 		_sparse = std::vector<int>(_capacity, -1);		// initialize with all values to -1. Used for checking an empty value
 	}
 

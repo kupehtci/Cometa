@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 12/2/25.
-//
 
 #ifndef AURAGL_CAMERA_H
 #define AURAGL_CAMERA_H

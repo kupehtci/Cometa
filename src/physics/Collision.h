@@ -1,6 +1,4 @@
-//
-// Created by Daniel Laplana Gimeno on 7/5/25.
-//
+
 
 #ifndef COMETA_COLLISION_H
 #define COMETA_COLLISION_H

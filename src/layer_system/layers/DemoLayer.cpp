@@ -1,34 +1,35 @@
 
-#include "MapsLayer.h"
+#include "DemoLayer.h"
 
 //
 #include <layer_system/EventBus.h>
 #include <physics/Collider.h>
-#include "debug/Assertion.h"
+
 #include "render/Renderer.h"
 #include "render/Shader.h"
 #include "render/Mesh.h"
 
 #include "world/Entity.h"
-#include "world/WorldManager.h" // #include "world/World.h"
+#include "world/WorldManager.h"
 #include "world/Components.h"
 
 #include "input/Input.h"
 
 #include "world/TestScript.h"
+#include "scripts/ZeldaWanderScript.h"
 
 
-MapsLayer::MapsLayer()
+DemoLayer::DemoLayer()
 {
-    _name = "MapsLayer";
+    _name = "DemoLayer";
 }
 
-MapsLayer::~MapsLayer()
+DemoLayer::~DemoLayer()
 {
 
 }
 
-void MapsLayer::Init()
+void DemoLayer::Init()
 {
     float vertices[] = {
         // Front face
@@ -86,6 +87,7 @@ void MapsLayer::Init()
 
     world0->SetCamera(&_camera);
 
+    // Entity 0 is the only object that is loaded using custom Vertices and indices as demostration of this capability
     Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 3.0f, -7.0f);
 
@@ -103,7 +105,7 @@ void MapsLayer::Init()
                                     glm::vec3(1.0f, 0.5f, 0.31f),
                                     glm::vec3(0.5f, 0.5f, 0.5f),
                                     64.0f,
-                                    "resources/bricks_diffuse_map.jpg",  // "resources/white.jpg",
+                                    "resources/bricks_diffuse_map.jpg",  
                                     "resources/bricks_specular_map.jpg",
                                     "resources/black.jpg");
 
@@ -217,66 +219,39 @@ void MapsLayer::Init()
     dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
 
-
-    // Create Duck entity
-    for (int i = 0; i < 2; i++){
-        Entity* duck = world0->CreateEntity("Duck" + std::to_string(i));
-        Transform* transform = duck->GetComponent<Transform>();
-        transform->position = glm::vec3(0.0f, i * 10.0f, -5.0f);
-        transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-        // duck->CreateComponent<RigidBody>();
-        // ColliderComponent* colliderComp = duck->CreateComponent<ColliderComponent>();
-        // colliderComp->SetCollider<BoxCollider>(glm::vec3(0.5f, 0.5f, 0.5f));
-
-
-        MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
-
-        std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-                                        glm::vec3(1.0f, 0.5f, 0.31f),
-                                        glm::vec3(1.0f, 0.5f, 0.31f),
-                                        glm::vec3(0.5f, 0.5f, 0.5f),
-                                        64.0f,
-                                        "resources/white.jpg",
-                                        "resources/white.jpg",
-                                        "resources/black.jpg");
-                                        
-
-        duckMaterial->LoadShader("Main Shader",
-            "src/render/shaders/blinn_phong_shader.vert",
-            "src/render/shaders/blinn_phong_shader.frag");
-        duckRenderable->SetMaterial(duckMaterial);
-        duckRenderable->LoadModel("resources/models/Duck.fbx");
-    }
-
     // Load Zelda
     Entity* zelda = world0->CreateEntity("Zelda");
     Transform* transform = zelda->GetComponent<Transform>();
-    transform->position = glm::vec3(0.0f, 5.0f, -5.0f);
+    transform->position = glm::vec3(0.0f, -2.0f, -5.0f);
     transform->rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
     transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
+
 
     MeshRenderable* zeldaRenderable = zelda->CreateComponent<MeshRenderable>();
     zeldaRenderable->LoadModel("resources/models/ZeldaHorse/HorseLoved.fbx");
 
+    // Attach ZeldaWanderScript
+    Script* zeldaScript = zelda->CreateComponent<Script>();
+    zeldaScript->Attach<ZeldaWanderScript>(zelda, 10.0f);
+    COMETA_MSG("ZeldaWanderScript attached to Zelda entity");
 
     // Event bus subscription
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_PRESS_EVENT, this);
     EventBus::GetInstancePtr()->Subscribe(EventType::COMETA_KEY_RELEASE_EVENT, this);
 }
 
-void MapsLayer::Update()
+void DemoLayer::Update()
 {
 
 }
 
 
-void MapsLayer::Close()
+void DemoLayer::Close()
 {
 
 }
 
-void MapsLayer::HandleEvent(Event& event){
+void DemoLayer::HandleEvent(Event& event){
     std::cout << "MapsLayer::HandleEvent" << std::endl;
     std::cout << "EventType: " << event.GetEventType() << std::endl;
     if (event.GetEventType() == COMETA_KEY_PRESS_EVENT)

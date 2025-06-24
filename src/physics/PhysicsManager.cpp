@@ -1,6 +1,4 @@
-//
-// Created by Daniel Laplana Gimeno on 6/5/25.
-//
+
 #include "physics/PhysicsManager.h"
 
 #include "world/WorldManager.h"
