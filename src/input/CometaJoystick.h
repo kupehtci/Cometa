@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 2/6/25.
-//
 
 #ifndef COMETA_JOYSTICK_H
 #define COMETA_JOYSTICK_H

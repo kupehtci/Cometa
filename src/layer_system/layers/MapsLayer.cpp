@@ -1,5 +1,3 @@
-// Created by Daniel Laplana Gimeno on 18/4/25.
-//
 
 #include "MapsLayer.h"
 

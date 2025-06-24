@@ -1,5 +1,3 @@
-// Created by Daniel Laplana Gimeno on 18/4/25.
-//
 
 #include "DemoLayer.h"
 
@@ -89,6 +87,7 @@ void DemoLayer::Init()
 
     world0->SetCamera(&_camera);
 
+    // Entity 0 is the only object that is loaded using custom Vertices and indices as demostration of this capability
     Entity* ent0 = world0->CreateEntity("Entity0");
     ent0->GetComponent<Transform>()->position = glm::vec3(0.0f, 3.0f, -7.0f);
 
@@ -219,34 +218,6 @@ void DemoLayer::Init()
     Collider* floorCollider = collider->SetCollider<BoxCollider>(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, -10.0f, 0.0f));
     dynamic_cast<BoxCollider*>(floorCollider)->SetCenter(glm::vec3(0.0f, -10.0f, 0.0f));
 
-
-
-    // Create Duck entity
-    for (int i = 0; i < 2; i++){
-        Entity* duck = world0->CreateEntity("Duck" + std::to_string(i));
-        Transform* transform = duck->GetComponent<Transform>();
-        transform->position = glm::vec3(0.0f, i * 10.0f, -5.0f);
-        transform->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-
-        MeshRenderable* duckRenderable = duck->CreateComponent<MeshRenderable>();
-
-        std::shared_ptr<Material> duckMaterial = std::make_shared<Material>(glm::vec3(1.0f, 1.0f, 1.0f),
-                                        glm::vec3(1.0f, 0.5f, 0.31f),
-                                        glm::vec3(1.0f, 0.5f, 0.31f),
-                                        glm::vec3(0.5f, 0.5f, 0.5f),
-                                        64.0f,
-                                        "resources/white.jpg",
-                                        "resources/white.jpg",
-                                        "resources/black.jpg");
-                                        
-
-        duckMaterial->LoadShader("Main Shader",
-            "src/render/shaders/blinn_phong_shader.vert",
-            "src/render/shaders/blinn_phong_shader.frag");
-        duckRenderable->SetMaterial(duckMaterial);
-        duckRenderable->LoadModel("resources/models/Duck.fbx");
-    }
 
     // Load Zelda
     Entity* zelda = world0->CreateEntity("Zelda");

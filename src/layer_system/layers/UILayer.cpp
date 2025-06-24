@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 1/5/25.
-//
 
 #include "UILayer.h"
 

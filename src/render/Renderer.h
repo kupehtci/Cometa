@@ -1,7 +1,3 @@
-// Created by Daniel Laplana Gimeno on 5/12/24.
-
-
-// #define GL_SILENCE_DEPRECATION
 
 #define GLAD_GL_IMPLEMENTATION
 #define GLFW_INCLUDE_NONE

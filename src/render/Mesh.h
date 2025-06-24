@@ -1,6 +1,4 @@
-//
-// Created by Daniel Laplana Gimeno on 22/4/25.
-//
+
 
 #ifndef MESH_H
 #define MESH_H

@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 6/5/25.
-//
 
 #ifndef COMETA_COLLIDER_H
 #define COMETA_COLLIDER_H

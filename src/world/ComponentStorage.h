@@ -2,6 +2,7 @@
 #define COMETA_COMPONENT_STORAGE_H
 
 #include "types/SparseSet.h"
+#include "debug/Assertion.h"
 
 /**
  * Component storage is an Sparse Set that stores the object more efficiently than ordered maps <id, Entity>
@@ -32,20 +33,20 @@ public:
 		}
 
 		// Increase dense and dense Index capacity if full or about to be full
-		if (_size >= _denseCapacity - 1) {
-			_denseCapacity = _denseCapacity * 2;
-			_dense.resize(_denseCapacity);
-			_denseIndex.resize(_denseCapacity);
-			_capacity = _denseCapacity;
-			_sparse.resize(_capacity, -1);
-			std::cout << "Increased dense capacity to: " << _denseCapacity << std::endl;
+		if (this->_size >= this->_denseCapacity - 1) {
+			this->_denseCapacity = this->_denseCapacity * 2;
+			this->_dense.resize(this->_denseCapacity);
+			this->_denseIndex.resize(this->_denseCapacity);
+			this->_capacity = this->_denseCapacity;
+			this->_sparse.resize(this->_capacity, -1);
+			COMETA_MSG("Increased dense capacity to: ", this->_denseCapacity);
 		}
 
 		// Increase sparse if index to insert is out of scope
-		while (_capacity <= index)
+		while (this->_capacity <= index)
 		{
-			_capacity *= 2;
-			_sparse.resize(_capacity, -1);
+			this->_capacity *= 2;
+			this->_sparse.resize(this->_capacity, -1);
 		}
 
 		// std::cout << "Created component for Entity: " << index << " new dense capacity: " << this->_denseCapacity << std::endl;

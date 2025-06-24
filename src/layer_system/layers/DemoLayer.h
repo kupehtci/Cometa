@@ -1,6 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 18/4/25.
-//
 
 #ifndef COMETA_DEMO_LAYER_H
 #define COMETA_DEMO_LAYER_H

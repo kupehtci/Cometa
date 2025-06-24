@@ -1,7 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 18/11/24.
-//
-
 #include "core/Application.h"
 
 #include <layer_system/layers/DemoLayer.h>
@@ -27,7 +23,6 @@ Application::~Application(){
 }
 
 void Application::Init(){
-    // Create managers
     Time::Create();
     _time = Time::GetInstancePtr();
 

@@ -1,7 +1,3 @@
-//
-// Created by Daniel Laplana Gimeno on 3/6/25.
-//
-
 #ifndef UIUTILS_H
 #define UIUTILS_H
 

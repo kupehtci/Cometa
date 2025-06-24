@@ -1,6 +1,4 @@
-//
-// Created by Daniel Laplana Gimeno on 3/6/25.
-//
+
 
 #ifndef COMETA_GAMEPADINFO_H
 #define COMETA_GAMEPADINFO_H
